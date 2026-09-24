@@ -120,12 +120,11 @@ export function initGA(overrideId?: string): boolean {
     // Ensure dataLayer exists
     window.dataLayer = window.dataLayer || [];
 
-    // Ensure gtag function exists
+    // Ensure gtag function exists using the canonical arguments forwarding
     if (!window.gtag) {
-      window.gtag = function gtag(...args: unknown[]) {
-        if (window.dataLayer) {
-          window.dataLayer.push(args);
-        }
+      window.gtag = function gtag() {
+        // eslint-disable-next-line prefer-rest-params
+        window.dataLayer!.push(arguments);
       };
     }
 
@@ -141,11 +140,17 @@ export function initGA(overrideId?: string): boolean {
       document.head.appendChild(script);
     }
 
-    // Configure GA4 with send_page_view: false so we control SPA page views explicitly
+    // Initialize gtag timestamp and configuration with initial page path
     window.gtag('js', new Date());
     window.gtag('config', measurementId, {
-      send_page_view: false,
+      page_path: window.location.pathname || '/',
+      page_title: typeof document !== 'undefined' ? document.title : '',
+      page_location: window.location.href,
     });
+
+    // Mark current path as tracked so initial route doesn't trigger duplicate page_view event
+    const initialCleanPath = (window.location.pathname || '/').split('?')[0].split('#')[0] || '/';
+    lastPagePath = initialCleanPath;
 
     isInitialized = true;
     return true;
