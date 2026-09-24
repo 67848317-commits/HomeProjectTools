@@ -1,0 +1,6 @@
+{
+  "name": "Home Project Tools",
+  "description": "Home Improvement Planning & Cost Estimation platform for homeowners and DIYers to calculate materials, estimate costs, and plan residential projects.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

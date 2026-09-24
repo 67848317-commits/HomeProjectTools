@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://homeprojecttools.com/sitemap.xml

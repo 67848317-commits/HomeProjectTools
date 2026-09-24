@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-canvas: #f7f5f0;
+    --color-surface: #ffffff;
+    --color-surface-subtle: #f1ede4;
+    --color-surface-muted: #e9e4d8;
+    --color-border-soft: #e3ded4;
+    --color-border-strong: #c8c1b2;
+    --color-craft-accent: #b8532b;
+    --color-craft-accent-hover: #9e431f;
+    --color-craft-accent-subtle: #fcf4ee;
+    --color-blueprint: #1e3a5f;
+    --color-blueprint-subtle: #edf3f9;
+    --color-ink-primary: #1c1917;
+    --color-ink-secondary: #57534e;
+    --color-ink-muted: #78716c;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink-primary);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Numeric legibility */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Worksheet architectural borders and accents */
+.worksheet-grid {
+  background-size: 24px 24px;
+  background-image: 
+    linear-gradient(to right, rgba(200, 193, 178, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(200, 193, 178, 0.15) 1px, transparent 1px);
+}

@@ -1,0 +1,192 @@
+import React from 'react';
+import { Container } from '../components/common/Container.tsx';
+import { Breadcrumbs } from '../components/common/Breadcrumbs.tsx';
+import {
+  MessageSquare,
+  AlertCircle,
+  HelpCircle,
+  CheckCircle2,
+  FileQuestion,
+  Wrench,
+  ExternalLink,
+} from 'lucide-react';
+
+interface ContactPageProps {
+  onNavigate: (path: string) => void;
+}
+
+export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
+  return (
+    <div className="py-8 md:py-12">
+      <Container>
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Contact & Feedback', href: '/contact' },
+          ]}
+          onNavigate={onNavigate}
+        />
+
+        {/* Page Header */}
+        <div className="max-w-3xl mb-12">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#f1ede4] border border-[#e3ded4] text-xs font-mono text-[#78716c] uppercase tracking-wider mb-4">
+            <MessageSquare className="h-3.5 w-3.5 text-[#b8532b]" />
+            Community & Quality Feedback
+          </div>
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#1c1917] tracking-tight mb-4">
+            Contact & Feedback
+          </h1>
+          <p className="text-lg md:text-xl text-[#57534e] leading-relaxed font-serif">
+            Help us maintain mathematical accuracy, clear instructions, and up-to-date residential estimating benchmarks.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+          {/* Main Content */}
+          <div className="lg:col-span-8 space-y-8">
+            {/* Contact Method Overview */}
+            <section className="bg-[#ffffff] border border-[#e3ded4] rounded-lg p-6 md:p-8 shadow-xs">
+              <h2 className="font-serif text-2xl font-bold text-[#1c1917] mb-4 flex items-center gap-3">
+                <FileQuestion className="h-6 w-6 text-[#b8532b]" />
+                How to Provide Feedback
+              </h2>
+              <p className="text-[#57534e] leading-relaxed mb-4">
+                Home Project Tools is committed to mathematical transparency, reproducible estimating formulas, and error-free
+                guidance. If you notice a calculation discrepancy, broken link, confusing instruction, or outdated packaging standard,
+                we welcome your feedback.
+              </p>
+              <div className="p-4 rounded-lg bg-[#f7f5f0] border border-[#e3ded4] text-sm text-[#57534e] leading-relaxed mb-6">
+                <p className="font-medium text-[#1c1917] mb-1">Feedback & Support Channel</p>
+                <p>
+                  Official feedback, mathematical bug reports, and editorial errata are tracked through our deployment and
+                  project repository channels. Direct issue submission links and communication channels are maintained directly
+                  through the project's hosted repository.
+                </p>
+              </div>
+
+              <h3 className="font-serif text-lg font-bold text-[#1c1917] mb-3">
+                What to Include in an Errata or Calculation Report
+              </h3>
+              <p className="text-sm text-[#57534e] mb-4">
+                To help us review and verify mathematical reports quickly, please include as much of the following information as possible:
+              </p>
+
+              <div className="space-y-3 text-sm text-[#1c1917]">
+                <div className="flex items-start gap-3 p-3 rounded bg-[#faf8f5] border border-[#e3ded4]">
+                  <CheckCircle2 className="h-4 w-4 text-[#2d6a4f] shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-semibold">Exact Page or Calculator URL:</span>
+                    <p className="text-xs text-[#78716c] mt-0.5">e.g., <code>/calculators/concrete-slab-calculator</code> or <code>/guides/how-much-sod-do-i-need</code></p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 rounded bg-[#faf8f5] border border-[#e3ded4]">
+                  <CheckCircle2 className="h-4 w-4 text-[#2d6a4f] shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-semibold">Input Values Tested:</span>
+                    <p className="text-xs text-[#78716c] mt-0.5">The exact dimensions, waste percentages, and option toggles entered into the worksheet.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 rounded bg-[#faf8f5] border border-[#e3ded4]">
+                  <CheckCircle2 className="h-4 w-4 text-[#2d6a4f] shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-semibold">Observed Output vs Expected Result:</span>
+                    <p className="text-xs text-[#78716c] mt-0.5">The numerical output generated by our calculator compared to your manual calculation or manufacturer spec sheet.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 rounded bg-[#faf8f5] border border-[#e3ded4]">
+                  <CheckCircle2 className="h-4 w-4 text-[#2d6a4f] shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-semibold">Source or Packaging Reference:</span>
+                    <p className="text-xs text-[#78716c] mt-0.5">Specific supplier carton yield, bag volume, or lumber dimension that differs from our baseline assumptions.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Types of Inquiries */}
+            <section className="bg-[#ffffff] border border-[#e3ded4] rounded-lg p-6 md:p-8 shadow-xs">
+              <h2 className="font-serif text-2xl font-bold text-[#1c1917] mb-4 flex items-center gap-3">
+                <Wrench className="h-6 w-6 text-[#b8532b]" />
+                What We Can & Cannot Assist With
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                <div className="border border-[#e3ded4] rounded-lg p-4 bg-[#f2f8f5]">
+                  <div className="font-semibold text-[#2d6a4f] mb-2 flex items-center gap-1.5">
+                    <CheckCircle2 className="h-4 w-4" />
+                    We Welcome Feedback On:
+                  </div>
+                  <ul className="space-y-1.5 text-xs text-[#57534e]">
+                    <li>• Calculation engine logic and rounding errors</li>
+                    <li>• Discrepancies between guides and calculators</li>
+                    <li>• Packaging sizing updates (e.g. new bag weights)</li>
+                    <li>• Accessibility, styling, or broken link reports</li>
+                    <li>• Suggestions for input ranges and unit toggles</li>
+                  </ul>
+                </div>
+
+                <div className="border border-[#e3ded4] rounded-lg p-4 bg-[#fcf4ee]">
+                  <div className="font-semibold text-[#b8532b] mb-2 flex items-center gap-1.5">
+                    <AlertCircle className="h-4 w-4" />
+                    We Cannot Provide:
+                  </div>
+                  <ul className="space-y-1.5 text-xs text-[#57534e]">
+                    <li>• Custom structural engineering assessments</li>
+                    <li>• Municipal code compliance determinations</li>
+                    <li>• Contractor bid evaluations or price negotiations</li>
+                    <li>• Live customer support for retail material orders</li>
+                    <li>• On-site project management or design consulting</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="bg-[#ffffff] border border-[#e3ded4] rounded-lg p-6 shadow-xs">
+              <h3 className="font-serif text-lg font-bold text-[#1c1917] mb-3">
+                Quick Resources
+              </h3>
+              <p className="text-xs text-[#57534e] mb-4 leading-relaxed">
+                Before submitting a question, our methodology and about pages answer common questions regarding formulas and benchmarks:
+              </p>
+              <div className="space-y-2">
+                <a
+                  href="/about"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('/about');
+                  }}
+                  className="block p-3 rounded bg-[#f7f5f0] border border-[#e3ded4] hover:border-[#b8532b] transition-colors text-xs text-[#1c1917] font-medium"
+                >
+                  About the Site & Philosophy
+                </a>
+                <a
+                  href="/methodology"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('/methodology');
+                  }}
+                  className="block p-3 rounded bg-[#f7f5f0] border border-[#e3ded4] hover:border-[#b8532b] transition-colors text-xs text-[#1c1917] font-medium"
+                >
+                  How Calculations Are Developed
+                </a>
+                <a
+                  href="/terms"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate('/terms');
+                  }}
+                  className="block p-3 rounded bg-[#f7f5f0] border border-[#e3ded4] hover:border-[#b8532b] transition-colors text-xs text-[#1c1917] font-medium"
+                >
+                  Terms of Use & Disclaimers
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </div>
+  );
+};

@@ -1,0 +1,280 @@
+import React from 'react';
+import { Container } from '../components/common/Container.tsx';
+import { Breadcrumbs } from '../components/common/Breadcrumbs.tsx';
+import {
+  Ruler,
+  FileSpreadsheet,
+  CheckCircle2,
+  ShieldCheck,
+  AlertTriangle,
+  ArrowRight,
+  Layers,
+  Compass,
+  Boxes,
+} from 'lucide-react';
+
+interface AboutPageProps {
+  onNavigate: (path: string) => void;
+}
+
+export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+    e.preventDefault();
+    onNavigate(path);
+  };
+
+  return (
+    <div className="py-8 md:py-12">
+      <Container>
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'About', href: '/about' },
+          ]}
+          onNavigate={onNavigate}
+        />
+
+        {/* Page Header */}
+        <div className="max-w-3xl mb-12">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#f1ede4] border border-[#e3ded4] text-xs font-mono text-[#78716c] uppercase tracking-wider mb-4">
+            <Ruler className="h-3.5 w-3.5 text-[#b8532b]" />
+            Site Philosophy & Mission
+          </div>
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#1c1917] tracking-tight mb-4">
+            About Home Project Tools
+          </h1>
+          <p className="text-lg md:text-xl text-[#57534e] leading-relaxed font-serif">
+            Plan your project. Estimate materials. Understand the cost.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+          {/* Main Content Column */}
+          <div className="lg:col-span-8 space-y-10">
+            {/* 1. What the Site Does */}
+            <section className="bg-[#ffffff] border border-[#e3ded4] rounded-lg p-6 md:p-8 shadow-xs">
+              <h2 className="font-serif text-2xl font-bold text-[#1c1917] mb-4 flex items-center gap-3">
+                <FileSpreadsheet className="h-6 w-6 text-[#b8532b]" />
+                What Home Project Tools Does
+              </h2>
+              <p className="text-[#57534e] leading-relaxed mb-4">
+                Home Project Tools is an independent collection of open, interactive estimating worksheets and companion
+                guides built for homeowners, DIY remodelers, and residential property planners.
+              </p>
+              <p className="text-[#57534e] leading-relaxed mb-6">
+                Most home improvement projects begin with uncertainty: how much material to buy, how commercial packaging
+                affects purchase quantities, and how much the raw materials will realistically cost. Our worksheets help you:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-[#1c1917]">
+                <div className="flex items-start gap-2.5 p-3 rounded bg-[#f7f5f0] border border-[#e3ded4]">
+                  <CheckCircle2 className="h-4 w-4 text-[#2d6a4f] shrink-0 mt-0.5" />
+                  <span>Measure project areas, perimeters, and three-dimensional volumes</span>
+                </div>
+                <div className="flex items-start gap-2.5 p-3 rounded bg-[#f7f5f0] border border-[#e3ded4]">
+                  <CheckCircle2 className="h-4 w-4 text-[#2d6a4f] shrink-0 mt-0.5" />
+                  <span>Account for jobsite cut scrap, compaction, and settling</span>
+                </div>
+                <div className="flex items-start gap-2.5 p-3 rounded bg-[#f7f5f0] border border-[#e3ded4]">
+                  <CheckCircle2 className="h-4 w-4 text-[#2d6a4f] shrink-0 mt-0.5" />
+                  <span>Convert planning footage into whole commercial store units</span>
+                </div>
+                <div className="flex items-start gap-2.5 p-3 rounded bg-[#f7f5f0] border border-[#e3ded4]">
+                  <CheckCircle2 className="h-4 w-4 text-[#2d6a4f] shrink-0 mt-0.5" />
+                  <span>Estimate planning-level material budgets across cost tiers</span>
+                </div>
+              </div>
+            </section>
+
+            {/* 2. Core Methodology */}
+            <section className="bg-[#ffffff] border border-[#e3ded4] rounded-lg p-6 md:p-8 shadow-xs">
+              <h2 className="font-serif text-2xl font-bold text-[#1c1917] mb-4 flex items-center gap-3">
+                <Layers className="h-6 w-6 text-[#b8532b]" />
+                The Three-Stage Estimating Model
+              </h2>
+              <p className="text-[#57534e] leading-relaxed mb-6">
+                Every calculator and companion guide on this site separates calculations into three distinct stages to ensure
+                mathematical transparency and eliminate accidental double-counting:
+              </p>
+
+              <div className="space-y-4">
+                <div className="p-4 rounded border-l-4 border-[#b8532b] bg-[#fcf4ee]">
+                  <div className="font-mono uppercase tracking-wider text-xs font-semibold text-[#b8532b] mb-1">
+                    Stage 1: Mathematical Requirement
+                  </div>
+                  <p className="text-sm text-[#57534e] leading-relaxed">
+                    Pure geometric surface area, perimeter length, or raw volume derived directly from your room or lot
+                    measurements, subtracting documented openings such as doorways, windows, or obstacles. No cut waste
+                    or packaging rounding is added here.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded border-l-4 border-[#c8c1b2] bg-[#f7f5f0]">
+                  <div className="font-mono uppercase tracking-wider text-xs font-semibold text-[#1c1917] mb-1">
+                    Stage 2: Planning Requirement
+                  </div>
+                  <p className="text-sm text-[#57534e] leading-relaxed">
+                    Applies a single, documented jobsite allowance for unavoidable physical factors: edge cuts, diagonal
+                    miter joints, gravel base compaction, organic topsoil settling, or post displacement in concrete holes.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded border-l-4 border-[#2d6a4f] bg-[#f2f8f5]">
+                  <div className="font-mono uppercase tracking-wider text-xs font-semibold text-[#2d6a4f] mb-1">
+                    Stage 3: Commercial Purchase Quantity
+                  </div>
+                  <p className="text-sm text-[#57534e] leading-relaxed">
+                    Rounds up to actual store-shelf distribution units—such as whole tile cartons, 50-lb or 80-lb concrete
+                    bags, 12-foot molding sticks, 1-gallon paint cans, sod pallets, or roofing squares. You cannot buy a fraction
+                    of a box or bag.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-[#e3ded4] flex items-center justify-between text-sm">
+                <span className="text-[#78716c]">Want an in-depth breakdown of our formulas?</span>
+                <a
+                  href="/methodology"
+                  onClick={(e) => handleNavClick(e, '/methodology')}
+                  className="font-medium text-[#b8532b] hover:underline inline-flex items-center gap-1"
+                >
+                  Read our full methodology
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+              </div>
+            </section>
+
+            {/* 3. What the Numbers Mean */}
+            <section className="bg-[#ffffff] border border-[#e3ded4] rounded-lg p-6 md:p-8 shadow-xs">
+              <h2 className="font-serif text-2xl font-bold text-[#1c1917] mb-4 flex items-center gap-3">
+                <ShieldCheck className="h-6 w-6 text-[#2d6a4f]" />
+                What the Numbers Mean
+              </h2>
+              <div className="space-y-4 text-sm text-[#57534e] leading-relaxed">
+                <p>
+                  Calculations provided on Home Project Tools are <strong>preliminary planning benchmarks</strong>. They
+                  are designed to help you organize project scopes, assemble shopping lists, and establish realistic budgets
+                  before you purchase materials or hire trades.
+                </p>
+                <p>
+                  <strong>Prices are planning benchmarks, not live retailer quotes.</strong> Unit material costs ($/sq ft,
+                  $/bag, $/stick) represent typical United States national residential planning averages across budget,
+                  standard, and premium product tiers. Local prices vary continuously by region, lumber grade, brand,
+                  supplier, sales tax, delivery fees, and seasonal availability.
+                </p>
+                <p>
+                  <strong>Verify before purchasing.</strong> Before placing an order, confirm manufacturer carton yields,
+                  nominal lumber dimensions, specific product coverage ratings, and return policies with your local supplier.
+                </p>
+              </div>
+            </section>
+
+            {/* 4. What the Site is NOT */}
+            <section className="bg-[#ffffff] border border-[#e3ded4] rounded-lg p-6 md:p-8 shadow-xs">
+              <h2 className="font-serif text-2xl font-bold text-[#1c1917] mb-4 flex items-center gap-3">
+                <AlertTriangle className="h-6 w-6 text-[#b8532b]" />
+                What Home Project Tools Is Not
+              </h2>
+              <div className="space-y-3 text-sm text-[#57534e] leading-relaxed">
+                <p>
+                  To maintain absolute transparency and trust, we state clearly what these tools are not:
+                </p>
+                <ul className="list-disc list-inside space-y-2 pl-2 text-[#57534e]">
+                  <li>
+                    <strong>Not structural engineering or architectural plans:</strong> These tools do not assess structural
+                    load-bearing capacities, seismic ratings, or span deflection limits.
+                  </li>
+                  <li>
+                    <strong>Not official building-code determinations:</strong> Municipal building codes, footing depths,
+                    frost line minimums, and egress requirements vary by jurisdiction.
+                  </li>
+                  <li>
+                    <strong>Not contractor bids:</strong> Labor rate benchmarks are for preliminary homeowner budgeting and do
+                    not reflect formal trade proposals or binding contract scopes.
+                  </li>
+                  <li>
+                    <strong>Not a guarantee of zero remaining scrap:</strong> Jobsite layouts, wall irregularities, installer
+                    cutting technique, and unexpected subfloor conditions can create unique project variances.
+                  </li>
+                </ul>
+              </div>
+            </section>
+          </div>
+
+          {/* Sidebar Column */}
+          <div className="lg:col-span-4 space-y-6">
+            {/* Quick Summary Card */}
+            <div className="bg-[#ffffff] border border-[#e3ded4] rounded-lg p-6 shadow-xs">
+              <h3 className="font-serif text-lg font-bold text-[#1c1917] mb-3">
+                Site Overview
+              </h3>
+              <dl className="space-y-3 text-xs font-mono">
+                <div className="flex justify-between border-b border-[#f1ede4] pb-2">
+                  <dt className="text-[#78716c]">Calculators:</dt>
+                  <dd className="font-semibold text-[#1c1917]">15 Active Worksheets</dd>
+                </div>
+                <div className="flex justify-between border-b border-[#f1ede4] pb-2">
+                  <dt className="text-[#78716c]">Companion Guides:</dt>
+                  <dd className="font-semibold text-[#1c1917]">15 Step-by-Step Guides</dd>
+                </div>
+                <div className="flex justify-between border-b border-[#f1ede4] pb-2">
+                  <dt className="text-[#78716c]">Project Categories:</dt>
+                  <dd className="font-semibold text-[#1c1917]">7 Trade Hubs</dd>
+                </div>
+                <div className="flex justify-between border-b border-[#f1ede4] pb-2">
+                  <dt className="text-[#78716c]">Measurement Standard:</dt>
+                  <dd className="font-semibold text-[#1c1917]">US Customary Units</dd>
+                </div>
+                <div className="flex justify-between border-b border-[#f1ede4] pb-2">
+                  <dt className="text-[#78716c]">Access Model:</dt>
+                  <dd className="font-semibold text-[#2d6a4f]">Free & Open (No Login)</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-[#78716c]">Data Storage:</dt>
+                  <dd className="font-semibold text-[#1c1917]">100% Client-Side Only</dd>
+                </div>
+              </dl>
+            </div>
+
+            {/* Navigation Navigation Card */}
+            <div className="bg-[#f1ede4] border border-[#e3ded4] rounded-lg p-6">
+              <h3 className="font-serif text-base font-bold text-[#1c1917] mb-2 flex items-center gap-2">
+                <Compass className="h-4 w-4 text-[#b8532b]" />
+                Explore the Site
+              </h3>
+              <p className="text-xs text-[#57534e] mb-4">
+                Explore our full library of interactive planning worksheets across all 7 home improvement categories.
+              </p>
+              <div className="space-y-2">
+                <a
+                  href="/projects"
+                  onClick={(e) => handleNavClick(e, '/projects')}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded bg-[#ffffff] border border-[#e3ded4] text-xs font-medium text-[#1c1917] hover:border-[#b8532b] transition-colors"
+                >
+                  <span>Browse All 7 Project Categories</span>
+                  <ArrowRight className="h-3.5 w-3.5 text-[#78716c]" />
+                </a>
+                <a
+                  href="/methodology"
+                  onClick={(e) => handleNavClick(e, '/methodology')}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded bg-[#ffffff] border border-[#e3ded4] text-xs font-medium text-[#1c1917] hover:border-[#b8532b] transition-colors"
+                >
+                  <span>View Calculation Methodology</span>
+                  <ArrowRight className="h-3.5 w-3.5 text-[#78716c]" />
+                </a>
+                <a
+                  href="/contact"
+                  onClick={(e) => handleNavClick(e, '/contact')}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded bg-[#ffffff] border border-[#e3ded4] text-xs font-medium text-[#1c1917] hover:border-[#b8532b] transition-colors"
+                >
+                  <span>Send Feedback or Errata</span>
+                  <ArrowRight className="h-3.5 w-3.5 text-[#78716c]" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </div>
+  );
+};
