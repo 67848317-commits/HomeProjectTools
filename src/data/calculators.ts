@@ -1,5 +1,5 @@
 /**
- * Calculator Metadata Registry for Home Project Tools
+ * Calculator Metadata Registry for Home Project Planner
  * 
  * IMPORTANT ARCHITECTURAL RULE:
  * This file contains ONLY declarative metadata, schemas, field options, and SEO configurations.

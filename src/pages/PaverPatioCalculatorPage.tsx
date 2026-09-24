@@ -27,6 +27,8 @@ import {
   ShieldAlert,
   Truck,
   Box,
+  BookOpen,
+  ArrowRight,
 } from 'lucide-react';
 
 interface PaverPatioCalculatorPageProps {
@@ -442,6 +444,33 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
               ]}
               scopeTitle="Excavation & Base Scope Disclaimers"
             />
+
+            {/* Comprehensive Editorial Planning Guide */}
+            <div className="p-5 sm:p-6 rounded-lg bg-[#f7f5f0] border border-[#e3ded4] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+              <div className="flex items-start gap-3.5">
+                <div className="p-2.5 rounded-md bg-white border border-[#e3ded4] text-[#b8532b] shrink-0">
+                  <BookOpen className="h-5 w-5" />
+                </div>
+                <div>
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#b8532b]">
+                    Project Planning Guide
+                  </span>
+                  <h3 className="font-serif text-lg font-bold text-[#1c1917] mt-0.5">
+                    How to Calculate Paver Patio Materials: Pavers, Base Rock, Sand, and Edge Restraints
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#57534e] mt-1 max-w-xl leading-relaxed">
+                    Estimate pavers with cut waste, calculate dense-graded aggregate base depth with 6-inch perimeter overrun, bedding coarse sand, and polymeric joint sand.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => onNavigate && onNavigate('/guides/how-to-calculate-paver-patio-materials')}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded text-xs font-mono font-semibold bg-[#b8532b] text-white hover:bg-[#a04422] transition-colors shrink-0 shadow-xs"
+              >
+                <span>Read Planning Guide</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
 
             {/* Practical Tips */}
             <PracticalTips

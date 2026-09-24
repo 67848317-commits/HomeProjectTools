@@ -42,7 +42,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             Site Philosophy & Mission
           </div>
           <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#1c1917] tracking-tight mb-4">
-            About Home Project Tools
+            About Home Project Planner
           </h1>
           <p className="text-lg md:text-xl text-[#57534e] leading-relaxed font-serif">
             Plan your project. Estimate materials. Understand the cost.
@@ -56,11 +56,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <section className="bg-[#ffffff] border border-[#e3ded4] rounded-lg p-6 md:p-8 shadow-xs">
               <h2 className="font-serif text-2xl font-bold text-[#1c1917] mb-4 flex items-center gap-3">
                 <FileSpreadsheet className="h-6 w-6 text-[#b8532b]" />
-                What Home Project Tools Does
+                What Home Project Planner Does
               </h2>
               <p className="text-[#57534e] leading-relaxed mb-4">
-                Home Project Tools is an independent collection of open, interactive estimating worksheets and companion
-                guides built for homeowners, DIY remodelers, and residential property planners.
+                Home Project Planner is developed and maintained as an independent home improvement planning resource,
+                providing open, interactive estimating worksheets and companion guides built for homeowners, DIY remodelers,
+                and residential property planners.
               </p>
               <p className="text-[#57534e] leading-relaxed mb-6">
                 Most home improvement projects begin with uncertainty: how much material to buy, how commercial packaging
@@ -152,7 +153,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
               </h2>
               <div className="space-y-4 text-sm text-[#57534e] leading-relaxed">
                 <p>
-                  Calculations provided on Home Project Tools are <strong>preliminary planning benchmarks</strong>. They
+                  Calculations provided on Home Project Planner are <strong>preliminary planning benchmarks</strong>. They
                   are designed to help you organize project scopes, assemble shopping lists, and establish realistic budgets
                   before you purchase materials or hire trades.
                 </p>
@@ -173,7 +174,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <section className="bg-[#ffffff] border border-[#e3ded4] rounded-lg p-6 md:p-8 shadow-xs">
               <h2 className="font-serif text-2xl font-bold text-[#1c1917] mb-4 flex items-center gap-3">
                 <AlertTriangle className="h-6 w-6 text-[#b8532b]" />
-                What Home Project Tools Is Not
+                What Home Project Planner Is Not
               </h2>
               <div className="space-y-3 text-sm text-[#57534e] leading-relaxed">
                 <p>

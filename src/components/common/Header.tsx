@@ -50,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPath = '/calculators/floo
               </div>
               <div className="flex flex-col">
                 <span className="font-serif font-bold text-lg leading-tight tracking-tight text-[#1c1917] group-hover:text-[#b8532b] transition-colors">
-                  Home Project Tools
+                  Home Project Planner
                 </span>
                 <span className="text-[11px] font-mono text-[#78716c] uppercase tracking-wider">
                   Planning & Cost Estimation

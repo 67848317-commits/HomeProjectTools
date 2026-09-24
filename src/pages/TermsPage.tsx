@@ -43,7 +43,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
               Important Planning Notice
             </h2>
             <p>
-              Home Project Tools provides free informational worksheets to assist with residential project planning and
+              Home Project Planner provides free informational worksheets to assist with residential project planning and
               material budgeting. These tools do not provide professional engineering calculations, architectural blueprints,
               building-code compliance certifications, or guaranteed merchant quotes. Always verify field measurements,
               product specifications, and local code requirements before buying materials or beginning physical work.
@@ -56,7 +56,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
               1. Acceptance of Terms
             </h2>
             <p className="text-sm leading-relaxed">
-              By accessing and using Home Project Tools (the "Website"), you agree to be bound by these Terms of Use and our
+              By accessing and using Home Project Planner (the "Website"), you agree to be bound by these Terms of Use and our
               Privacy Policy. If you do not agree to these terms, please discontinue use of our calculators, tools, and guides.
             </p>
           </section>
@@ -129,7 +129,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
             </h2>
             <p className="text-sm leading-relaxed">
               The design, interactive calculator source code, calculation architectures, companion guides, and text content
-              on Home Project Tools are protected by copyright and intellectual property laws. You may use our worksheets for
+              on Home Project Planner are protected by copyright and intellectual property laws. You may use our worksheets for
               personal or internal business planning. You may not reproduce, scrape, republish, or redistribute our software
               engines or content without prior written permission.
             </p>
@@ -146,9 +146,9 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
                 either express or implied.
               </p>
               <p>
-                To the fullest extent permissible under applicable law, Home Project Tools and its contributors disclaim all
+                To the fullest extent permissible under applicable law, Home Project Planner and its contributors disclaim all
                 warranties, express or implied, including warranties of merchantability, fitness for a particular purpose, and
-                non-infringement. Under no circumstances shall Home Project Tools be liable for any direct, indirect, incidental,
+                non-infringement. Under no circumstances shall Home Project Planner be liable for any direct, indirect, incidental,
                 consequential, or special damages (including, without limitation, material shortages, material surplus, restocking
                 fees, construction delays, or structural damage) arising from the use of or inability to use our tools.
               </p>

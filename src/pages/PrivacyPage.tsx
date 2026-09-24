@@ -43,7 +43,7 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({ onNavigate }) => {
               Privacy Summary in Plain English
             </h2>
             <p>
-              Home Project Tools is an open, client-side informational tool. We do not require accounts, we do not use
+              Home Project Planner is an open, client-side informational tool. We do not require accounts, we do not use
               tracking cookies or behavioral advertising networks, and we do not store your room dimensions or calculator
               inputs on our servers. All calculations execute directly in your browser.
             </p>
@@ -142,7 +142,7 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({ onNavigate }) => {
               5. Children's Privacy
             </h2>
             <p className="text-sm leading-relaxed">
-              Home Project Tools is intended for general audiences planning residential home improvement and DIY projects.
+              Home Project Planner is intended for general audiences planning residential home improvement and DIY projects.
               We do not knowingly collect or solicit personal information from children under the age of 13.
             </p>
           </section>

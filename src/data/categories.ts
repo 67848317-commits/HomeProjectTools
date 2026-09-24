@@ -1,5 +1,5 @@
 /**
- * Category Data Store for Home Project Tools
+ * Category Data Store for Home Project Planner
  * Defines the 7 Core Residential Improvement Categories
  */
 

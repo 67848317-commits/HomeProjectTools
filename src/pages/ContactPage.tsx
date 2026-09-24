@@ -52,16 +52,19 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                 How to Provide Feedback
               </h2>
               <p className="text-[#57534e] leading-relaxed mb-4">
-                Home Project Tools is committed to mathematical transparency, reproducible estimating formulas, and error-free
+                Home Project Planner is committed to mathematical transparency, reproducible estimating formulas, and error-free
                 guidance. If you notice a calculation discrepancy, broken link, confusing instruction, or outdated packaging standard,
                 we welcome your feedback.
               </p>
-              <div className="p-4 rounded-lg bg-[#f7f5f0] border border-[#e3ded4] text-sm text-[#57534e] leading-relaxed mb-6">
-                <p className="font-medium text-[#1c1917] mb-1">Feedback & Support Channel</p>
+              <div className="p-5 rounded-lg bg-[#f7f5f0] border border-[#e3ded4] text-sm text-[#57534e] leading-relaxed mb-6 space-y-3">
+                <p className="font-medium text-[#1c1917]">Feedback & Issue Reporting</p>
                 <p>
-                  Official feedback, mathematical bug reports, and editorial errata are tracked through our deployment and
-                  project repository channels. Direct issue submission links and communication channels are maintained directly
-                  through the project's hosted repository.
+                  Official feedback, mathematical bug reports, and errata are managed through our project deployment channels
+                  and public code repository issues. You can submit calculation discrepancies, dimension edge cases, or packaging
+                  updates directly for review.
+                </p>
+                <p className="text-xs text-[#78716c]">
+                  Please include the specific calculator URL, tested dimensions, and observed versus expected results to assist in verification.
                 </p>
               </div>
 

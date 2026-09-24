@@ -25,7 +25,7 @@ test('Phase 5B-1: Page titles are unique and free of duplicate brand repetition'
   // Check categories
   for (const [id, cat] of Object.entries(CATEGORIES)) {
     assert.ok(
-      !cat.seo.metaTitle.includes('Home Project Tools'),
+      !cat.seo.metaTitle.includes('Home Project Planner'),
       `Category ${id} metaTitle '${cat.seo.metaTitle}' should not contain brand name because App.tsx appends it`
     );
   }
@@ -34,7 +34,7 @@ test('Phase 5B-1: Page titles are unique and free of duplicate brand repetition'
   const calcTitles = new Set<string>();
   for (const [id, calc] of Object.entries(CALCULATORS)) {
     assert.ok(
-      !calc.seo.metaTitle.includes('Home Project Tools'),
+      !calc.seo.metaTitle.includes('Home Project Planner'),
       `Calculator ${id} metaTitle '${calc.seo.metaTitle}' should not contain brand name because App.tsx appends it`
     );
     assert.ok(!calcTitles.has(calc.seo.metaTitle), `Duplicate calculator metaTitle in ${id}`);
@@ -45,7 +45,7 @@ test('Phase 5B-1: Page titles are unique and free of duplicate brand repetition'
   const guideTitles = new Set<string>();
   for (const [id, guide] of Object.entries(GUIDES)) {
     assert.ok(
-      !guide.metaTitle.includes('Home Project Tools'),
+      !guide.metaTitle.includes('Home Project Planner'),
       `Guide ${id} metaTitle '${guide.metaTitle}' should not contain brand name because App.tsx appends it`
     );
     assert.ok(!guideTitles.has(guide.metaTitle), `Duplicate guide metaTitle in ${id}`);
@@ -87,24 +87,25 @@ test('Phase 5B-1: Organization schema has no non-existent assets', () => {
 });
 
 test('Phase 5B-1: Canonical URLs and domain safety', () => {
-  assert.equal(getCanonicalUrl('/'), 'https://homeprojecttools.com/');
-  assert.equal(getCanonicalUrl('/projects'), 'https://homeprojecttools.com/projects');
-  assert.equal(getCanonicalUrl('/projects/flooring'), 'https://homeprojecttools.com/projects/flooring');
+  assert.equal(getCanonicalUrl('/'), 'https://homeprojectplanner.org/');
+  assert.equal(getCanonicalUrl('/projects'), 'https://homeprojectplanner.org/projects');
+  assert.equal(getCanonicalUrl('/projects/flooring'), 'https://homeprojectplanner.org/projects/flooring');
   assert.equal(
     getCanonicalUrl('/calculators/tile-calculator'),
-    'https://homeprojecttools.com/calculators/tile-calculator'
+    'https://homeprojectplanner.org/calculators/tile-calculator'
   );
   assert.equal(
     getCanonicalUrl('/about'),
-    'https://homeprojecttools.com/about'
+    'https://homeprojectplanner.org/about'
   );
 
   const sitemapEntries = generateSitemapEntries();
   for (const entry of sitemapEntries) {
-    assert.ok(entry.loc.startsWith('https://homeprojecttools.com'), `Invalid host in ${entry.loc}`);
+    assert.ok(entry.loc.startsWith('https://homeprojectplanner.org'), `Invalid host in ${entry.loc}`);
     assert.ok(!entry.loc.includes('localhost'), `localhost in ${entry.loc}`);
     assert.ok(!entry.loc.includes('run.app'), `run.app in ${entry.loc}`);
     assert.ok(!entry.loc.includes('vercel.app'), `vercel.app in ${entry.loc}`);
+    assert.ok(!entry.loc.includes('homeprojecttools.com'), `legacy domain in ${entry.loc}`);
     assert.ok(!entry.loc.includes('/categories/'), `/categories/ alias in ${entry.loc}`);
   }
 });
@@ -159,7 +160,7 @@ test('Phase 5B-2: GA4 analytics safety and event contract', async () => {
   (globalThis as any).window = {
     dataLayer: [],
     gtag: mockGtag,
-    location: { href: 'https://homeprojecttools.com/' },
+    location: { href: 'https://homeprojectplanner.org/' },
   };
   (globalThis as any).document = {
     querySelector: () => null,

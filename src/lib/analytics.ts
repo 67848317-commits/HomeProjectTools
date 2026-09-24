@@ -1,6 +1,6 @@
 /**
  * Google Analytics 4 (GA4) & Lightweight Product Analytics Utility
- * Home Project Tools - Phase 5B-2
+ * Home Project Planner - Phase 5B-2 / 6A.5
  *
  * Requirements:
  * - Read GA4 Measurement ID from PUBLIC_GA4_MEASUREMENT_ID (Vercel / Vite env / runtime window)

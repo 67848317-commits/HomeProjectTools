@@ -78,7 +78,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 <div className="flex h-7 w-7 items-center justify-center rounded border border-[#c8c1b2] bg-[#f7f5f0] text-[#b8532b]">
                   <Ruler className="h-4 w-4" />
                 </div>
-                <span className="font-serif font-bold text-base text-[#1c1917]">Home Project Tools</span>
+                <span className="font-serif font-bold text-base text-[#1c1917]">Home Project Planner</span>
               </div>
               <p className="text-sm text-[#78716c] leading-relaxed mb-4">
                 Plan your residential project. Estimate materials. Understand the cost. Designed for homeowners and DIY remodelers who need accurate estimating worksheets before buying.
@@ -233,7 +233,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           {/* Bottom Bar */}
           <div className="mt-12 pt-6 border-t border-[#e3ded4] flex flex-col sm:flex-row items-center justify-between text-xs text-[#78716c] gap-4">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-              <span>© {new Date().getFullYear()} Home Project Tools. For planning and estimating purposes only.</span>
+              <span>© {new Date().getFullYear()} Home Project Planner. For planning and estimating purposes only.</span>
               <span className="text-[#c8c1b2] hidden sm:inline">|</span>
               <a
                 href="/privacy"

@@ -176,7 +176,7 @@ export default function App() {
     } else if (cleanPath === '/about') {
       pageTitle = `About Us | ${SITE_CONFIG.siteName}`;
       metaDesc =
-        'Learn about Home Project Tools, our three-stage material estimating model, planning cost benchmarks, and transparent residential project planning mission.';
+        'Learn about Home Project Planner, our three-stage material estimating model, planning cost benchmarks, and transparent residential project planning mission.';
       schemaData = {
         '@type': 'AboutPage',
         name: `About ${SITE_CONFIG.siteName}`,
@@ -187,7 +187,7 @@ export default function App() {
     } else if (cleanPath === '/methodology') {
       pageTitle = `Calculation Methodology & Estimating Standards | ${SITE_CONFIG.siteName}`;
       metaDesc =
-        'Detailed explanation of how Home Project Tools calculates material requirements, cut waste allowances, commercial package rounding, and planning costs.';
+        'Detailed explanation of how Home Project Planner calculates material requirements, cut waste allowances, commercial package rounding, and planning costs.';
       schemaData = {
         '@type': 'WebPage',
         name: `Calculation Methodology - ${SITE_CONFIG.siteName}`,
@@ -199,7 +199,7 @@ export default function App() {
     } else if (cleanPath === '/contact') {
       pageTitle = `Contact & Feedback | ${SITE_CONFIG.siteName}`;
       metaDesc =
-        'Report calculation discrepancies, errata, broken links, or suggest new home improvement packaging benchmarks to Home Project Tools.';
+        'Report calculation discrepancies, errata, broken links, or suggest new home improvement packaging benchmarks to Home Project Planner.';
       schemaData = {
         '@type': 'ContactPage',
         name: `Contact ${SITE_CONFIG.siteName}`,
@@ -210,7 +210,7 @@ export default function App() {
     } else if (cleanPath === '/privacy') {
       pageTitle = `Privacy Policy | ${SITE_CONFIG.siteName}`;
       metaDesc =
-        'Home Project Tools privacy policy: 100% client-side calculation processing, no tracking cookies, and no personal account requirements.';
+        'Home Project Planner privacy policy: 100% client-side calculation processing, no tracking cookies, and no personal account requirements.';
       schemaData = {
         '@type': 'WebPage',
         name: `Privacy Policy - ${SITE_CONFIG.siteName}`,
@@ -221,7 +221,7 @@ export default function App() {
     } else if (cleanPath === '/terms') {
       pageTitle = `Terms of Use & Disclaimers | ${SITE_CONFIG.siteName}`;
       metaDesc =
-        'Terms of use and disclaimers for Home Project Tools: informational planning tools, user verification responsibilities, and limitation of liability.';
+        'Terms of use and disclaimers for Home Project Planner: informational planning tools, user verification responsibilities, and limitation of liability.';
       schemaData = {
         '@type': 'WebPage',
         name: `Terms of Use - ${SITE_CONFIG.siteName}`,
@@ -233,7 +233,7 @@ export default function App() {
       isNotFound = true;
       pageTitle = `Page Not Found | ${SITE_CONFIG.siteName}`;
       metaDesc =
-        'The requested page could not be found. Return to Home Project Tools to plan your residential project and estimate materials.';
+        'The requested page could not be found. Return to Home Project Planner to plan your residential project and estimate materials.';
       schemaData = null;
     }
 

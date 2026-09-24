@@ -510,7 +510,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 What Does the Project Cost?
               </h2>
               <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-                Rather than pretending to provide live retailer prices, Home Project Tools uses calibrated planning price benchmarks. Real-world costs vary significantly across residential markets. Here is how we think about project expenses:
+                Rather than pretending to provide live retailer prices, Home Project Planner uses calibrated planning price benchmarks. Real-world costs vary significantly across residential markets. Here is how we think about project expenses:
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">

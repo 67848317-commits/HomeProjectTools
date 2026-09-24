@@ -1,5 +1,5 @@
 /**
- * Centralized Project Guide Registry for Home Project Tools
+ * Centralized Project Guide Registry for Home Project Planner
  * 
  * Phase 4B-1: 3 Pilot Guides
  * 1. how-to-calculate-flooring-material (Flooring)

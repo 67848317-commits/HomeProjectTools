@@ -47,7 +47,7 @@ export const MethodologyPage: React.FC<MethodologyPageProps> = ({ onNavigate }) 
             Calculation Methodology
           </h1>
           <p className="text-lg md:text-xl text-[#57534e] leading-relaxed font-serif">
-            How Home Project Tools develops transparent, reproducible material estimates and planning budgets.
+            How Home Project Planner develops transparent, reproducible material estimates and planning budgets.
           </p>
         </div>
 

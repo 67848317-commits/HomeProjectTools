@@ -1,5 +1,5 @@
 /**
- * Static XML Sitemap Generator for Home Project Tools
+ * Static XML Sitemap Generator for Home Project Planner
  * 
  * Generates public/sitemap.xml deterministically from canonical source registries.
  * Ensures:

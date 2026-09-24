@@ -54,7 +54,7 @@ test('Phase 5A: robots.txt contains proper production directives', () => {
   assert.ok(robotsContent.includes('User-agent: *'), 'Must contain User-agent: *');
   assert.ok(robotsContent.includes('Allow: /'), 'Must contain Allow: /');
   assert.ok(
-    robotsContent.includes('Sitemap: https://homeprojecttools.com/sitemap.xml'),
+    robotsContent.includes('Sitemap: https://homeprojectplanner.org/sitemap.xml'),
     'Must specify canonical sitemap'
   );
   assert.ok(!robotsContent.includes('localhost'), 'Must not contain localhost');

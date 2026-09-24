@@ -3,21 +3,21 @@
  */
 
 export const SITE_CONFIG = {
-  siteName: 'Home Project Tools',
+  siteName: 'Home Project Planner',
   tagline: 'Home Improvement Planning & Cost Estimation',
   defaultDescription:
-    'Home Project Tools helps homeowners and DIYers estimate materials, quantities, packaging, and planning costs before buying. Measure your space and calculate shopping lists.',
+    'Home Project Planner helps homeowners and DIYers estimate materials, quantities, packaging, and planning costs before buying. Measure your space and calculate shopping lists.',
   // Isolated production site URL (no temporary preview or run.app URLs)
-  productionUrl: 'https://homeprojecttools.com',
+  productionUrl: 'https://homeprojectplanner.org',
   organization: {
     '@type': 'Organization',
-    name: 'Home Project Tools',
-    url: 'https://homeprojecttools.com',
+    name: 'Home Project Planner',
+    url: 'https://homeprojectplanner.org',
   },
   editorialTeam: {
     '@type': 'Organization',
-    name: 'Home Project Tools Editorial Team',
-    url: 'https://homeprojecttools.com',
+    name: 'Home Project Planner',
+    url: 'https://homeprojectplanner.org',
   },
 };
 
