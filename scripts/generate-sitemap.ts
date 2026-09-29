@@ -35,14 +35,12 @@ interface SitemapEntry {
 
 export function generateSitemapEntries(): SitemapEntry[] {
   const entries: SitemapEntry[] = [];
-  const today = '2026-02-20';
 
   // 1. Homepage
   entries.push({
     loc: getCanonicalUrl('/'),
     changefreq: 'weekly',
     priority: '1.0',
-    lastmod: today,
   });
 
   // 2. Projects Overview Hub
@@ -50,7 +48,6 @@ export function generateSitemapEntries(): SitemapEntry[] {
     loc: getCanonicalUrl('/projects'),
     changefreq: 'weekly',
     priority: '0.9',
-    lastmod: today,
   });
 
   // 3. Category Hubs (7 canonical /projects/:slug routes)
@@ -59,7 +56,6 @@ export function generateSitemapEntries(): SitemapEntry[] {
       loc: getCanonicalUrl(`/projects/${category.slug}`),
       changefreq: 'weekly',
       priority: '0.8',
-      lastmod: today,
     });
   });
 
@@ -69,17 +65,17 @@ export function generateSitemapEntries(): SitemapEntry[] {
       loc: getCanonicalUrl(`/calculators/${calculator.slug}`),
       changefreq: 'monthly',
       priority: '0.8',
-      lastmod: today,
     });
   });
 
-  // 5. Guides (15 editorial guides)
+  // 5. Guides (15 editorial guides with verified review dates)
   Object.values(GUIDES).forEach((guide) => {
+    const guideLastmod = guide.lastReviewedDate || guide.publishedDate;
     entries.push({
       loc: getCanonicalUrl(`/guides/${guide.slug}`),
       changefreq: 'monthly',
       priority: '0.8',
-      lastmod: guide.lastReviewedDate || today,
+      ...(guideLastmod ? { lastmod: guideLastmod } : {}),
     });
   });
 
@@ -97,7 +93,6 @@ export function generateSitemapEntries(): SitemapEntry[] {
       loc: getCanonicalUrl(page.path),
       changefreq: page.changefreq,
       priority: page.priority,
-      lastmod: today,
     });
   });
 

@@ -43,9 +43,10 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({ onNavigate }) => {
               Privacy Summary in Plain English
             </h2>
             <p>
-              Home Project Planner is an open, client-side informational tool. We do not require accounts, we do not use
-              tracking cookies or behavioral advertising networks, and we do not store your room dimensions or calculator
-              inputs on our servers. All calculations execute directly in your browser.
+              Home Project Planner is an open, client-side informational planning resource. We do not require user accounts,
+              we do not use advertising cookies or cross-site behavioral profiling networks, and we do not store your room
+              dimensions or project inputs on our servers. All calculations execute directly in your browser. We use Google
+              Analytics 4 strictly for aggregate, non-personally identifiable site performance and traffic measurement.
             </p>
           </div>
 
@@ -78,16 +79,24 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({ onNavigate }) => {
             </h2>
             <div className="space-y-3 text-sm leading-relaxed">
               <p>
-                <strong>No Advertising Cookies or Cross-Site Tracking:</strong> We do not use advertising cookies, social media tracking
-                pixels, session recording scripts, or behavioral profiling tools.
+                To provide transparency regarding how data is handled when you browse Home Project Planner, we clearly distinguish between commercial advertising trackers and privacy-conscious aggregate analytics:
               </p>
-              <p>
-                <strong>Lightweight Product Analytics (Google Analytics 4):</strong> To understand aggregate site traffic and ensure our calculators operate reliably, this site uses Google Analytics 4 (GA4) configured with strict privacy protections:
-              </p>
-              <ul className="list-disc list-inside space-y-1 pl-2 text-xs text-[#57534e]">
-                <li><strong>No PII Collection:</strong> We do not collect names, email addresses, phone numbers, street addresses, or payment data.</li>
-                <li><strong>No Project Dimensions or Monetary Data:</strong> Your room measurements, custom pricing inputs, and material quantity totals remain strictly inside your browser and are never transmitted to analytics servers.</li>
-                <li><strong>Aggregate Product Metrics Only:</strong> We monitor aggregate page views, tool starts, calculation completions, and guide referral paths to prioritize calculator improvements and guide editorial depth.</li>
+              <ul className="list-disc list-inside space-y-1.5 pl-2 text-xs sm:text-sm text-[#57534e]">
+                <li>
+                  <strong>Advertising Cookies:</strong> We do not use third-party advertising cookies, retargeting pixels, or commercial ad network scripts.
+                </li>
+                <li>
+                  <strong>Behavioral Advertising & Profiling:</strong> We do not engage in behavioral profiling, interest-based user targeting, keystroke recording, or session replays.
+                </li>
+                <li>
+                  <strong>Cross-Site Advertising Trackers:</strong> We do not deploy social media tracking pixels (such as Meta Pixel) or cross-site advertising beacons that track you across other domains.
+                </li>
+                <li>
+                  <strong>Aggregate Analytics:</strong> We collect only high-level, aggregate metrics (such as total page visits, popular calculator usage rates, and general referral channels) to identify broken links, optimize calculator load times, and prioritize new project guides.
+                </li>
+                <li>
+                  <strong>Google Analytics 4 (GA4):</strong> We utilize Google Analytics 4 configured with strict privacy safeguards. GA4 uses first-party cookies (such as <code className="font-mono text-xs bg-[#f5f2eb] px-1 py-0.5 rounded">_ga</code>) solely to distinguish anonymous, aggregated browser sessions. It does not collect personally identifiable information (PII), and it never captures your room measurements, custom price inputs, or project results.
+                </li>
               </ul>
               <p>
                 <strong>Client-Side Computation:</strong> All mathematical estimates, packaging conversions, and waste allowances run directly within your browser session without persisting personal project files on remote servers.

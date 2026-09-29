@@ -210,7 +210,7 @@ export default function App() {
     } else if (cleanPath === '/privacy') {
       pageTitle = `Privacy Policy | ${SITE_CONFIG.siteName}`;
       metaDesc =
-        'Home Project Planner privacy policy: 100% client-side calculation processing, no tracking cookies, and no personal account requirements.';
+        'Home Project Planner privacy policy: 100% client-side calculation processing, no advertising trackers, and aggregate analytics disclosures.';
       schemaData = {
         '@type': 'WebPage',
         name: `Privacy Policy - ${SITE_CONFIG.siteName}`,

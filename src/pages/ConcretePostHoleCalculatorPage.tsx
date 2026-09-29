@@ -492,7 +492,7 @@ export const ConcretePostHoleCalculatorPage: React.FC<ConcretePostHoleCalculator
                 </div>
               </div>
               <button
-                onClick={() => onNavigate && onNavigate('/guides/how-much-concrete-for-a-post-hole')}
+                onClick={() => onNavigate && onNavigate('/guides/how-much-concrete-do-i-need-for-fence-posts')}
                 className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded text-xs font-mono font-semibold bg-[#b8532b] text-white hover:bg-[#a04422] transition-colors shrink-0 shadow-xs"
               >
                 <span>Read Planning Guide</span>

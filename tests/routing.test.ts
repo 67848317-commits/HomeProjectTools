@@ -33,6 +33,12 @@ test('Phase 6A.6: vercel.json structure and routing configuration', () => {
   );
   assert.ok(categoryRedirect, 'Must contain alias redirect: /categories/:slug -> /projects/:slug');
   assert.equal(categoryRedirect.permanent, true, 'Category alias redirect should be permanent');
+
+  const flooringRedirect = config.redirects.find(
+    (r: any) => r.source === '/calculators/flooring' && r.destination === '/calculators/flooring-calculator'
+  );
+  assert.ok(flooringRedirect, 'Must contain legacy redirect: /calculators/flooring -> /calculators/flooring-calculator');
+  assert.equal(flooringRedirect.permanent, true, 'Flooring redirect should be permanent');
 });
 
 test('Phase 6A.6: static files exist and are not missing from dist', () => {
