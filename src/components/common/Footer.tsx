@@ -20,11 +20,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   return (
     <footer className="mt-auto border-t border-[#e3ded4] bg-[#ffffff] text-[#57534e]">
       {/* Top Banner: Estimating Principles */}
-      <div className="border-b border-[#e3ded4] bg-[#f1ede4] py-6">
+      <div className="border-b border-[#e3ded4] bg-[#f7f5f0] py-6">
         <Container>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
             <div className="flex items-start gap-3">
-              <div className="rounded p-2 bg-[#ffffff] border border-[#e3ded4] text-[#b8532b] shrink-0">
+              <div className="rounded p-2 bg-[#ffffff] border border-[#e3ded4] text-[#b8532b] shrink-0 shadow-2xs">
                 <FileSpreadsheet className="h-4 w-4" />
               </div>
               <div>
@@ -38,7 +38,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="rounded p-2 bg-[#ffffff] border border-[#e3ded4] text-[#b8532b] shrink-0">
+              <div className="rounded p-2 bg-[#ffffff] border border-[#e3ded4] text-[#b8532b] shrink-0 shadow-2xs">
                 <ShieldCheck className="h-4 w-4" />
               </div>
               <div>
@@ -52,7 +52,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="rounded p-2 bg-[#ffffff] border border-[#e3ded4] text-[#b8532b] shrink-0">
+              <div className="rounded p-2 bg-[#ffffff] border border-[#e3ded4] text-[#b8532b] shrink-0 shadow-2xs">
                 <HardHat className="h-4 w-4" />
               </div>
               <div>
@@ -73,17 +73,17 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         <Container>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8">
             {/* Col 1: Brand & Philosophy */}
-            <div className="md:col-span-4">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="flex h-7 w-7 items-center justify-center rounded border border-[#c8c1b2] bg-[#f7f5f0] text-[#b8532b]">
+            <div className="md:col-span-4 space-y-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded border border-[#c8c1b2] bg-[#f7f5f0] text-[#b8532b]">
                   <Ruler className="h-4 w-4" />
                 </div>
-                <span className="font-serif font-bold text-base text-[#1c1917]">Home Project Planner</span>
+                <span className="font-serif font-bold text-base text-[#1c1917]">Home Project Tools</span>
               </div>
-              <p className="text-sm text-[#78716c] leading-relaxed mb-4">
+              <p className="text-xs text-[#78716c] leading-relaxed">
                 Plan your residential project. Estimate materials. Understand the cost. Designed for homeowners and DIY remodelers who need accurate estimating worksheets before buying.
               </p>
-              <div className="font-mono text-xs text-[#78716c]">
+              <div className="font-mono text-[11px] text-[#78716c]">
                 Built for US residential estimating standards.
               </div>
             </div>
@@ -219,7 +219,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <div className="font-mono uppercase tracking-wider text-xs font-semibold text-[#1c1917] mb-3">
                 Planning Standards
               </div>
-              <ul className="space-y-2 text-xs text-[#78716c]">
+              <ul className="space-y-1.5 text-xs text-[#78716c]">
                 <li>• Measure physical field dimensions first</li>
                 <li>• Apply documented scrap and cut allowances</li>
                 <li>• Round up to whole commercial store units</li>
@@ -233,7 +233,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           {/* Bottom Bar */}
           <div className="mt-12 pt-6 border-t border-[#e3ded4] flex flex-col sm:flex-row items-center justify-between text-xs text-[#78716c] gap-4">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-              <span>© {new Date().getFullYear()} Home Project Planner. For planning and estimating purposes only.</span>
+              <span>© {new Date().getFullYear()} Home Project Tools. For planning and estimating purposes only.</span>
               <span className="text-[#c8c1b2] hidden sm:inline">|</span>
               <a
                 href="/privacy"

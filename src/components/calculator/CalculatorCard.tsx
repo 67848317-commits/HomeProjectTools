@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Layers } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export interface CalculatorCardProps {
   id: string;
@@ -32,15 +32,16 @@ export const CalculatorCard: React.FC<CalculatorCardProps> = ({
 
   return (
     <div
-      className={`rounded-lg border border-[#e3ded4] bg-[#ffffff] p-5 shadow-xs hover:border-[#b8532b] hover:shadow-sm transition-all flex flex-col justify-between group ${className}`}
+      className={`rounded-xl border border-[#e3ded4] bg-[#ffffff] p-5 sm:p-6 shadow-2xs hover:border-[#b8532b] hover:shadow-sm transition-all flex flex-col justify-between group ${className}`}
     >
       <div className="space-y-3">
-        {/* Category Context Tag */}
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#f7f5f0] text-[#57534e] border border-[#e3ded4]">
+        {/* Unboxed Metadata Header */}
+        <div className="flex items-center gap-2 text-xs">
+          <span className="font-mono text-[#b8532b] font-semibold uppercase tracking-wider text-[11px]">
             {categoryName}
           </span>
-          <span className="text-[10px] font-mono text-[#78716c]">
+          <span className="text-[#c8c1b2]" aria-hidden="true">·</span>
+          <span className="text-[11px] font-mono text-[#78716c]">
             Interactive Worksheet
           </span>
         </div>
@@ -52,19 +53,21 @@ export const CalculatorCard: React.FC<CalculatorCardProps> = ({
           </h3>
         </div>
 
-        {/* 1-Sentence Homeowner Description */}
+        {/* Homeowner Description */}
         <p className="text-xs text-[#57534e] leading-relaxed line-clamp-3">
           {description}
         </p>
 
-        {/* Useful Output Summary */}
-        <div className="pt-2 border-t border-[#f1ede4]">
-          <span className="text-[10px] font-mono uppercase text-[#78716c] block mb-0.5">
-            Key Planning Outputs
-          </span>
-          <span className="text-xs font-mono font-medium text-[#1c1917] block">
-            {outputSummary}
-          </span>
+        {/* Key Planning Outputs Box */}
+        <div className="pt-2">
+          <div className="rounded-lg bg-[#fdfbf7] border border-[#f1ede4] p-3 space-y-1">
+            <span className="text-[10px] font-mono uppercase text-[#78716c] block font-semibold">
+              Key Deliverables
+            </span>
+            <span className="text-xs font-mono font-medium text-[#1c1917] block leading-snug">
+              {outputSummary}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -76,7 +79,7 @@ export const CalculatorCard: React.FC<CalculatorCardProps> = ({
           className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#b8532b] group-hover:text-[#9e431f] transition-colors"
         >
           <span>{ctaText}</span>
-          <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+          <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
         </a>
       </div>
     </div>
