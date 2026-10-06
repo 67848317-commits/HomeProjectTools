@@ -258,6 +258,7 @@ export default function App() {
     setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary');
     setMetaTag('meta[name="twitter:title"]', 'name', 'twitter:title', pageTitle);
     setMetaTag('meta[name="twitter:description"]', 'name', 'twitter:description', metaDesc);
+    setMetaTag('meta[name="google-adsense-account"]', 'name', 'google-adsense-account', 'ca-pub-1850854173653124');
 
     if (isNotFound) {
       setMetaTag('meta[name="robots"]', 'name', 'robots', 'noindex, nofollow');
@@ -335,6 +336,16 @@ export default function App() {
       trackCategoryView({
         category_slug: cat.slug,
       });
+    }
+
+    // Refresh AdSense auto-ads on SPA route transition
+    try {
+      if (typeof window !== 'undefined') {
+        ((window as unknown as { adsbygoogle?: unknown[] }).adsbygoogle =
+          (window as unknown as { adsbygoogle?: unknown[] }).adsbygoogle || []).push({});
+      }
+    } catch {
+      // Gracefully ignore in development or when blocked by ad blockers
     }
   }, [currentPath]);
 
