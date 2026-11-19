@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "cleanUrls": false,
+  "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
     {
@@ -12,12 +12,6 @@
       "source": "/calculators/flooring",
       "destination": "/calculators/flooring-calculator",
       "permanent": true
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
     }
   ]
 }

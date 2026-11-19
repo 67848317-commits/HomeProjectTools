@@ -1,0 +1,195 @@
+---
+import Container from './Container.astro';
+import { Ruler, ShieldCheck, FileSpreadsheet, HardHat } from 'lucide-react';
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="mt-auto border-t border-[#e3ded4] bg-[#ffffff] text-[#57534e]">
+  <!-- Top Banner: Estimating Principles -->
+  <div class="border-b border-[#e3ded4] bg-[#f7f5f0] py-6">
+    <Container>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+        <div class="flex items-start gap-3">
+          <div class="rounded p-2 bg-[#ffffff] border border-[#e3ded4] text-[#b8532b] shrink-0 shadow-2xs">
+            <FileSpreadsheet className="h-4 w-4" />
+          </div>
+          <div>
+            <div class="font-semibold text-[#1c1917] font-mono uppercase tracking-wider text-[11px] mb-1">
+              1. Transparent Math
+            </div>
+            <p class="text-[#78716c] leading-relaxed">
+              Net geometric requirements, cut waste allowances, and commercial package rounding are kept distinct.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="rounded p-2 bg-[#ffffff] border border-[#e3ded4] text-[#b8532b] shrink-0 shadow-2xs">
+            <ShieldCheck className="h-4 w-4" />
+          </div>
+          <div>
+            <div class="font-semibold text-[#1c1917] font-mono uppercase tracking-wider text-[11px] mb-1">
+              2. Planning Benchmarks
+            </div>
+            <p class="text-[#78716c] leading-relaxed">
+              Costs represent realistic US DIY and contractor planning ranges, never disguised as live store inventory.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="rounded p-2 bg-[#ffffff] border border-[#e3ded4] text-[#b8532b] shrink-0 shadow-2xs">
+            <HardHat className="h-4 w-4" />
+          </div>
+          <div>
+            <div class="font-semibold text-[#1c1917] font-mono uppercase tracking-wider text-[11px] mb-1">
+              3. Contractor-Separated
+            </div>
+            <p class="text-[#78716c] leading-relaxed">
+              Material purchase quantities and professional installation labor rates are always modeled independently.
+            </p>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </div>
+
+  <!-- Main Footer Links -->
+  <div class="py-12">
+    <Container>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8">
+        <!-- Col 1: Brand & Philosophy -->
+        <div class="md:col-span-4 space-y-3">
+          <div class="flex items-center gap-2.5">
+            <div class="flex h-8 w-8 items-center justify-center rounded border border-[#c8c1b2] bg-[#f7f5f0] text-[#b8532b]">
+              <Ruler className="h-4 w-4" />
+            </div>
+            <span class="font-serif font-bold text-base text-[#1c1917]">Home Project Tools</span>
+          </div>
+          <p class="text-xs text-[#78716c] leading-relaxed">
+            Plan your residential project. Estimate materials. Understand the cost. Designed for homeowners and DIY remodelers who need accurate estimating worksheets before buying.
+          </p>
+          <div class="font-mono text-[11px] text-[#78716c]">
+            Built for US residential estimating standards.
+          </div>
+        </div>
+
+        <!-- Col 2: Project Categories -->
+        <div class="md:col-span-3">
+          <div class="font-mono uppercase tracking-wider text-xs font-semibold text-[#1c1917] mb-3">
+            Project Categories
+          </div>
+          <ul class="space-y-1.5 text-xs">
+            <li>
+              <a href="/projects/flooring" class="text-[#57534e] hover:text-[#b8532b] transition-colors">
+                Flooring & Tile
+              </a>
+            </li>
+            <li>
+              <a href="/projects/painting-finishes" class="text-[#57534e] hover:text-[#b8532b] transition-colors">
+                Painting & Finishes
+              </a>
+            </li>
+            <li>
+              <a href="/projects/concrete-masonry" class="text-[#57534e] hover:text-[#b8532b] transition-colors">
+                Concrete & Masonry
+              </a>
+            </li>
+            <li>
+              <a href="/projects/landscaping-groundwork" class="text-[#57534e] hover:text-[#b8532b] transition-colors">
+                Landscaping & Groundwork
+              </a>
+            </li>
+            <li>
+              <a href="/projects/walls-drywall" class="text-[#57534e] hover:text-[#b8532b] transition-colors">
+                Walls & Drywall
+              </a>
+            </li>
+            <li>
+              <a href="/projects/fencing-decking" class="text-[#57534e] hover:text-[#b8532b] transition-colors">
+                Fencing & Decking
+              </a>
+            </li>
+            <li>
+              <a href="/projects/roofing-siding" class="text-[#57534e] hover:text-[#b8532b] transition-colors">
+                Roofing & Siding
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Trust & Foundation Pages -->
+        <div class="md:col-span-2">
+          <div class="font-mono uppercase tracking-wider text-xs font-semibold text-[#1c1917] mb-3">
+            About & Trust
+          </div>
+          <ul class="space-y-2 text-xs">
+            <li>
+              <a href="/about" class="text-[#57534e] hover:text-[#b8532b] transition-colors font-medium">
+                About the Site
+              </a>
+            </li>
+            <li>
+              <a href="/methodology" class="text-[#57534e] hover:text-[#b8532b] transition-colors font-medium">
+                Methodology
+              </a>
+            </li>
+            <li>
+              <a href="/contact" class="text-[#57534e] hover:text-[#b8532b] transition-colors font-medium">
+                Contact & Feedback
+              </a>
+            </li>
+            <li>
+              <a href="/privacy" class="text-[#57534e] hover:text-[#b8532b] transition-colors">
+                Privacy Policy
+              </a>
+            </li>
+            <li>
+              <a href="/terms" class="text-[#57534e] hover:text-[#b8532b] transition-colors">
+                Terms of Use
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Planning Standards -->
+        <div class="md:col-span-3">
+          <div class="font-mono uppercase tracking-wider text-xs font-semibold text-[#1c1917] mb-3">
+            Planning Standards
+          </div>
+          <ul class="space-y-1.5 text-xs text-[#78716c]">
+            <li>• Measure physical field dimensions first</li>
+            <li>• Apply documented scrap and cut allowances</li>
+            <li>• Round up to whole commercial store units</li>
+            <li>• Retain 1 spare carton or cushion for repairs</li>
+            <li>• Separate material costs from contractor labor</li>
+            <li>• Verify local building code & frost line depth</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="mt-12 pt-6 border-t border-[#e3ded4] flex flex-col sm:flex-row items-center justify-between text-xs text-[#78716c] gap-4">
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <span>© {currentYear} Home Project Tools. For planning and estimating purposes only.</span>
+          <span class="text-[#c8c1b2] hidden sm:inline">|</span>
+          <a href="/privacy" class="hover:text-[#b8532b] transition-colors">
+            Privacy
+          </a>
+          <span class="text-[#c8c1b2]">·</span>
+          <a href="/terms" class="hover:text-[#b8532b] transition-colors">
+            Terms
+          </a>
+          <span class="text-[#c8c1b2]">·</span>
+          <a href="/contact" class="hover:text-[#b8532b] transition-colors">
+            Contact
+          </a>
+        </div>
+        <div class="font-mono text-[11px]">
+          Planning Estimators • Not Structural Engineering Specifications
+        </div>
+      </div>
+    </Container>
+  </div>
+</footer>

@@ -15,12 +15,9 @@ interface BreadcrumbsProps {
 export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items, onNavigate }) => {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href?: string) => {
     if (!href) return;
-    e.preventDefault();
     if (onNavigate) {
+      e.preventDefault();
       onNavigate(href);
-    } else {
-      window.history.pushState({}, '', href);
-      window.dispatchEvent(new PopStateEvent('popstate'));
     }
   };
 

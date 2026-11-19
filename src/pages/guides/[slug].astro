@@ -1,0 +1,720 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ALL_GUIDES, getGuideBySlug } from '../../data/guides.ts';
+import { CATEGORIES, getCategoryById } from '../../data/categories.ts';
+import { getCalculatorById } from '../../data/calculators.ts';
+import { SITE_CONFIG, getCanonicalUrl } from '../../data/siteConfig.ts';
+import type { GuideDefinition, CalculatorDefinition } from '../../types/index.ts';
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Calculator,
+  Calendar,
+  CheckCircle2,
+  ChevronDown,
+  Clock,
+  DollarSign,
+  HelpCircle,
+  Info,
+  Layers,
+  Ruler,
+  ShieldAlert,
+  Sparkles,
+} from 'lucide-react';
+
+export function getStaticPaths() {
+  return ALL_GUIDES.map((guide) => ({
+    params: { slug: guide.slug },
+    props: { guide },
+  }));
+}
+
+interface Props {
+  guide: GuideDefinition;
+}
+
+const { guide } = Astro.props;
+const currentPath = `/guides/${guide.slug}`;
+const canonicalUrl = getCanonicalUrl(currentPath);
+const title = `${guide.metaTitle} | ${SITE_CONFIG.siteName}`;
+const description = guide.metaDescription;
+
+const category = getCategoryById(guide.categoryId);
+const guideCat = CATEGORIES[guide.categoryId];
+
+const relatedGuidesList = guide.relatedGuideSlugs
+  .map((slug) => getGuideBySlug(slug))
+  .filter((g): g is GuideDefinition => g !== undefined);
+
+const relatedCalculatorsList = guide.relatedCalculatorIds
+  .map((id) => getCalculatorById(id))
+  .filter((c): c is CalculatorDefinition => c !== undefined && c.id !== guide.targetCalculatorId);
+
+const breadcrumbList = [
+  { '@type': 'ListItem', position: 1, name: 'Home', item: getCanonicalUrl('/') },
+  { '@type': 'ListItem', position: 2, name: 'Projects', item: getCanonicalUrl('/projects') },
+  ...(guideCat
+    ? [{ '@type': 'ListItem', position: 3, name: guideCat.name, item: getCanonicalUrl(`/projects/${guideCat.slug}`) }]
+    : []),
+  {
+    '@type': 'ListItem',
+    position: guideCat ? 4 : 3,
+    name: guide.title,
+    item: canonicalUrl,
+  },
+];
+
+const jsonLdGraph: Record<string, unknown>[] = [
+  {
+    '@type': 'Article',
+    headline: guide.title,
+    description: guide.metaDescription,
+    datePublished: guide.publishedDate,
+    dateModified: guide.lastReviewedDate,
+    url: canonicalUrl,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': canonicalUrl,
+    },
+    author: SITE_CONFIG.editorialTeam,
+    publisher: SITE_CONFIG.organization,
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbList,
+  },
+];
+
+if (guide.faqs && guide.faqs.length > 0) {
+  jsonLdGraph.push({
+    '@type': 'FAQPage',
+    mainEntity: guide.faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  });
+}
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  ogType="article"
+  currentPath={currentPath}
+  jsonLdGraph={jsonLdGraph}
+>
+  <article class="min-h-screen bg-[#fcfbf9] text-[#1c1917] pb-24 font-sans">
+    <!-- Editorial Top Navigation & Breadcrumbs -->
+    <div class="border-b border-[#e3ded4] bg-[#f7f5f0]">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+        <nav aria-label="Breadcrumb" class="flex items-center text-xs text-[#78716c] font-mono">
+          <a href="/" class="hover:text-[#b8532b] transition-colors">
+            Home
+          </a>
+          <span class="mx-2 text-[#a8a29e]">/</span>
+          {category && (
+            <>
+              <a href={category.hubPath} class="hover:text-[#b8532b] transition-colors">
+                {category.name}
+              </a>
+              <span class="mx-2 text-[#a8a29e]">/</span>
+            </>
+          )}
+          <span class="text-[#1c1917] font-semibold truncate max-w-[260px] sm:max-w-none">
+            {guide.title}
+          </span>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Guide Header -->
+    <header class="border-b border-[#e3ded4] bg-white py-10 sm:py-14">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          {category && (
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono font-semibold uppercase tracking-wider bg-[#f1ede4] text-[#44403c]">
+              <Layers className="h-3 w-3 text-[#b8532b]" />
+              {category.name}
+            </span>
+          )}
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-mono text-[#78716c] bg-[#faf8f5]">
+            <Clock className="h-3 w-3" />
+            {guide.readingTimeMinutes} min read
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-mono text-[#78716c] bg-[#faf8f5]">
+            <Calendar className="h-3 w-3" />
+            Updated {guide.lastReviewedDate}
+          </span>
+        </div>
+
+        <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#1c1917] leading-[1.15]">
+          {guide.title}
+        </h1>
+
+        {guide.subtitle && (
+          <p class="mt-4 text-lg sm:text-xl text-[#57534e] leading-relaxed font-serif italic">
+            {guide.subtitle}
+          </p>
+        )}
+
+        <!-- Quick Primary Calculator Jump Card -->
+        <div class="mt-8 p-4 rounded-lg bg-[#f7f5f0] border border-[#e3ded4] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-start sm:items-center gap-3">
+            <div class="p-2 rounded bg-white border border-[#e3ded4] text-[#b8532b]">
+              <Calculator className="h-5 w-5" />
+            </div>
+            <div>
+              <span class="text-xs font-mono uppercase tracking-wider text-[#78716c]">Companion Estimator</span>
+              <p class="font-semibold text-sm text-[#1c1917]">
+                {guide.targetCalculatorName}
+              </p>
+            </div>
+          </div>
+          <a
+            href={guide.targetCalculatorPath}
+            data-guide-calc-cta
+            data-guide-slug={guide.slug}
+            data-calc-slug={guide.targetCalculatorId}
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded font-mono text-xs font-semibold bg-[#b8532b] text-white hover:bg-[#a04422] transition-colors shadow-xs"
+          >
+            <span>Open Calculator</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 pt-10">
+      <div class="space-y-12">
+        <!-- Quick Answer / Takeaways Box -->
+        <section class="p-5 sm:p-6 rounded-lg bg-[#f4efe6] border border-[#dfd6c5] shadow-xs">
+          <div class="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#b8532b] mb-2">
+            <Sparkles className="h-4 w-4" />
+            <span>Quick Answer &amp; Key Formula</span>
+          </div>
+          <p class="text-base sm:text-lg text-[#1c1917] font-medium leading-relaxed">
+            {guide.quickAnswer}
+          </p>
+        </section>
+
+        <!-- Introduction -->
+        <section class="space-y-4 text-base sm:text-lg text-[#44403c] leading-relaxed">
+          {guide.introduction.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+        </section>
+
+        <!-- What You Need to Measure -->
+        <section class="space-y-6 pt-4 border-t border-[#e3ded4]">
+          <div class="flex items-center gap-2">
+            <Ruler className="h-5 w-5 text-[#b8532b]" />
+            <h2 class="font-serif text-2xl font-bold text-[#1c1917]">
+              What You Need to Measure
+            </h2>
+          </div>
+          <p class="text-sm text-[#57534e]">
+            Before running any numbers, take these specific field measurements with a reliable steel tape measure or laser distance meter:
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {guide.measurementsNeeded.map((meas) => (
+              <div class="p-4 rounded-lg bg-white border border-[#e3ded4] hover:border-[#b8532b]/40 transition-colors shadow-2xs">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-semibold text-sm text-[#1c1917]">
+                    {meas.item}
+                  </span>
+                  <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-[#f1ede4] text-[#57534e]">
+                    {meas.unit}
+                  </span>
+                </div>
+                <p class="text-xs text-[#57534e] mb-2 leading-relaxed">
+                  {meas.description}
+                </p>
+                <div class="pt-2 border-t border-[#f7f5f0] text-xs text-[#78716c]">
+                  <span class="font-mono font-medium text-[#44403c]">How to measure: </span>
+                  {meas.howToMeasure}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <!-- The Three-Stage Estimating Method -->
+        <section class="space-y-6 pt-4 border-t border-[#e3ded4]">
+          <div class="flex items-center gap-2">
+            <Layers className="h-5 w-5 text-[#b8532b]" />
+            <h2 class="font-serif text-2xl font-bold text-[#1c1917]">
+              The Three-Stage Estimating Method
+            </h2>
+          </div>
+          <p class="text-sm text-[#57534e] leading-relaxed">
+            Every calculator on Home Project Tools follows this rigorous 3-stage model. Never skip straight to ordering material without completing all three stages:
+          </p>
+
+          <div class="grid grid-cols-1 gap-4">
+            <div class="p-5 rounded-lg bg-white border-l-4 border-l-[#78716c] border border-[#e3ded4] shadow-2xs space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-xs uppercase tracking-wider font-bold text-[#78716c]">
+                  Stage 1
+                </span>
+                <span class="text-xs font-mono text-[#78716c]">Geometry Output</span>
+              </div>
+              <h3 class="font-serif text-lg font-bold text-[#1c1917]">
+                {guide.threeStageExplanation.stage1Title}
+              </h3>
+              <div class="p-2.5 rounded bg-[#f7f5f0] font-mono text-xs text-[#1c1917] border border-[#e3ded4]">
+                {guide.threeStageExplanation.stage1Formula}
+              </div>
+              <p class="text-sm text-[#57534e] leading-relaxed">
+                {guide.threeStageExplanation.stage1Description}
+              </p>
+            </div>
+
+            <div class="p-5 rounded-lg bg-white border-l-4 border-l-[#d97706] border border-[#e3ded4] shadow-2xs space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-xs uppercase tracking-wider font-bold text-[#d97706]">
+                  Stage 2
+                </span>
+                <span class="text-xs font-mono text-[#d97706]">Field Reality Factor</span>
+              </div>
+              <h3 class="font-serif text-lg font-bold text-[#1c1917]">
+                {guide.threeStageExplanation.stage2Title}
+              </h3>
+              <div class="p-2.5 rounded bg-[#fffbeb] font-mono text-xs text-[#92400e] border border-[#fef3c7]">
+                {guide.threeStageExplanation.stage2Formula}
+              </div>
+              <p class="text-sm text-[#57534e] leading-relaxed">
+                {guide.threeStageExplanation.stage2Description}
+              </p>
+            </div>
+
+            <div class="p-5 rounded-lg bg-white border-l-4 border-l-[#b8532b] border border-[#e3ded4] shadow-2xs space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-xs uppercase tracking-wider font-bold text-[#b8532b]">
+                  Stage 3
+                </span>
+                <span class="text-xs font-mono text-[#b8532b]">Commercial Ceiling</span>
+              </div>
+              <h3 class="font-serif text-lg font-bold text-[#1c1917]">
+                {guide.threeStageExplanation.stage3Title}
+              </h3>
+              <div class="p-2.5 rounded bg-[#fdf2ee] font-mono text-xs text-[#b8532b] border border-[#fbdcd2]">
+                {guide.threeStageExplanation.stage3Formula}
+              </div>
+              <p class="text-sm text-[#57534e] leading-relaxed">
+                {guide.threeStageExplanation.stage3Description}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Practical Worked Example -->
+        <section class="space-y-6 pt-4 border-t border-[#e3ded4]">
+          <div class="flex items-center gap-2">
+            <Calculator className="h-5 w-5 text-[#b8532b]" />
+            <h2 class="font-serif text-2xl font-bold text-[#1c1917]">
+              Practical Worked Example
+            </h2>
+          </div>
+
+          <div class="rounded-lg border border-[#e3ded4] bg-white overflow-hidden shadow-xs">
+            <div class="p-5 bg-[#f7f5f0] border-b border-[#e3ded4]">
+              <span class="text-xs font-mono uppercase tracking-wider text-[#78716c]">Real-World Scenario</span>
+              <p class="font-medium text-base text-[#1c1917] mt-1">
+                {guide.practicalExample.scenario}
+              </p>
+            </div>
+
+            <div class="p-5 border-b border-[#e3ded4] bg-[#faf8f5]">
+              <span class="text-xs font-mono uppercase tracking-wider text-[#78716c] block mb-3">Project Inputs</span>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {Object.entries(guide.practicalExample.inputs).map(([key, value]) => (
+                  <div class="p-2.5 rounded bg-white border border-[#e3ded4] text-xs">
+                    <span class="text-[#78716c] block">{key}</span>
+                    <span class="font-mono font-semibold text-[#1c1917] mt-0.5 block">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div class="p-5 space-y-4">
+              <span class="text-xs font-mono uppercase tracking-wider text-[#78716c] block">Calculation Steps</span>
+              <div class="space-y-3">
+                {guide.practicalExample.steps.map((st) => (
+                  <div class="p-3.5 rounded bg-[#fcfbf9] border border-[#e3ded4] space-y-1.5">
+                    <div class="flex items-center justify-between">
+                      <span class="font-mono text-xs font-bold text-[#b8532b]">{st.step}</span>
+                      <span class="text-xs font-medium text-[#78716c]">{st.title}</span>
+                    </div>
+                    <div class="p-2 rounded bg-white font-mono text-xs text-[#1c1917] border border-[#e8e4dc]">
+                      {st.calculation}
+                    </div>
+                    <p class="text-xs text-[#57534e] italic">
+                      {st.note}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div class="p-5 bg-[#f4efe6] border-t border-[#dfd6c5]">
+              <div class="flex items-start gap-2.5">
+                <CheckCircle2 className="h-5 w-5 text-[#15803d] shrink-0 mt-0.5" />
+                <div>
+                  <span class="font-mono text-xs font-bold uppercase tracking-wider text-[#15803d]">Purchasing Plan</span>
+                  <p class="text-sm font-semibold text-[#1c1917] mt-1 leading-relaxed">
+                    {guide.practicalExample.resultSummary}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Deep Dive Editorial Sections -->
+        {guide.sections.map((section) => (
+          <section id={section.id} class="space-y-4 pt-4 border-t border-[#e3ded4]">
+            <h2 class="font-serif text-2xl font-bold text-[#1c1917]">
+              {section.title}
+            </h2>
+            <div class="text-base text-[#44403c] leading-relaxed whitespace-pre-line">
+              {section.content}
+            </div>
+
+            {section.table && (
+              <div class="mt-4 overflow-x-auto rounded-lg border border-[#e3ded4]">
+                <table class="w-full text-left text-sm">
+                  {section.table.caption && (
+                    <caption class="p-2 text-xs font-mono text-[#78716c] bg-[#f7f5f0] text-left border-b border-[#e3ded4]">
+                      {section.table.caption}
+                    </caption>
+                  )}
+                  <thead class="bg-[#f7f5f0] font-mono text-xs text-[#44403c] uppercase">
+                    <tr>
+                      {section.table.headers.map((h) => (
+                        <th class="px-4 py-3 border-b border-[#e3ded4]">
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-[#e3ded4] bg-white">
+                    {section.table.rows.map((row) => (
+                      <tr class="hover:bg-[#faf8f5] transition-colors">
+                        {row.map((cell) => (
+                          <td class="px-4 py-3 text-xs sm:text-sm text-[#44403c]">
+                            {cell}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {section.callout && (
+              <div
+                class={`mt-4 p-4 rounded-lg border flex items-start gap-3 ${
+                  section.callout.type === 'warning'
+                    ? 'bg-[#fffbeb] border-[#fde68a] text-[#92400e]'
+                    : section.callout.type === 'tip'
+                    ? 'bg-[#f0fdf4] border-[#bbf7d0] text-[#166534]'
+                    : 'bg-[#f7f5f0] border-[#e3ded4] text-[#44403c]'
+                }`}
+              >
+                <Info className="h-5 w-5 shrink-0 mt-0.5" />
+                <div>
+                  <span class="font-semibold text-sm block">
+                    {section.callout.title}
+                  </span>
+                  <p class="text-xs sm:text-sm mt-0.5 leading-relaxed">
+                    {section.callout.text}
+                  </p>
+                </div>
+              </div>
+            )}
+          </section>
+        ))}
+
+        <!-- Cost Planning & Benchmark Pricing -->
+        <section class="space-y-6 pt-4 border-t border-[#e3ded4]">
+          <div class="flex items-center gap-2">
+            <DollarSign className="h-5 w-5 text-[#b8532b]" />
+            <h2 class="font-serif text-2xl font-bold text-[#1c1917]">
+              Cost Planning &amp; Benchmark Pricing
+            </h2>
+          </div>
+          <p class="text-sm text-[#57534e] leading-relaxed">
+            {guide.costPlanning.overview}
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {guide.costPlanning.materialTiers.map((tier, idx) => (
+              <div class="p-4 rounded-lg bg-white border border-[#e3ded4] flex flex-col justify-between shadow-2xs">
+                <div>
+                  <span class="text-xs font-mono font-bold text-[#b8532b] block mb-1">
+                    Tier {idx + 1}
+                  </span>
+                  <h3 class="font-semibold text-sm text-[#1c1917]">
+                    {tier.tier}
+                  </h3>
+                  <p class="text-xs text-[#57534e] mt-2 leading-relaxed">
+                    {tier.description}
+                  </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-[#f7f5f0] font-mono text-xs font-bold text-[#1c1917]">
+                  {tier.range}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div class="p-4 rounded-lg bg-[#faf8f5] border border-[#e3ded4]">
+            <span class="text-xs font-mono uppercase tracking-wider text-[#78716c] block mb-1">
+              DIY vs. Contractor Labor
+            </span>
+            <p class="text-xs sm:text-sm text-[#57534e] leading-relaxed">
+              {guide.costPlanning.diyVsContractor}
+            </p>
+          </div>
+
+          <p class="text-xs text-[#78716c] italic">
+            Note: {guide.costPlanning.benchmarksNote}
+          </p>
+        </section>
+
+        <!-- Common Homeowner Mistakes -->
+        <section class="space-y-6 pt-4 border-t border-[#e3ded4]">
+          <div class="flex items-center gap-2">
+            <ShieldAlert className="h-5 w-5 text-[#dc2626]" />
+            <h2 class="font-serif text-2xl font-bold text-[#1c1917]">
+              Common Mistakes to Avoid
+            </h2>
+          </div>
+          <p class="text-sm text-[#57534e]">
+            Field reports show these errors account for over 80% of project delays, re-trips, and budget overruns:
+          </p>
+
+          <div class="space-y-3">
+            {guide.commonMistakes.map((cm, idx) => (
+              <div class="p-4 rounded-lg bg-white border border-[#e3ded4] space-y-2 shadow-2xs">
+                <div class="flex items-start gap-2">
+                  <span class="font-mono text-xs font-bold text-[#dc2626] bg-[#fef2f2] px-2 py-0.5 rounded">
+                    Mistake #{idx + 1}
+                  </span>
+                  <h3 class="font-semibold text-sm text-[#1c1917]">
+                    {cm.mistake}
+                  </h3>
+                </div>
+                <p class="text-xs text-[#57534e] leading-relaxed pl-1">
+                  <strong class="text-[#44403c]">Why it matters: </strong>
+                  {cm.whyItMatters}
+                </p>
+                <p class="text-xs text-[#15803d] font-medium leading-relaxed pl-1 pt-1 border-t border-[#f7f5f0]">
+                  <strong>Prevention: </strong>
+                  {cm.prevention}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <!-- When the Estimate Changes -->
+        <section class="space-y-4 pt-4 border-t border-[#e3ded4]">
+          <h2 class="font-serif text-2xl font-bold text-[#1c1917]">
+            When the Estimate Changes
+          </h2>
+          <p class="text-sm text-[#57534e]">
+            Field conditions that will alter your calculated purchase quantities:
+          </p>
+          <ul class="space-y-2">
+            {guide.whenEstimateChanges.map((change) => (
+              <li class="flex items-start gap-2 text-sm text-[#44403c]">
+                <span class="h-1.5 w-1.5 rounded-full bg-[#b8532b] mt-2 shrink-0" />
+                <span>{change}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <!-- Primary Calculator CTA Banner -->
+        <section class="p-6 sm:p-8 rounded-xl bg-[#1c1917] text-white space-y-4 shadow-lg">
+          <div class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#d57a53]">
+            <Calculator className="h-4 w-4" />
+            <span>Ready to Run Your Project?</span>
+          </div>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white">
+            Launch the {guide.targetCalculatorName}
+          </h2>
+          <p class="text-sm text-[#d6d3d1] max-w-2xl leading-relaxed">
+            Use our verified calculation engine with your room dimensions, customizable cut waste allowance, commercial carton/bag rounding, and local benchmark pricing.
+          </p>
+          <div class="pt-2">
+            <a
+              href={guide.targetCalculatorPath}
+              data-guide-calc-cta
+              data-guide-slug={guide.slug}
+              data-calc-slug={guide.targetCalculatorId}
+              class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-mono text-sm font-semibold bg-[#b8532b] text-white hover:bg-[#a04422] transition-colors shadow-md"
+            >
+              <span>Calculate My Project Now</span>
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+        </section>
+
+        <!-- Complementary Calculators -->
+        {relatedCalculatorsList.length > 0 && (
+          <section class="space-y-4 pt-4 border-t border-[#e3ded4]">
+            <div class="flex items-center justify-between">
+              <h2 class="font-serif text-xl font-bold text-[#1c1917]">
+                Related Project Calculators
+              </h2>
+              <span class="text-xs font-mono text-[#78716c]">Companion Tools</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {relatedCalculatorsList.map((calc) => (
+                <a
+                  href={`/calculators/${calc.slug}`}
+                  data-guide-calc-cta
+                  data-guide-slug={guide.slug}
+                  data-calc-slug={calc.slug}
+                  class="block p-4 rounded-lg bg-white border border-[#e3ded4] hover:border-[#b8532b] transition-all group shadow-2xs"
+                >
+                  <div class="flex items-center justify-between mb-1">
+                    <h3 class="font-semibold text-sm text-[#1c1917] group-hover:text-[#b8532b] transition-colors">
+                      {calc.name}
+                    </h3>
+                    <ArrowRight className="h-3.5 w-3.5 text-[#78716c] group-hover:text-[#b8532b] group-hover:translate-x-1 transition-all" />
+                  </div>
+                  <p class="text-xs text-[#57534e] line-clamp-2">
+                    {calc.description}
+                  </p>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- Related Planning Guides -->
+        {relatedGuidesList.length > 0 && (
+          <section class="space-y-4 pt-4 border-t border-[#e3ded4]">
+            <div class="flex items-center justify-between">
+              <h2 class="font-serif text-xl font-bold text-[#1c1917]">
+                Related Planning Guides
+              </h2>
+              <span class="text-xs font-mono text-[#78716c]">Editorial References</span>
+            </div>
+            <div class="grid grid-cols-1 gap-3">
+              {relatedGuidesList.map((rg) => (
+                <a
+                  href={`/guides/${rg.slug}`}
+                  class="p-4 rounded-lg bg-white border border-[#e3ded4] hover:border-[#b8532b] transition-all group shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                >
+                  <div>
+                    <div class="flex items-center gap-2 mb-1">
+                      <BookOpen className="h-3.5 w-3.5 text-[#b8532b]" />
+                      <span class="text-xs font-mono text-[#78716c]">{rg.readingTimeMinutes} min read</span>
+                    </div>
+                    <h3 class="font-semibold text-sm text-[#1c1917] group-hover:text-[#b8532b] transition-colors">
+                      {rg.title}
+                    </h3>
+                    <p class="text-xs text-[#57534e] mt-1 line-clamp-1">
+                      {rg.summary}
+                    </p>
+                  </div>
+                  <span class="font-mono text-xs font-semibold text-[#b8532b] shrink-0">
+                    Read Guide →
+                  </span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- Frequently Asked Questions (100% static HTML via native details/summary) -->
+        <section class="space-y-4 pt-4 border-t border-[#e3ded4]">
+          <div class="flex items-center gap-2">
+            <HelpCircle className="h-5 w-5 text-[#b8532b]" />
+            <h2 class="font-serif text-2xl font-bold text-[#1c1917]">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <p class="text-sm text-[#57534e]">
+            Real-world answers to questions homeowners ask during project planning:
+          </p>
+
+          <div class="space-y-3">
+            {guide.faqs.map((faq, idx) => (
+              <details
+                open={idx === 0}
+                class="group rounded-lg border border-[#e3ded4] bg-white overflow-hidden shadow-2xs"
+              >
+                <summary class="list-none cursor-pointer w-full p-4 text-left flex items-center justify-between gap-3 hover:bg-[#faf8f5] transition-colors">
+                  <span class="font-medium text-sm text-[#1c1917]">
+                    {faq.question}
+                  </span>
+                  <ChevronDown className="h-4 w-4 text-[#78716c] shrink-0 transition-transform group-open:rotate-180" />
+                </summary>
+                <div class="p-4 pt-0 text-xs sm:text-sm text-[#57534e] leading-relaxed border-t border-[#f7f5f0] bg-[#faf8f5]">
+                  {faq.answer}
+                </div>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <!-- Methodology & Assumptions -->
+        <section class="p-5 rounded-lg bg-[#f7f5f0] border border-[#e3ded4] space-y-3">
+          <span class="text-xs font-mono uppercase tracking-wider font-bold text-[#78716c]">
+            Methodology &amp; Technical Assumptions
+          </span>
+          <ul class="space-y-1.5 text-xs text-[#57534e]">
+            {guide.methodologyAssumptions.map((assump) => (
+              <li class="flex items-start gap-2">
+                <span class="text-[#a8a29e]">•</span>
+                <span>{assump}</span>
+              </li>
+            ))}
+          </ul>
+          <p class="text-[11px] text-[#78716c] pt-2 border-t border-[#e3ded4]">
+            Estimates are provided for residential material budgeting purposes only. Always verify critical structural dimensions and consult manufacturer warranty specifications prior to permanent installation.
+          </p>
+        </section>
+
+        <!-- Bottom Back Link -->
+        <div class="pt-6 flex justify-start">
+          <a
+            href={category ? category.hubPath : '/'}
+            class="inline-flex items-center gap-2 px-4 py-2 rounded text-xs font-mono font-medium text-[#57534e] bg-white border border-[#e3ded4] hover:bg-[#faf8f5] transition-colors"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Back to {category ? category.name : 'Home'}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <script>
+    import { trackGuideCalculatorClick } from '../../lib/analytics.ts';
+    document.querySelectorAll('[data-guide-calc-cta]').forEach((el) => {
+      el.addEventListener('click', () => {
+        const anchor = el as HTMLElement;
+        const guide_slug = anchor.dataset.guideSlug;
+        const calculator_slug = anchor.dataset.calcSlug;
+        if (guide_slug && calculator_slug) {
+          trackGuideCalculatorClick({ guide_slug, calculator_slug });
+        }
+      });
+    });
+  </script>
+</BaseLayout>

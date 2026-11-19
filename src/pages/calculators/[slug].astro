@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ALL_CALCULATORS } from '../../data/calculators.ts';
+import { CATEGORIES } from '../../data/categories.ts';
+import { SITE_CONFIG, getCanonicalUrl } from '../../data/siteConfig.ts';
+import type { CalculatorDefinition } from '../../types/index.ts';
+
+import { BaseboardTrimCalculatorIsland } from '../../components/calculators/BaseboardTrimCalculatorPage.tsx';
+import { ConcretePostHoleCalculatorIsland } from '../../components/calculators/ConcretePostHoleCalculatorPage.tsx';
+import { ConcreteSlabCalculatorIsland } from '../../components/calculators/ConcreteSlabCalculatorPage.tsx';
+import { DeckMaterialCalculatorIsland } from '../../components/calculators/DeckMaterialCalculatorPage.tsx';
+import { DrywallCalculatorIsland } from '../../components/calculators/DrywallCalculatorPage.tsx';
+import { FenceMaterialCalculatorIsland } from '../../components/calculators/FenceMaterialCalculatorPage.tsx';
+import { FlooringCalculatorIsland } from '../../components/calculators/FlooringCalculatorPage.tsx';
+import { GravelCalculatorIsland } from '../../components/calculators/GravelCalculatorPage.tsx';
+import { MulchCalculatorIsland } from '../../components/calculators/MulchCalculatorPage.tsx';
+import { PaintCalculatorIsland } from '../../components/calculators/PaintCalculatorPage.tsx';
+import { PaverPatioCalculatorIsland } from '../../components/calculators/PaverPatioCalculatorPage.tsx';
+import { RoofingCalculatorIsland } from '../../components/calculators/RoofingCalculatorPage.tsx';
+import { SodCalculatorIsland } from '../../components/calculators/SodCalculatorPage.tsx';
+import { TileCalculatorIsland } from '../../components/calculators/TileCalculatorPage.tsx';
+import { TopsoilCalculatorIsland } from '../../components/calculators/TopsoilCalculatorPage.tsx';
+
+export function getStaticPaths() {
+  return ALL_CALCULATORS.map((calc) => ({
+    params: { slug: calc.slug },
+    props: { calc },
+  }));
+}
+
+interface Props {
+  calc: CalculatorDefinition;
+}
+
+const { calc } = Astro.props;
+const currentPath = `/calculators/${calc.slug}`;
+const canonicalUrl = getCanonicalUrl(currentPath);
+const title = `${calc.seo.metaTitle} | ${SITE_CONFIG.siteName}`;
+const description = calc.seo.metaDescription;
+
+const calcCat = CATEGORIES[calc.categoryId];
+
+const breadcrumbItems = [
+  { '@type': 'ListItem', position: 1, name: 'Home', item: getCanonicalUrl('/') },
+  { '@type': 'ListItem', position: 2, name: 'Projects', item: getCanonicalUrl('/projects') },
+  ...(calcCat
+    ? [{ '@type': 'ListItem', position: 3, name: calcCat.name, item: getCanonicalUrl(`/projects/${calcCat.slug}`) }]
+    : []),
+  {
+    '@type': 'ListItem',
+    position: calcCat ? 4 : 3,
+    name: calc.name,
+    item: canonicalUrl,
+  },
+];
+
+const jsonLdGraph = [
+  {
+    '@type': 'SoftwareApplication',
+    name: calc.name,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Any',
+    description: calc.description,
+    url: canonicalUrl,
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems,
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  currentPath={currentPath}
+  jsonLdGraph={jsonLdGraph}
+>
+  {calc.slug === 'baseboard-trim-calculator' && <BaseboardTrimCalculatorIsland client:load />}
+  {calc.slug === 'concrete-post-hole-calculator' && <ConcretePostHoleCalculatorIsland client:load />}
+  {calc.slug === 'concrete-slab-calculator' && <ConcreteSlabCalculatorIsland client:load />}
+  {calc.slug === 'deck-material-calculator' && <DeckMaterialCalculatorIsland client:load />}
+  {calc.slug === 'drywall-calculator' && <DrywallCalculatorIsland client:load />}
+  {calc.slug === 'fence-material-calculator' && <FenceMaterialCalculatorIsland client:load />}
+  {calc.slug === 'flooring-calculator' && <FlooringCalculatorIsland client:load />}
+  {calc.slug === 'gravel-calculator' && <GravelCalculatorIsland client:load />}
+  {calc.slug === 'mulch-calculator' && <MulchCalculatorIsland client:load />}
+  {calc.slug === 'paint-calculator' && <PaintCalculatorIsland client:load />}
+  {calc.slug === 'paver-patio-calculator' && <PaverPatioCalculatorIsland client:load />}
+  {calc.slug === 'roofing-calculator' && <RoofingCalculatorIsland client:load />}
+  {calc.slug === 'sod-calculator' && <SodCalculatorIsland client:load />}
+  {calc.slug === 'tile-calculator' && <TileCalculatorIsland client:load />}
+  {calc.slug === 'topsoil-calculator' && <TopsoilCalculatorIsland client:load />}
+</BaseLayout>

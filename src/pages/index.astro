@@ -1,0 +1,676 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/common/Container.astro';
+import { HomeHeroSearch } from '../components/home/HomeHeroSearch.tsx';
+import { HomeCalculatorShowcase } from '../components/home/HomeCalculatorShowcase.tsx';
+import { GUIDES } from '../data/guides.ts';
+import { SITE_CONFIG, getCanonicalUrl } from '../data/siteConfig.ts';
+import {
+  Ruler,
+  Layers,
+  ArrowRight,
+  Paintbrush,
+  Trees,
+  Box,
+  Wrench,
+  Compass,
+  Clock,
+  CheckCircle2,
+  PackageCheck,
+  Calculator,
+  DollarSign,
+  FileText,
+  Hammer,
+} from 'lucide-react';
+
+const canonicalUrl = getCanonicalUrl('/');
+const title = `${SITE_CONFIG.siteName} | Plan your project. Estimate materials. Understand the cost.`;
+const description = SITE_CONFIG.defaultDescription;
+
+const jsonLdGraph = [
+  {
+    '@type': 'WebSite',
+    name: SITE_CONFIG.siteName,
+    url: canonicalUrl,
+    description,
+  },
+];
+
+const PRESENTATION_CATEGORIES = [
+  {
+    id: 'painting',
+    name: 'Painting',
+    hubPath: '/projects/painting-finishes',
+    toolCount: 1,
+    description: 'Interior walls, ceilings, trim primer, and multi-coat spread rates.',
+    themeGradient: 'from-amber-700/80 via-orange-800/80 to-stone-900',
+    icon: Paintbrush,
+  },
+  {
+    id: 'flooring',
+    name: 'Flooring',
+    hubPath: '/projects/flooring',
+    toolCount: 3,
+    description: 'Vinyl plank, hardwood, tile, and perimeter baseboard trim molding.',
+    themeGradient: 'from-amber-900/80 via-stone-800/80 to-stone-950',
+    icon: Layers,
+  },
+  {
+    id: 'concrete',
+    name: 'Concrete',
+    hubPath: '/projects/concrete-masonry',
+    toolCount: 2,
+    description: 'Slabs, footings, post holes, and 80-lb / 60-lb pre-mixed bags.',
+    themeGradient: 'from-slate-700/80 via-slate-800/80 to-slate-950',
+    icon: Box,
+  },
+  {
+    id: 'landscaping',
+    name: 'Landscaping',
+    hubPath: '/projects/landscaping-groundwork',
+    toolCount: 4,
+    description: 'Bulk mulch, crushed gravel, sod rolls, and topsoil yardage.',
+    themeGradient: 'from-emerald-800/80 via-stone-800/80 to-stone-950',
+    icon: Trees,
+  },
+  {
+    id: 'fencing',
+    name: 'Fencing',
+    hubPath: '/projects/fencing-decking',
+    toolCount: 1,
+    description: 'Privacy fence runs, post spacing, rails, and pickets.',
+    themeGradient: 'from-stone-700/80 via-amber-900/70 to-stone-900',
+    icon: Wrench,
+  },
+  {
+    id: 'decking',
+    name: 'Decking',
+    hubPath: '/projects/fencing-decking',
+    toolCount: 1,
+    description: 'Deck surface boards, 16" OC joists, stock lengths, and fasteners.',
+    themeGradient: 'from-amber-800/80 via-stone-900/80 to-stone-950',
+    icon: Hammer,
+  },
+  {
+    id: 'roofing',
+    name: 'Roofing',
+    hubPath: '/projects/roofing-siding',
+    toolCount: 1,
+    description: 'Roofing squares, 3-bundle shingle packs, and sloped pitch multipliers.',
+    themeGradient: 'from-slate-800/80 via-zinc-800/80 to-stone-950',
+    icon: Compass,
+  },
+  {
+    id: 'drywall',
+    name: 'Drywall',
+    hubPath: '/projects/walls-drywall',
+    toolCount: 1,
+    description: '4x8 & 4x12 drywall sheets, joint compound buckets, and tape rolls.',
+    themeGradient: 'from-stone-600/80 via-stone-700/80 to-stone-900',
+    icon: Box,
+  },
+];
+
+const QUICK_JUMP_CHIPS = [
+  { label: 'Flooring', path: '/calculators/flooring-calculator' },
+  { label: 'Tile', path: '/calculators/tile-calculator' },
+  { label: 'Paint', path: '/calculators/paint-calculator' },
+  { label: 'Concrete', path: '/calculators/concrete-slab-calculator' },
+  { label: 'Mulch', path: '/calculators/mulch-calculator' },
+  { label: 'Decking', path: '/calculators/deck-material-calculator' },
+  { label: 'Roofing', path: '/calculators/roofing-calculator' },
+  { label: 'Drywall', path: '/calculators/drywall-calculator' },
+];
+
+const PROJECT_PLANS = [
+  {
+    id: 'living-room-flooring',
+    title: 'Living Room Flooring & Trim Refresh',
+    category: 'Flooring & Trim',
+    description:
+      'Coordinate new luxury vinyl or hardwood floor planks with perimeter baseboards and shoe molding in a single unified planning estimate.',
+    tools: [
+      { name: 'Flooring Material Calculator', path: '/calculators/flooring-calculator' },
+      { name: 'Baseboard Trim Calculator', path: '/calculators/baseboard-trim-calculator' },
+    ],
+    highlights: [
+      'Net floor square footage + 10% cut scrap buffer',
+      'Commercial full carton counts + 1 spare reserve box',
+      'Linear feet of baseboard minus standard doorway openings',
+      'Underlayment rolls & transition strips at threshold doors',
+    ],
+    primaryAction: {
+      label: 'Open Flooring & Trim Plan',
+      path: '/calculators/flooring-calculator',
+    },
+  },
+  {
+    id: 'backyard-patio-outdoor',
+    title: 'Outdoor Living Patio & Deck Build',
+    category: 'Hardscaping & Decking',
+    description:
+      'Plan durable hardscapes and outdoor entertaining spaces by coordinating stone pavers, gravel subbase tonnage, and timber decking.',
+    tools: [
+      { name: 'Paver Patio Calculator', path: '/calculators/paver-patio-calculator' },
+      { name: 'Deck Board Calculator', path: '/calculators/deck-material-calculator' },
+      { name: 'Mulch Calculator', path: '/calculators/mulch-calculator' },
+    ],
+    highlights: [
+      'Interlocking paver surface units with 10% perimeter cut waste',
+      'Crushed stone aggregate base depth & bedding sand tons',
+      'Deck boards in 12/16/20 ft lengths + 16" OC joist layout',
+      'Perimeter landscape mulch coverage in bulk cubic yards',
+    ],
+    primaryAction: {
+      label: 'Open Patio & Deck Plan',
+      path: '/calculators/paver-patio-calculator',
+    },
+  },
+  {
+    id: 'backyard-fence-post',
+    title: 'Backyard Privacy Fence & Post Foundations',
+    category: 'Fencing & Masonry',
+    description:
+      'Estimate the complete lumber package for privacy fencing alongside structural concrete foundations poured below the local frost depth.',
+    tools: [
+      { name: 'Fence Material Calculator', path: '/calculators/fence-material-calculator' },
+      { name: 'Concrete Post Hole Calculator', path: '/calculators/concrete-post-hole-calculator' },
+    ],
+    highlights: [
+      'Total linear run, corner posts, line posts, and gate framing',
+      'Horizontal 2x4 rails & vertical dog-ear or flat-top pickets',
+      'Concrete bags per hole (50-lb, 60-lb, or 80-lb pre-mix)',
+      'Gate latch hardware sets & structural hinge post pairs',
+    ],
+    primaryAction: {
+      label: 'Open Fence & Post Plan',
+      path: '/calculators/fence-material-calculator',
+    },
+  },
+  {
+    id: 'room-addition-paint',
+    title: 'Room Framing, Drywall & Paint Finishing',
+    category: 'Interior Remodel',
+    description:
+      'Take an interior renovation from bare studs through hung drywall, taped seams, and finish painting without multiple store trips.',
+    tools: [
+      { name: 'Drywall Sheet Calculator', path: '/calculators/drywall-calculator' },
+      { name: 'Paint Coverage Calculator', path: '/calculators/paint-calculator' },
+    ],
+    highlights: [
+      '4x8 or 4x12 drywall sheets with ceiling and wall allocations',
+      'Fastener counts, joint compound pails, and paper seam tape',
+      'Net paintable wall footage with door & window deductions',
+      'Primer gallons plus 2-coat wall and ceiling paint pails',
+    ],
+    primaryAction: {
+      label: 'Open Drywall & Paint Plan',
+      path: '/calculators/drywall-calculator',
+    },
+  },
+];
+
+const curatedGuideSlugs = [
+  'how-to-calculate-flooring-material',
+  'how-much-paint-do-i-need',
+  'how-much-concrete-do-i-need-for-a-slab',
+  'how-to-calculate-deck-materials',
+];
+const curatedGuides = curatedGuideSlugs.map((slug) => GUIDES[slug]).filter(Boolean);
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  currentPath="/"
+  jsonLdGraph={jsonLdGraph}
+>
+  <div class="space-y-16 lg:space-y-24 pb-16">
+    <!-- 1. HERO SECTION: WARM HOME-IMPROVEMENT EDITORIAL VISUAL -->
+    <section aria-labelledby="hero-heading" class="relative bg-[#0f172a] text-white overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-[#0f172a] via-[#1e293b]/90 to-[#0f172a]/95 z-10"></div>
+      <div class="absolute -top-40 right-10 w-[500px] h-[500px] rounded-full bg-amber-500/10 blur-3xl pointer-events-none z-10"></div>
+      <div class="absolute -bottom-40 left-10 w-[500px] h-[500px] rounded-full bg-amber-600/10 blur-3xl pointer-events-none z-10"></div>
+
+      <Container className="relative z-20 py-16 sm:py-20 lg:py-24">
+        <div class="max-w-3xl space-y-6">
+          <div class="inline-flex items-center gap-2 text-xs font-mono tracking-wider uppercase text-amber-400 font-semibold">
+            <Ruler className="h-4 w-4" />
+            <span>Residential Project Planning</span>
+          </div>
+
+          <h1
+            id="hero-heading"
+            class="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.15]"
+            style="text-wrap: balance;"
+          >
+            Plan Your Next Home Project With <span class="text-amber-400">Confidence</span>
+          </h1>
+
+          <p class="text-base sm:text-xl text-slate-300 leading-relaxed max-w-2xl font-sans">
+            Calculate materials, estimate project costs, and understand what your project may require before you start.
+          </p>
+
+          <!-- Project Search & Quick Entry Control -->
+          <div class="pt-2 max-w-2xl space-y-3">
+            <HomeHeroSearch client:load />
+
+            <!-- Quick Keyword Jump Chips -->
+            <div class="flex flex-wrap items-center gap-1.5 text-xs text-slate-400 pt-1">
+              <span class="font-mono text-[11px] text-slate-300">Quick Jump:</span>
+              {QUICK_JUMP_CHIPS.map((chip) => (
+                <a
+                  href={chip.path}
+                  class="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 transition-colors text-xs font-medium"
+                >
+                  {chip.label}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <!-- Primary Action Buttons -->
+          <div class="pt-4 flex flex-wrap items-center gap-4">
+            <a
+              href="#project-categories"
+              class="inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-sm hover:bg-amber-400 transition-colors shadow-md"
+            >
+              <span>Start a Project</span>
+              <ArrowRight className="h-4 w-4" />
+            </a>
+
+            <a
+              href="/projects"
+              class="inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-white/10 text-white border border-white/20 font-semibold text-sm hover:bg-white/20 transition-colors"
+            >
+              <span>Browse All Calculators</span>
+            </a>
+          </div>
+        </div>
+      </Container>
+    </section>
+
+    <!-- 2. VALUE PROPOSITIONS: HOMEOWNER USER BENEFITS -->
+    <section aria-labelledby="value-props-heading" class="-mt-6 sm:-mt-10 relative z-20">
+      <Container>
+        <h2 id="value-props-heading" class="sr-only">
+          Core Planning Benefits
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div class="p-6 rounded-xl border border-slate-200 bg-white shadow-sm space-y-2.5">
+            <div class="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200/60 text-amber-700 flex items-center justify-center shrink-0">
+              <Calculator className="h-5 w-5" />
+            </div>
+            <h3 class="font-serif text-base font-bold text-slate-900">
+              Accurate Calculations
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Precise material takeoffs for rooms, walls, yards, and roofs using verified measurements and realistic scrap rates.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-xl border border-slate-200 bg-white shadow-sm space-y-2.5">
+            <div class="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200/60 text-amber-700 flex items-center justify-center shrink-0">
+              <DollarSign className="h-5 w-5" />
+            </div>
+            <h3 class="font-serif text-base font-bold text-slate-900">
+              Detailed Cost Estimates
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Clear planning cost benchmarks showing low, typical, and high ranges for DIY materials and turnkey contractor labor.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-xl border border-slate-200 bg-white shadow-sm space-y-2.5">
+            <div class="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200/60 text-amber-700 flex items-center justify-center shrink-0">
+              <PackageCheck className="h-5 w-5" />
+            </div>
+            <h3 class="font-serif text-base font-bold text-slate-900">
+              Step-by-Step Planning
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Structured guidance from initial room dimensions to commercial retail packaging like full cartons, bags, and rolls.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-xl border border-slate-200 bg-white shadow-sm space-y-2.5">
+            <div class="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200/60 text-amber-700 flex items-center justify-center shrink-0">
+              <FileText className="h-5 w-5" />
+            </div>
+            <h3 class="font-serif text-base font-bold text-slate-900">
+              Expert Guides
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              In-depth methodology guides covering proper measurement, cutting allowances, code rules, and package rounding.
+            </p>
+          </div>
+        </div>
+      </Container>
+    </section>
+
+    <!-- 3. CATEGORY SECTION: IMAGE-LED 8-CARD GRID -->
+    <section id="project-categories" aria-labelledby="category-heading" class="scroll-mt-20">
+      <Container>
+        <div class="border-b border-slate-200 pb-4 mb-8">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600">
+            Project Categories
+          </span>
+          <h2 id="category-heading" class="font-serif text-2xl sm:text-4xl font-bold text-slate-900 mt-1">
+            What are you working on?
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 mt-1">
+            Start with your project, then use the right planning tools.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {PRESENTATION_CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            return (
+              <a
+                href={cat.hubPath}
+                class="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs hover:border-amber-500 hover:shadow-md transition-all flex flex-col justify-between group"
+              >
+                <div class={`h-36 sm:h-40 w-full bg-gradient-to-br ${cat.themeGradient} relative p-4 flex flex-col justify-between overflow-hidden`}>
+                  <div
+                    class="absolute inset-0 opacity-15"
+                    style="background-image: linear-gradient(to right, rgba(255, 255, 255, 0.3) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.3) 1px, transparent 1px); background-size: 20px 20px;"
+                  ></div>
+
+                  <div class="relative z-10 flex justify-between items-center">
+                    <span class="text-[11px] font-mono font-medium px-2.5 py-1 rounded bg-black/40 text-white backdrop-blur-xs border border-white/10">
+                      {cat.toolCount} {cat.toolCount === 1 ? 'Tool' : 'Tools'}
+                    </span>
+                    <div class="h-8 w-8 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center text-white">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                  </div>
+
+                  <div class="relative z-10">
+                    <span class="text-xs font-mono uppercase tracking-wider text-amber-300 font-medium">
+                      Trade Hub
+                    </span>
+                    <h3 class="font-serif text-xl sm:text-2xl font-bold text-white leading-tight">
+                      {cat.name}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3">
+                  <p class="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-2">
+                    {cat.description}
+                  </p>
+
+                  <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-mono font-bold text-amber-700 group-hover:text-amber-800">
+                    <span>Explore Tools</span>
+                    <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+
+        <div class="mt-8 text-center">
+          <a
+            href="/projects"
+            class="inline-flex items-center gap-2 text-xs font-mono font-semibold text-slate-600 hover:text-amber-700 transition-colors"
+          >
+            <span>Looking for all tools? Browse the complete directory of 15 calculators</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </Container>
+    </section>
+
+    <!-- 4. POPULAR CALCULATORS: SPLIT LAYOUT COMPOSITION -->
+    <section id="popular-calculators" aria-labelledby="popular-heading" class="scroll-mt-20">
+      <Container>
+        <div class="border-b border-slate-200 pb-4 mb-8">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600">
+            Interactive Tools
+          </span>
+          <h2 id="popular-heading" class="font-serif text-2xl sm:text-4xl font-bold text-slate-900 mt-1">
+            Popular Calculators
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 mt-1">
+            Representative worksheets demonstrating complete three-stage takeoff modeling.
+          </p>
+        </div>
+
+        <HomeCalculatorShowcase client:load />
+      </Container>
+    </section>
+
+    <!-- 5. COMPLETE PROJECT PLANS: LIGHTER BLUEPRINT-INSPIRED VISUAL -->
+    <section id="project-plans" aria-labelledby="plans-heading" class="scroll-mt-20 py-12 bg-slate-50 border-y border-slate-200">
+      <Container>
+        <div class="border-b border-slate-200 pb-4 mb-8">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600">
+            Coordinated Workflows
+          </span>
+          <h2 id="plans-heading" class="font-serif text-2xl sm:text-4xl font-bold text-slate-900 mt-1">
+            Complete Project Plans
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 mt-1">
+            Home renovations rarely involve just one material. Use our complete multi-tool project plans to coordinate ordering across every phase of your build.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {PROJECT_PLANS.map((plan) => (
+            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm hover:border-amber-500 hover:shadow-md transition-all flex flex-col justify-between group">
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-mono uppercase tracking-wider text-amber-700 font-bold">
+                    {plan.category}
+                  </span>
+                  <span class="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                    Coordinated Plan
+                  </span>
+                </div>
+
+                <div>
+                  <h3 class="font-serif text-xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
+                    {plan.title}
+                  </h3>
+                  <p class="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
+                    {plan.description}
+                  </p>
+                </div>
+
+                <div class="pt-2">
+                  <span class="text-[10px] font-mono uppercase text-slate-500 block mb-1.5 font-semibold">
+                    Bundled Worksheets:
+                  </span>
+                  <div class="flex flex-wrap gap-1.5">
+                    {plan.tools.map((tool) => (
+                      <a
+                        href={tool.path}
+                        class="text-xs font-medium px-2.5 py-1 rounded bg-slate-100 text-slate-800 hover:bg-amber-600 hover:text-white transition-colors border border-slate-200"
+                      >
+                        {tool.name}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100">
+                  <span class="text-[10px] font-mono uppercase text-slate-500 block mb-2 font-semibold">
+                    Coordinated Takeoffs:
+                  </span>
+                  <ul class="space-y-1.5 text-xs text-slate-700">
+                    {plan.highlights.map((h) => (
+                      <li class="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <span>{h}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div class="mt-6 pt-4 border-t border-slate-100">
+                <a
+                  href={plan.primaryAction.path}
+                  class="inline-flex items-center justify-between w-full text-xs font-mono font-bold text-amber-700 group-hover:text-amber-800"
+                >
+                  <span>{plan.primaryAction.label}</span>
+                  <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+
+    <!-- 6. GUIDES SECTION: DARK EDITORIAL MOMENT -->
+    <section id="planning-guides" aria-labelledby="guides-heading" class="scroll-mt-20 py-16 lg:py-20 bg-[#0f172a] text-white">
+      <Container>
+        <div class="border-b border-slate-800 pb-4 mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-400">
+              Editorial Knowledge Base
+            </span>
+            <h2 id="guides-heading" class="font-serif text-2xl sm:text-4xl font-bold text-white mt-1">
+              Learn, Plan, and Do It Right
+            </h2>
+            <p class="text-sm sm:text-base text-slate-300 mt-1">
+              Field-tested methodologies covering measurement techniques, scrap factors, packaging realism, and building standards.
+            </p>
+          </div>
+          <a
+            href="/projects"
+            class="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-amber-400 hover:text-amber-300 hover:underline self-start sm:self-auto"
+          >
+            <span>Browse All 15 Guides</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {curatedGuides.map((guide) => (
+            <div class="rounded-xl border border-slate-800 bg-slate-900/90 p-5 hover:border-amber-400/50 transition-all flex flex-col justify-between group shadow-lg">
+              <div class="space-y-3">
+                <div class="flex items-center gap-1.5 text-xs">
+                  <span class="font-mono text-amber-400 font-semibold uppercase tracking-wider text-[11px]">
+                    Field Guide
+                  </span>
+                  <span class="text-slate-600" aria-hidden="true">·</span>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-mono text-slate-400">
+                    <Clock className="h-3 w-3" />
+                    <span>{guide.readingTimeMinutes} min read</span>
+                  </span>
+                </div>
+
+                <h3 class="font-serif text-base font-bold text-white group-hover:text-amber-400 transition-colors leading-snug">
+                  {guide.title}
+                </h3>
+
+                <p class="text-xs text-slate-300 leading-relaxed line-clamp-3">
+                  {guide.summary}
+                </p>
+
+                <div class="pt-2 text-xs border-t border-slate-800">
+                  <span class="text-[10px] font-mono uppercase text-slate-400 block">Companion Tool</span>
+                  <span class="font-medium text-slate-200 line-clamp-1">{guide.targetCalculatorName}</span>
+                </div>
+              </div>
+
+              <div class="mt-5 pt-3 border-t border-slate-800 flex items-center justify-between">
+                <a
+                  href={`/guides/${guide.slug}`}
+                  class="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-amber-400 group-hover:text-amber-300"
+                >
+                  <span>Read Guide</span>
+                  <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+
+    <!-- 7. PLANNING FRAMEWORK & METHODOLOGY -->
+    <section aria-labelledby="framework-heading" class="space-y-8">
+      <Container>
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 sm:p-10 shadow-xs">
+          <div class="max-w-2xl mb-8">
+            <span class="font-mono text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded border border-amber-200">
+              ESTIMATING ARCHITECTURE
+            </span>
+            <h2 id="framework-heading" class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mt-3">
+              From Measurements to a Shopping List
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
+              Good project planning starts with measurements, not guesses. Every calculator on Home Project Tools follows our strict three-stage estimating model.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-5 flex flex-col justify-between">
+              <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs font-bold text-amber-700">STEP 01</span>
+                  <Ruler className="h-4 w-4 text-slate-500" />
+                </div>
+                <h3 class="font-serif text-lg font-bold text-slate-900">
+                  Measure the Project
+                </h3>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Input room dimensions, wall lengths, excavation depth, height, or roof slope pitch. We compute the exact mathematical geometric requirement without hidden inflations.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] font-mono text-slate-500">
+                Example: 192 sq ft net floor area
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-5 flex flex-col justify-between">
+              <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs font-bold text-amber-700">STEP 02</span>
+                  <PackageCheck className="h-4 w-4 text-slate-500" />
+                </div>
+                <h3 class="font-serif text-lg font-bold text-slate-900">
+                  Estimate the Requirement
+                </h3>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Apply realistic planning allowances for cutting scrap, pattern offsets, soil compaction, and subgrade variances. All allowances are stated transparently.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] font-mono text-slate-500">
+                Example: +10% cut waste = 211.2 sq ft
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-5 flex flex-col justify-between">
+              <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs font-bold text-amber-700">STEP 03</span>
+                  <Box className="h-4 w-4 text-slate-500" />
+                </div>
+                <h3 class="font-serif text-lg font-bold text-slate-900">
+                  Plan the Purchase
+                </h3>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Convert requirements into retail packaging: full cartons, pre-mixed bags, rolls, bundles, pallets, sticks, or bulk cubic yards. Never get caught short at the checkout register.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] font-mono text-slate-500">
+                Example: 11 full cartons (220 sq ft purchased)
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500 leading-relaxed">
+            <strong>Planning Notice:</strong> Our estimates are planning tools designed to assist in material takeoffs and project budgeting. They are not structural engineering specifications or guaranteed contractor bids. Always verify measurements on-site before ordering.
+          </div>
+        </div>
+      </Container>
+    </section>
+  </div>
+</BaseLayout>

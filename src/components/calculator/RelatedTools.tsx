@@ -20,13 +20,10 @@ interface RelatedToolsProps {
 
 export const RelatedTools: React.FC<RelatedToolsProps> = ({ currentCalculatorId, onNavigate }) => {
   const handleNav = (e: React.MouseEvent<HTMLAnchorElement>, path?: string) => {
-    e.preventDefault();
     if (!path) return;
     if (onNavigate) {
+      e.preventDefault();
       onNavigate(path);
-    } else {
-      window.history.pushState({}, '', path);
-      window.dispatchEvent(new PopStateEvent('popstate'));
     }
   };
 

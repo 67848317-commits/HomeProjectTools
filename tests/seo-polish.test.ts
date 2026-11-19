@@ -71,8 +71,14 @@ test('Phase 5B-1: Favicon exists and is linked properly', () => {
   const faviconContent = fs.readFileSync(faviconSvg, 'utf8');
   assert.ok(faviconContent.includes('<svg'), 'favicon.svg must be a valid SVG');
 
-  const indexHtml = fs.readFileSync(path.resolve(rootDir, 'index.html'), 'utf8');
-  assert.ok(indexHtml.includes('/favicon.svg'), 'index.html must reference /favicon.svg');
+  const baseLayout = fs.readFileSync(path.resolve(rootDir, 'src', 'layouts', 'BaseLayout.astro'), 'utf8');
+  assert.ok(baseLayout.includes('/favicon.svg'), 'BaseLayout.astro must reference /favicon.svg');
+
+  const distIndex = path.resolve(rootDir, 'dist', 'index.html');
+  if (fs.existsSync(distIndex)) {
+    const distHtml = fs.readFileSync(distIndex, 'utf8');
+    assert.ok(distHtml.includes('/favicon.svg'), 'dist/index.html must reference /favicon.svg');
+  }
 });
 
 test('Phase 5B-1: Organization schema has no non-existent assets', () => {

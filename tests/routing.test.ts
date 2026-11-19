@@ -7,26 +7,46 @@ import { fileURLToPath } from 'node:url';
 import { CALCULATORS } from '../src/data/calculators.ts';
 import { CATEGORIES, getCategoryBySlug } from '../src/data/categories.ts';
 import { GUIDES } from '../src/data/guides.ts';
+import { getCanonicalUrl } from '../src/data/siteConfig.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
-test('Phase 6A.6: vercel.json structure and routing configuration', () => {
+function getAllCanonicalRoutes(): string[] {
+  return [
+    '/',
+    '/projects',
+    ...Object.values(CATEGORIES).map((c) => `/projects/${c.slug}`),
+    ...Object.keys(CALCULATORS).map((slug) => `/calculators/${slug}`),
+    ...Object.keys(GUIDES).map((slug) => `/guides/${slug}`),
+    '/about',
+    '/methodology',
+    '/contact',
+    '/privacy',
+    '/terms',
+  ];
+}
+
+function routeToDistHtmlPath(distDir: string, route: string): string {
+  if (route === '/') {
+    return path.join(distDir, 'index.html');
+  }
+  const trimmed = route.replace(/^\/+/, '').replace(/\/+$/, '');
+  return path.join(distDir, `${trimmed}.html`);
+}
+
+test('Astro SSG: vercel.json enforces cleanUrls, redirects, and no global SPA fallback rewrite', () => {
   const vercelPath = path.join(rootDir, 'vercel.json');
   assert.ok(fs.existsSync(vercelPath), 'vercel.json must exist in project root');
 
   const content = fs.readFileSync(vercelPath, 'utf-8');
   const config = JSON.parse(content);
 
-  // Rewrites verification
-  assert.ok(Array.isArray(config.rewrites), 'vercel.json must specify rewrites array');
-  const spaRewrite = config.rewrites.find(
-    (r: any) => r.source === '/(.*)' && r.destination === '/index.html'
-  );
-  assert.ok(spaRewrite, 'Must contain fallback rewrite: source "/(.*)" -> destination "/index.html"');
+  assert.equal(config.cleanUrls, true, 'vercel.json must enable cleanUrls: true');
+  assert.equal(config.trailingSlash, false, 'vercel.json must set trailingSlash: false');
+  assert.equal(config.rewrites, undefined, 'vercel.json must NOT contain global SPA fallback rewrites');
 
-  // Redirects verification
   assert.ok(Array.isArray(config.redirects), 'vercel.json must specify redirects array');
   const categoryRedirect = config.redirects.find(
     (r: any) => r.source === '/categories/:slug' && r.destination === '/projects/:slug'
@@ -41,15 +61,20 @@ test('Phase 6A.6: vercel.json structure and routing configuration', () => {
   assert.equal(flooringRedirect.permanent, true, 'Flooring redirect should be permanent');
 });
 
-test('Phase 6A.6: static files exist and are not missing from dist', () => {
+test('Astro SSG: all 44 canonical HTML files, 404.html, robots.txt, sitemap.xml, and ads.txt exist in dist', () => {
   const distDir = path.join(rootDir, 'dist');
   assert.ok(fs.existsSync(distDir), 'dist directory must exist');
 
-  const indexHtml = path.join(distDir, 'index.html');
-  assert.ok(fs.existsSync(indexHtml), 'dist/index.html must exist');
-  const indexContent = fs.readFileSync(indexHtml, 'utf-8');
-  assert.ok(/<!doctype html>/i.test(indexContent), 'dist/index.html must contain valid html document');
-  assert.ok(indexContent.includes('<div id="root"></div>'), 'dist/index.html must contain react mount node');
+  const routes = getAllCanonicalRoutes();
+  assert.equal(routes.length, 44, 'Must verify all 44 canonical routes');
+
+  for (const route of routes) {
+    const htmlPath = routeToDistHtmlPath(distDir, route);
+    assert.ok(fs.existsSync(htmlPath), `Static HTML file missing for route ${route}: ${htmlPath}`);
+  }
+
+  const notFoundHtml = path.join(distDir, '404.html');
+  assert.ok(fs.existsSync(notFoundHtml), 'dist/404.html must exist');
 
   const robotsTxt = path.join(distDir, 'robots.txt');
   assert.ok(fs.existsSync(robotsTxt), 'dist/robots.txt must exist');
@@ -62,71 +87,101 @@ test('Phase 6A.6: static files exist and are not missing from dist', () => {
   const sitemapContent = fs.readFileSync(sitemapXml, 'utf-8');
   assert.ok(sitemapContent.includes('<?xml version="1.0" encoding="UTF-8"?>'), 'dist/sitemap.xml must be valid xml');
   assert.ok(sitemapContent.includes('<urlset'), 'dist/sitemap.xml must contain urlset');
+
+  const adsTxt = path.join(distDir, 'ads.txt');
+  assert.ok(fs.existsSync(adsTxt), 'dist/ads.txt must exist');
+  const adsContent = fs.readFileSync(adsTxt, 'utf-8');
+  assert.ok(adsContent.includes('pub-1850854173653124'), 'dist/ads.txt must contain AdSense publisher ID');
 });
 
-test('Phase 6A.6: SPA router recognizes all 44 canonical routes and handles 404', () => {
-  const testRoutes = [
-    '/',
-    '/projects',
-    ...Object.values(CATEGORIES).map((c) => `/projects/${c.slug}`),
-    ...Object.keys(CALCULATORS).map((slug) => `/calculators/${slug}`),
-    ...Object.keys(GUIDES).map((slug) => `/guides/${slug}`),
-    '/about',
-    '/methodology',
-    '/contact',
-    '/privacy',
-    '/terms',
-  ];
+test('Astro SSG: pre-rendered HTML for all 44 routes contains unique SSR SEO tags, canonical, h1, JSON-LD, and AdSense without SPA root', () => {
+  const distDir = path.join(rootDir, 'dist');
+  const routes = getAllCanonicalRoutes();
+  const seenTitles = new Set<string>();
+  const seenCanonicals = new Set<string>();
 
-  assert.equal(testRoutes.length, 44, 'Must verify all 44 canonical routes');
+  for (const route of routes) {
+    const html = fs.readFileSync(routeToDistHtmlPath(distDir, route), 'utf-8');
+    const expectedCanonical = getCanonicalUrl(route);
 
-  // Verify each route against router recognition logic (mirroring App.tsx)
-  for (const route of testRoutes) {
-    const isCalc = route.startsWith('/calculators/') && !!CALCULATORS[route.replace('/calculators/', '')];
-    const isGuide = route.startsWith('/guides/') && !!GUIDES[route.replace('/guides/', '')];
-    const isProject = route.startsWith('/projects/') && !!getCategoryBySlug(route.replace('/projects/', ''));
-    const isTrust = ['/about', '/methodology', '/contact', '/privacy', '/terms'].includes(route);
-    const isHomeOrProjects = route === '/' || route === '/projects';
+    assert.ok(/<!doctype html>/i.test(html), `${route}: missing doctype`);
+    assert.ok(!html.includes('<div id="root"></div>'), `${route}: must not contain empty SPA #root mount`);
 
-    const matched = isCalc || isGuide || isProject || isTrust || isHomeOrProjects;
-    assert.ok(matched, `Route ${route} should be recognized by router`);
+    // Exact canonical link (and no duplicates)
+    const canonicalMatches = [...html.matchAll(/<link\s+rel="canonical"\s+href="([^"]+)"/g)];
+    assert.equal(canonicalMatches.length, 1, `${route}: expected exactly 1 canonical link`);
+    assert.equal(canonicalMatches[0][1], expectedCanonical, `${route}: canonical mismatch`);
+    assert.ok(!seenCanonicals.has(expectedCanonical), `Duplicate canonical ${expectedCanonical}`);
+    seenCanonicals.add(expectedCanonical);
+
+    // Unique <title>
+    const titleMatch = html.match(/<title>([^<]+)<\/title>/);
+    assert.ok(titleMatch && titleMatch[1].trim().length > 10, `${route}: missing or empty <title>`);
+    assert.ok(!seenTitles.has(titleMatch[1]), `${route}: duplicate title "${titleMatch[1]}"`);
+    seenTitles.add(titleMatch[1]);
+
+    // <meta name="description">
+    const descMatch = html.match(/<meta\s+name="description"\s+content="([^"]+)"/);
+    assert.ok(descMatch && descMatch[1].trim().length >= 50, `${route}: missing or short meta description`);
+
+    // <h1> present in static HTML
+    assert.ok(/<h1[\s>]/i.test(html), `${route}: missing static <h1>`);
+
+    // Inner pages must not serve homepage hero
+    if (route !== '/') {
+      assert.ok(
+        !html.includes('Plan Your Next Home Project With <span class="text-amber-400">Confidence</span>'),
+        `${route}: accidentally served homepage hero`
+      );
+    }
+
+    // Valid single JSON-LD script block
+    const jsonLdMatches = [...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+    assert.equal(jsonLdMatches.length, 1, `${route}: expected exactly 1 JSON-LD block`);
+    const parsed = JSON.parse(jsonLdMatches[0][1]);
+    assert.equal(parsed['@context'], 'https://schema.org', `${route}: invalid JSON-LD @context`);
+    assert.ok(Array.isArray(parsed['@graph']) && parsed['@graph'].length >= 1, `${route}: empty JSON-LD @graph`);
+
+    // AdSense script in static head
+    assert.ok(html.includes('ca-pub-1850854173653124'), `${route}: missing AdSense client ID`);
   }
 
-  // Verify unknown route is recognized as unmapped
-  const invalidRoute: string = '/this-route-does-not-exist';
-  const isCalc = invalidRoute.startsWith('/calculators/') && !!CALCULATORS[invalidRoute.replace('/calculators/', '')];
-  const isGuide = invalidRoute.startsWith('/guides/') && !!GUIDES[invalidRoute.replace('/guides/', '')];
-  const isProject = invalidRoute.startsWith('/projects/') && !!getCategoryBySlug(invalidRoute.replace('/projects/', ''));
-  const isTrust = ['/about', '/methodology', '/contact', '/privacy', '/terms'].includes(invalidRoute);
-  const isHomeOrProjects = invalidRoute === '/' || invalidRoute === '/projects';
-
-  const matched = isCalc || isGuide || isProject || isTrust || isHomeOrProjects;
-  assert.equal(matched, false, 'Invalid route should not match valid application routes');
+  // Verify 404.html has noindex, nofollow and no canonical
+  const notFoundHtml = fs.readFileSync(path.join(distDir, '404.html'), 'utf-8');
+  assert.ok(
+    notFoundHtml.includes('<meta name="robots" content="noindex, nofollow"'),
+    '404.html must include noindex, nofollow'
+  );
+  assert.ok(!notFoundHtml.includes('rel="canonical"'), '404.html must not emit a canonical link');
+  assert.ok(/<h1[\s>]/i.test(notFoundHtml), '404.html must include an <h1>');
 });
 
-test('Phase 6A.6: simulated Vercel static file server serves static files and rewrites SPA routes', async () => {
+test('Astro SSG: simulated Vercel cleanUrls static server serves 200 on all 44 routes, 308 redirects, and 404 on unknown paths', async () => {
   const distDir = path.join(rootDir, 'dist');
   assert.ok(fs.existsSync(distDir), 'dist must be built');
+  const notFoundContent = fs.readFileSync(path.join(distDir, '404.html'), 'utf-8');
 
-  const indexHtmlContent = fs.readFileSync(path.join(distDir, 'index.html'), 'utf-8');
-
-  // Simulate Vercel static + rewrite behavior
   const server = http.createServer((req, res) => {
     const parsedUrl = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
-    let pathname = decodeURIComponent(parsedUrl.pathname);
+    const pathname = decodeURIComponent(parsedUrl.pathname).replace(/\/+$/, '') || '/';
 
-    // 1. Check redirects (like /categories/:slug -> /projects/:slug)
+    // 1. Permanent redirects from vercel.json
     if (pathname.startsWith('/categories/')) {
       const slug = pathname.replace('/categories/', '');
       res.writeHead(308, { Location: `/projects/${slug}` });
       res.end();
       return;
     }
+    if (pathname === '/calculators/flooring') {
+      res.writeHead(308, { Location: '/calculators/flooring-calculator' });
+      res.end();
+      return;
+    }
 
-    // 2. Check filesystem for static file
-    const filePath = path.join(distDir, pathname === '/' ? 'index.html' : pathname);
-    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-      const ext = path.extname(filePath).toLowerCase();
+    // 2. Exact static file (robots.txt, sitemap.xml, ads.txt, favicon.svg, assets)
+    const exactFile = path.join(distDir, pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, ''));
+    if (fs.existsSync(exactFile) && fs.statSync(exactFile).isFile()) {
+      const ext = path.extname(exactFile).toLowerCase();
       const contentTypes: Record<string, string> = {
         '.html': 'text/html; charset=utf-8',
         '.txt': 'text/plain; charset=utf-8',
@@ -136,13 +191,21 @@ test('Phase 6A.6: simulated Vercel static file server serves static files and re
         '.css': 'text/css; charset=utf-8',
       };
       res.writeHead(200, { 'Content-Type': contentTypes[ext] || 'application/octet-stream' });
-      res.end(fs.readFileSync(filePath));
+      res.end(fs.readFileSync(exactFile));
       return;
     }
 
-    // 3. Fallback rewrite to /index.html
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    res.end(indexHtmlContent);
+    // 3. Vercel cleanUrls: true lookup (<pathname>.html)
+    const cleanHtmlFile = path.join(distDir, `${pathname.replace(/^\/+/, '')}.html`);
+    if (fs.existsSync(cleanHtmlFile) && fs.statSync(cleanHtmlFile).isFile()) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(fs.readFileSync(cleanHtmlFile));
+      return;
+    }
+
+    // 4. Real 404 serving 404.html
+    res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(notFoundContent);
   });
 
   await new Promise<void>((resolve) => server.listen(0, resolve));
@@ -168,64 +231,52 @@ test('Phase 6A.6: simulated Vercel static file server serves static files and re
   };
 
   try {
-    // 1. Static file precedence tests
+    // 1. Static non-HTML files
     const robotsRes = await fetchRoute('/robots.txt');
     assert.equal(robotsRes.status, 200);
-    assert.ok(robotsRes.contentType.includes('text/plain'), 'robots.txt must return text/plain');
-    assert.ok(robotsRes.body.includes('User-agent: *'), 'robots.txt content must be real robots.txt');
-    assert.ok(!robotsRes.body.includes('<!DOCTYPE html>'), 'robots.txt must not return index.html');
+    assert.ok(robotsRes.contentType.includes('text/plain'));
+    assert.ok(robotsRes.body.includes('User-agent: *'));
 
     const sitemapRes = await fetchRoute('/sitemap.xml');
     assert.equal(sitemapRes.status, 200);
-    assert.ok(sitemapRes.contentType.includes('text/xml'), 'sitemap.xml must return text/xml');
-    assert.ok(sitemapRes.body.includes('<urlset'), 'sitemap.xml content must be real XML');
-    assert.ok(!sitemapRes.body.includes('<!DOCTYPE html>'), 'sitemap.xml must not return index.html');
+    assert.ok(sitemapRes.contentType.includes('text/xml'));
+    assert.ok(sitemapRes.body.includes('<urlset'));
+
+    const adsRes = await fetchRoute('/ads.txt');
+    assert.equal(adsRes.status, 200);
+    assert.ok(adsRes.body.includes('pub-1850854173653124'));
 
     const faviconRes = await fetchRoute('/favicon.svg');
     assert.equal(faviconRes.status, 200);
-    assert.ok(faviconRes.contentType.includes('image/svg+xml'), 'favicon.svg must return image/svg+xml');
+    assert.ok(faviconRes.contentType.includes('image/svg+xml'));
 
-    // 2. Redirect tests
+    // 2. Permanent redirects
     const categoryRedirectRes = await fetchRoute('/categories/flooring');
     assert.equal(categoryRedirectRes.status, 308);
     assert.equal(categoryRedirectRes.location, '/projects/flooring');
 
-    // 3. Deep-link test matrix (all must return 200 text/html serving index.html)
-    const deepRoutes = [
-      '/',
-      '/projects',
-      '/projects/flooring',
-      '/calculators/flooring-calculator',
-      '/calculators/tile-calculator',
-      '/calculators/paint-calculator',
-      '/calculators/concrete-slab-calculator',
-      '/calculators/concrete-post-hole-calculator',
-      '/calculators/mulch-calculator',
-      '/calculators/gravel-calculator',
-      '/calculators/sod-calculator',
-      '/calculators/drywall-calculator',
-      '/calculators/deck-material-calculator',
-      '/calculators/fence-material-calculator',
-      '/calculators/roofing-calculator',
-      '/calculators/paver-patio-calculator',
-      '/calculators/topsoil-calculator',
-      '/calculators/baseboard-trim-calculator',
-      '/guides/how-much-tile-do-i-need',
-      '/guides/how-much-gravel-do-i-need',
-      '/about',
-      '/methodology',
-      '/contact',
-      '/privacy',
-      '/terms',
-      '/this-route-does-not-exist',
-    ];
+    const flooringRedirectRes = await fetchRoute('/calculators/flooring');
+    assert.equal(flooringRedirectRes.status, 308);
+    assert.equal(flooringRedirectRes.location, '/calculators/flooring-calculator');
 
-    for (const r of deepRoutes) {
-      const res = await fetchRoute(r);
-      assert.equal(res.status, 200, `Route ${r} should return status 200`);
-      assert.ok(res.contentType.includes('text/html'), `Route ${r} should return text/html`);
-      assert.ok(res.body.includes('<div id="root"></div>'), `Route ${r} should serve SPA entry point`);
+    // 3. All 44 canonical routes must return 200 with page-specific HTML
+    for (const route of getAllCanonicalRoutes()) {
+      const res = await fetchRoute(route);
+      assert.equal(res.status, 200, `Route ${route} should return HTTP 200`);
+      assert.ok(res.contentType.includes('text/html'), `Route ${route} should return text/html`);
+      assert.ok(
+        res.body.includes(`href="${getCanonicalUrl(route)}"`),
+        `Route ${route} HTML must contain its own canonical URL`
+      );
     }
+
+    // 4. Unknown route must return HTTP 404 (not 200 homepage)
+    const missingRes = await fetchRoute('/this-route-does-not-exist');
+    assert.equal(missingRes.status, 404, 'Unknown route must return HTTP 404');
+    assert.ok(missingRes.body.includes('noindex, nofollow'), '404 response must serve 404.html');
+
+    // 5. Category helper check preserved
+    assert.ok(getCategoryBySlug('flooring'));
   } finally {
     server.close();
   }

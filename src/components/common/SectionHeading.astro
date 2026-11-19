@@ -1,0 +1,28 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  numberPrefix?: string;
+  className?: string;
+}
+
+const { title, subtitle, numberPrefix, className = '' } = Astro.props;
+---
+
+<div class={`border-b border-[#e3ded4] pb-3 mb-6 ${className}`}>
+  <div class="flex items-center gap-2">
+    {numberPrefix && (
+      <span class="font-mono text-xs font-bold text-[#b8532b] bg-[#fcf4ee] px-2 py-0.5 rounded border border-[#e3ded4]">
+        {numberPrefix}
+      </span>
+    )}
+    <h2 class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#1c1917]">
+      {title}
+    </h2>
+  </div>
+  {subtitle && (
+    <p class="mt-1.5 text-sm text-[#57534e] leading-relaxed">
+      {subtitle}
+    </p>
+  )}
+</div>

@@ -128,25 +128,26 @@ export function initGA(overrideId?: string): boolean {
       };
     }
 
-    // Check if script tag is already in DOM
+    // Check if script tag is already in DOM or initialized by BaseLayout <head>
+    const headInitialized = Boolean((window as unknown as { __GA4_HEAD_INITIALIZED__?: boolean }).__GA4_HEAD_INITIALIZED__);
     const existingScript = document.querySelector(
       `script[src*="googletagmanager.com/gtag/js?id=${measurementId}"]`
     );
 
-    if (!existingScript) {
+    if (!headInitialized && !existingScript) {
       const script = document.createElement('script');
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
       document.head.appendChild(script);
-    }
 
-    // Initialize gtag timestamp and configuration with initial page path
-    window.gtag('js', new Date());
-    window.gtag('config', measurementId, {
-      page_path: window.location.pathname || '/',
-      page_title: typeof document !== 'undefined' ? document.title : '',
-      page_location: window.location.href,
-    });
+      // Initialize gtag timestamp and configuration with initial page path
+      window.gtag('js', new Date());
+      window.gtag('config', measurementId, {
+        page_path: window.location.pathname || '/',
+        page_title: typeof document !== 'undefined' ? document.title : '',
+        page_location: window.location.href,
+      });
+    }
 
     // Mark current path as tracked so initial route doesn't trigger duplicate page_view event
     const initialCleanPath = (window.location.pathname || '/').split('?')[0].split('#')[0] || '/';
