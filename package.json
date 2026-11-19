@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "bun@1.4.4",
   "scripts": {
     "dev": "astro dev --port 3000 --host 0.0.0.0",
     "build": "node --import tsx scripts/generate-sitemap.ts && astro build",
