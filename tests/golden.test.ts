@@ -54,6 +54,9 @@ test('Golden 2: Tile - Pattern Waste & Packaging Separation', () => {
   // 12" x 24" tile = 2 sq ft per tile => 60 net tiles, 69 recommended tiles
   // Box coverage: 16 sq ft => 138 / 16 = 8.625 boxes => 9 boxes
   // Purchased tile area: 9 * 16 = 144 sq ft
+  // 12" x 24" is Large Format Tile (>= 15") => auto-selects 1/2"x1/2" trowel (~35 sq ft/bag)
+  // Mortar on 120 sq ft net + 10% bucket/back-butter allowance = 132 sq ft => 132 / 35 = 3.77 => 4 bags
+  // Grout at default 1/8" joint & 3/8" thickness => ~6.60 lbs => 1 bag (25 lb)
   const res = calculateTile({
     areaLength: 12,
     areaWidth: 10,
@@ -71,8 +74,10 @@ test('Golden 2: Tile - Pattern Waste & Packaging Separation', () => {
     assert.equal(res.outputs.recommendedTilesWithWaste, 69);
     assert.equal(res.outputs.boxesToPurchase, 9);
     assert.equal(res.outputs.purchasedSqFt, 144);
-    assert.equal(res.outputs.thinsetMortar50lbBags, 3); // 138 / 50 = 2.76 => 3 bags
-    assert.equal(res.outputs.grout25lbBags, 1); // 138 / 150 = 0.92 => 1 bag
+    assert.equal(res.outputs.mortarTrowelNotch, '1/2x1/2');
+    assert.equal(res.outputs.mortarCoverageSqFtPerBag, 35);
+    assert.equal(res.outputs.thinsetMortar50lbBags, 4); // (120 * 1.10) / 35 = 3.77 => 4 bags
+    assert.equal(res.outputs.grout25lbBags, 1);
   }
 });
 

@@ -15,10 +15,10 @@ import { PracticalTips, type PracticalTipItem } from '../../components/calculato
 import { RelatedTools } from '../../components/calculator/RelatedTools.tsx';
 import { CalculatorTrackerWrapper } from '../calculator/CalculatorTrackerWrapper.tsx';
 
-import { calculateTile } from '../../scripts/calculators/tile.ts';
+import { calculateTile, type TileTrowelNotchSize } from '../../scripts/calculators/tile.ts';
 import { CALCULATORS } from '../../data/calculators.ts';
 import { CATEGORIES } from '../../data/categories.ts';
-import { RotateCcw, SlidersHorizontal, Layers, CheckCircle2, Box, Sparkles, ShieldCheck, Wrench, AlertTriangle, BookOpen, ArrowRight } from 'lucide-react';
+import { RotateCcw, SlidersHorizontal, Layers, Box, ShieldCheck, Wrench, AlertTriangle, BookOpen, ArrowRight } from 'lucide-react';
 
 interface TileCalculatorPageProps {
   onNavigate?: (path: string) => void;
@@ -33,9 +33,11 @@ export const TileCalculatorPage: React.FC<TileCalculatorPageProps> = ({ onNaviga
   const [areaWidth, setAreaWidth] = useState<number>(8);
   const [tileLengthInches, setTileLengthInches] = useState<number>(12);
   const [tileWidthInches, setTileWidthInches] = useState<number>(12);
+  const [tileThicknessInches, setTileThicknessInches] = useState<number>(0.375);
   const [boxCoverageSqFt, setBoxCoverageSqFt] = useState<number>(15);
   const [wastePercentage, setWastePercentage] = useState<number>(10);
   const [groutJointWidthInches, setGroutJointWidthInches] = useState<string>('0.125');
+  const [trowelNotchSize, setTrowelNotchSize] = useState<TileTrowelNotchSize>('auto');
   const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
 
   // Live calculation
@@ -45,20 +47,34 @@ export const TileCalculatorPage: React.FC<TileCalculatorPageProps> = ({ onNaviga
       areaWidth,
       tileLengthInches,
       tileWidthInches,
+      tileThicknessInches,
       boxCoverageSqFt,
       wastePercentage,
-      groutJointWidthInches: parseFloat(groutJointWidthInches) || 0.125,
+      groutJointWidthInches: Number(groutJointWidthInches),
+      trowelNotchSize,
     });
-  }, [areaLength, areaWidth, tileLengthInches, tileWidthInches, boxCoverageSqFt, wastePercentage, groutJointWidthInches]);
+  }, [
+    areaLength,
+    areaWidth,
+    tileLengthInches,
+    tileWidthInches,
+    tileThicknessInches,
+    boxCoverageSqFt,
+    wastePercentage,
+    groutJointWidthInches,
+    trowelNotchSize,
+  ]);
 
   const handleReset = () => {
     setAreaLength(10);
     setAreaWidth(8);
     setTileLengthInches(12);
     setTileWidthInches(12);
+    setTileThicknessInches(0.375);
     setBoxCoverageSqFt(15);
     setWastePercentage(10);
     setGroutJointWidthInches('0.125');
+    setTrowelNotchSize('auto');
   };
 
   const breadcrumbs = [
@@ -72,6 +88,13 @@ export const TileCalculatorPage: React.FC<TileCalculatorPageProps> = ({ onNaviga
     { value: '0.125', label: '1/8" (Standard Floor & Wall)', description: 'Most common joint width for standard ceramic and pressed porcelain' },
     { value: '0.1875', label: '3/16" (Handmade / Uneven Edge)', description: 'For artisanal tiles with slight dimensional variation' },
     { value: '0.25', label: '1/4" (Wide Quarry / Saltillo)', description: 'Wide rustic joint for pavers and Mexican terracotta tile' },
+  ];
+
+  const trowelNotchOptions = [
+    { value: 'auto', label: 'Auto-Select by Tile Size', description: 'Picks 1/4"×1/4" (< 8"), 1/4"×3/8" (8"–14"), or 1/2"×1/2" (≥ 15" LFT)' },
+    { value: '1/4x1/4', label: '1/4" × 1/4" (~65 sq ft/bag)', description: 'For small subway, mosaic, or wall tiles under 8"' },
+    { value: '1/4x3/8', label: '1/4" × 3/8" (~50 sq ft/bag)', description: 'Standard square-notch trowel for 8" to 14" tiles' },
+    { value: '1/2x1/2', label: '1/2" × 1/2" (~35 sq ft/bag)', description: 'Large Format Tile (≥ 15" side) including back-buttering' },
   ];
 
   const commonTileSizePresets = [
@@ -132,11 +155,13 @@ export const TileCalculatorPage: React.FC<TileCalculatorPageProps> = ({ onNaviga
         },
         {
           stepNumber: 5,
-          title: 'Estimate Thin-Set Mortar & Joint Grout Quantities',
-          description: 'Standard polymer-modified thinset covers ~50 sq ft per 50-lb bag with a 1/4" x 3/8" notched trowel. Grout yield is calculated from tile dimensions and joint width.',
+          title: 'Estimate Thin-Set Mortar & Dimension-Based Joint Grout',
+          description: `Mortar uses the ${outputs.mortarTrowelNotch}" trowel planning rate (~${outputs.mortarCoverageSqFtPerBag} sq ft/50-lb bag) across the ${outputs.netAreaSqFt} sq ft substrate plus 10% bucket/back-butter allowance. Grout is computed from the ${tileLengthInches}"×${tileWidthInches}"×${outputs.tileThicknessInches}" joint volume (${outputs.groutVolumeCuIn} in³) at 0.06 lb/in³ plus 10% float loss.`,
           formulaDisplay: (
             <span>
-              Mortar: ⌈{outputs.recommendedAreaSqFt} ÷ 50⌉ = <strong>{outputs.thinsetMortar50lbBags} bags (50 lb)</strong> | Grout: <strong>{outputs.grout25lbBags} bags (25 lb)</strong>
+              Mortar: ⌈({outputs.netAreaSqFt} × 1.10) ÷ {outputs.mortarCoverageSqFtPerBag}⌉ ={' '}
+              <strong>{outputs.thinsetMortar50lbBags} bags (50 lb)</strong> | Grout:{' '}
+              {outputs.groutRecommendedLbs} lbs ÷ 25 = <strong>{outputs.grout25lbBags} bags (25 lb)</strong>
             </span>
           ),
         },
@@ -339,6 +364,21 @@ export const TileCalculatorPage: React.FC<TileCalculatorPageProps> = ({ onNaviga
                         step={0.5}
                         description="Found on carton label (commonly 10 to 18 sq ft/box)."
                         required
+                        error={boxCoverageSqFt <= 0 ? 'Must be > 0' : undefined}
+                      />
+
+                      <CalculatorInput
+                        id="tile-thickness"
+                        label="Tile Thickness / Joint Depth"
+                        value={tileThicknessInches}
+                        onChange={setTileThicknessInches}
+                        unit="in"
+                        min={0.125}
+                        max={2}
+                        step={0.0625}
+                        description='Typical thicknesses: 0.25" (wall), 0.375" (3/8" floor), 0.5" (stone).'
+                        required
+                        error={tileThicknessInches <= 0 ? 'Must be > 0' : undefined}
                       />
 
                       <CalculatorSelect
@@ -347,7 +387,16 @@ export const TileCalculatorPage: React.FC<TileCalculatorPageProps> = ({ onNaviga
                         value={groutJointWidthInches}
                         onChange={setGroutJointWidthInches}
                         options={groutJointOptions}
-                        description="Influences joint visual profile and dry powder grout consumption."
+                        description="Directly determines joint volume and dry powder grout weight."
+                      />
+
+                      <CalculatorSelect
+                        id="trowel-notch"
+                        label="Trowel Notch Profile"
+                        value={trowelNotchSize}
+                        onChange={(val) => setTrowelNotchSize(val as TileTrowelNotchSize)}
+                        options={trowelNotchOptions}
+                        description="Auto mode selects 1/2&quot;×1/2&quot; for tiles ≥ 15&quot; and 1/4&quot;×1/4&quot; for tiles < 8&quot;."
                       />
                     </div>
                   )}
@@ -391,13 +440,13 @@ export const TileCalculatorPage: React.FC<TileCalculatorPageProps> = ({ onNaviga
                           label="Thinset Mortar"
                           value={out.thinsetMortar50lbBags}
                           unit="bags (50lb)"
-                          subtext="~50 sq ft/bag"
+                          subtext={`~${out.mortarCoverageSqFtPerBag} sq ft/bag (${out.mortarTrowelNotch}")`}
                         />
                         <ResultMetric
                           label="Joint Grout"
                           value={out.grout25lbBags}
                           unit="bags (25lb)"
-                          subtext="Planning estimate"
+                          subtext={`~${out.groutRecommendedLbs} lbs (${out.groutJointWidthInches}" joint)`}
                         />
                       </div>
                     </div>
@@ -466,7 +515,7 @@ export const TileCalculatorPage: React.FC<TileCalculatorPageProps> = ({ onNaviga
                             </span>
                           </div>
                           <p className="text-[#57534e] leading-snug">
-                            Based on ~50 sq ft per 50-lb bag with a standard 1/4" × 3/8" notched trowel. Substrate flatness, back-buttering, and trowel angle will vary field consumption.
+                            Uses {out.mortarTrowelNotch}" notch profile (~{out.mortarCoverageSqFtPerBag} sq ft/bag planning benchmark) across {out.netAreaSqFt} sq ft + 10% bucket/back-butter allowance ({out.mortarRecommendedBagsExact} bags exact).
                           </p>
                         </div>
 
@@ -478,7 +527,7 @@ export const TileCalculatorPage: React.FC<TileCalculatorPageProps> = ({ onNaviga
                             </span>
                           </div>
                           <p className="text-[#57534e] leading-snug">
-                            Yield estimate for {tileLengthInches}" × {tileWidthInches}" tile with standard joints. Smaller subway or mosaic tiles require significantly more grout per square foot.
+                            Estimated {out.groutRecommendedLbs} lbs ({out.groutNetLbs} lbs net + 10% float loss) for {tileLengthInches}" × {tileWidthInches}" × {out.tileThicknessInches}" tile with {out.groutJointWidthInches}" joints (~{out.groutEstimatedCoverageSqFtPerBag} sq ft/bag).
                           </p>
                         </div>
                       </div>
@@ -486,7 +535,7 @@ export const TileCalculatorPage: React.FC<TileCalculatorPageProps> = ({ onNaviga
                       <div className="p-2.5 rounded bg-[#fcf4ee] border border-[#f1ede4] text-[11px] text-[#57534e] flex items-start gap-2">
                         <AlertTriangle className="h-4 w-4 text-[#b8532b] shrink-0 mt-0.5" />
                         <span>
-                          <strong>Installation Note:</strong> Mortar and grout are planning estimates. Actual consumption varies with trowel depth, back-buttering technique, and joint depth. Always confirm coverage charts on the mortar bag label.
+                          <strong>Installation Note:</strong> Mortar trowel coverage (~65 / ~50 / ~35 sq ft/bag) and grout yield (0.06 lb/in³ planning conversion) are preliminary planning assumptions awaiting manufacturer Technical Data Sheet (TDS) verification. Always confirm coverage charts on the mortar and grout bag labels.
                         </span>
                       </div>
                     </div>
@@ -527,7 +576,7 @@ export const TileCalculatorPage: React.FC<TileCalculatorPageProps> = ({ onNaviga
               assumptions={calculationResult.assumptions}
               notices={calculationResult.notices}
               limitations={[
-                'Mortar & Grout Estimation: Mortar (~50 sq ft/bag) and grout bag quantities are preliminary planning benchmarks based on standard square trowel notches on flat substrates. Actual coverage requires confirming manufacturer coverage tables against your specific trowel notch profile, tile back profile, and joint width/depth.',
+                'Mortar & Grout Planning Assumptions: Trowel-tiered mortar coverage (~65 sq ft/bag for < 8" tile, ~50 sq ft/bag for 8"–14" tile, ~35 sq ft/bag for ≥ 15" LFT) and volumetric grout conversion (0.06 lb/in³ cured joint volume + 10% bucket/float allowance) are planning benchmarks awaiting manufacturer Technical Data Sheet (TDS) verification.',
                 'Substrate Preparation: Cement backer board (Durock/Wonderboard), uncoupling membranes (Schluter DITRA), and waterproofing are not included in square footage.',
                 'Grout Yield Variations: Epoxy grouts and pre-mixed urethane grouts have very different densities and spread rates than cementitious dry powder bags.',
                 'Subfloor Flatness: Subfloor must not deflect more than L/360 for ceramic or L/720 for natural stone to avoid cracked tile or broken grout bonds.',
