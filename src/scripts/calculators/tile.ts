@@ -328,12 +328,12 @@ export function calculateTile(inputs: TileInputs): CalculationResult<TileOutputs
       {
         id: 'mortar-bags',
         name: 'Thinset Mortar (50 lb)',
-        description: `Polymer-modified thinset (${resolvedTrowel}" notch trowel, +${MIXING_AND_SPREAD_LOSS_PERCENT}% pot/spread allowance)`,
+        description: `Provisional polymer-modified thinset estimate (${resolvedTrowel}" suggested profile, +${MIXING_AND_SPREAD_LOSS_PERCENT}% provisional allowance)`,
         exactQuantity: roundToPrecision(mortarNetBagsExact, 2),
         recommendedQuantity: roundToPrecision(mortarRecommendedBagsExact, 2),
         purchaseQuantity: mortarBags,
         packageUnit: '50-lb bags',
-        unitSizeDescription: `~${mortarCoverageSqFtPerBag} sq ft/bag (${resolvedTrowel}" trowel)`,
+        unitSizeDescription: `Est. ~${mortarCoverageSqFtPerBag} sq ft/bag (${resolvedTrowel}" profile)`,
         wasteAppliedPercentage: MIXING_AND_SPREAD_LOSS_PERCENT,
         benchmarkPriceId: 'tile-thinset-mortar-50lb',
         estimatedCost: mortarCost,
@@ -341,12 +341,12 @@ export function calculateTile(inputs: TileInputs): CalculationResult<TileOutputs
       {
         id: 'grout-bags',
         name: 'Tile Grout (25 lb)',
-        description: `Cementitious joint grout for ${tileLIn}"×${tileWIn}"×${tileThicknessIn}" tile, ${jointWidthIn}" joint (+${MIXING_AND_SPREAD_LOSS_PERCENT}% float loss)`,
+        description: `Provisional cementitious grout estimate for ${tileLIn}"×${tileWIn}"×${tileThicknessIn}" assumed depth, ${jointWidthIn}" joint (+${MIXING_AND_SPREAD_LOSS_PERCENT}% provisional allowance)`,
         exactQuantity: roundToPrecision(groutNetBagsExact, 2),
         recommendedQuantity: roundToPrecision(groutRecommendedBagsExact, 2),
         purchaseQuantity: groutBags,
         packageUnit: '25-lb bags',
-        unitSizeDescription: `~${roundToPrecision(groutEstimatedCoverageSqFtPerBag, 0)} sq ft/bag (${jointWidthIn}" joint)`,
+        unitSizeDescription: `Est. ~${roundToPrecision(groutEstimatedCoverageSqFtPerBag, 0)} sq ft/bag (provisional)`,
         wasteAppliedPercentage: MIXING_AND_SPREAD_LOSS_PERCENT,
         benchmarkPriceId: 'tile-grout-bag',
         estimatedCost: groutCost,
@@ -373,14 +373,14 @@ export function calculateTile(inputs: TileInputs): CalculationResult<TileOutputs
     assumptions: [
       {
         id: 'mortar-coverage',
-        title: 'Trowel-Based Mortar Planning Estimate',
-        detail: `Uses ${resolvedTrowel}" notch trowel benchmark (~${mortarCoverageSqFtPerBag} sq ft per 50-lb bag) on ${roundToPrecision(netArea, 1)} sq ft net substrate plus ${MIXING_AND_SPREAD_LOSS_PERCENT}% pot/back-butter allowance. Coverage benchmarks are planning estimates awaiting specific manufacturer Technical Data Sheet (TDS) verification.`,
+        title: 'Preliminary Mortar Coverage Benchmark',
+        detail: `Uses a suggested ${resolvedTrowel}" notch profile (preliminary planning benchmark of ~${mortarCoverageSqFtPerBag} sq ft per 50-lb bag, selected primarily from tile dimensions) across ${roundToPrecision(netArea, 1)} sq ft plus a ${MIXING_AND_SPREAD_LOSS_PERCENT}% provisional planning allowance. Actual coverage depends on mortar product, trowel notch and angle, substrate flatness, tile-back profile, and installation technique—verify trowel selection and coverage using the manufacturer's installation instructions and Technical Data Sheet (TDS).`,
         category: 'coverage',
       },
       {
         id: 'grout-volume-model',
-        title: 'Dimension-Based Grout Volume Model',
-        detail: `Computes joint volume from ${tileLIn}"×${tileWIn}" tile size, ${jointWidthIn}" joint width, and ${tileThicknessIn}" tile thickness (${roundToPrecision(groutVolumeCuIn, 1)} in³), converted using an unverified planning density factor of ${DRY_GROUT_LBS_PER_CU_IN} lb/in³ plus ${MIXING_AND_SPREAD_LOSS_PERCENT}% float/bucket loss awaiting manufacturer TDS verification.`,
+        title: 'Provisional Grout Volume & Weight Estimate',
+        detail: `Estimates geometric joint volume from ${tileLIn}"×${tileWIn}" tile size, ${jointWidthIn}" joint width, and ${tileThicknessIn}" assumed joint depth (${roundToPrecision(groutVolumeCuIn, 1)} in³), converted using an unverified ${DRY_GROUT_LBS_PER_CU_IN} lb/in³ planning assumption plus a ${MIXING_AND_SPREAD_LOSS_PERCENT}% provisional planning allowance (not a universal industry standard). Calculated grout weight is not manufacturer-verified or exact; actual consumption depends on product formulation, joint depth, tile edge geometry, and installation conditions.`,
         category: 'coverage',
       },
       {

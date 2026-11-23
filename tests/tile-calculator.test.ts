@@ -290,3 +290,36 @@ test('Tile Calculator - invalid optional and core inputs fail cleanly without Na
     }
   }
 });
+
+test('Tile Calculator - provisional assumption and TDS disclosures are present in engine, metadata, and guide', async () => {
+  const { CALCULATORS } = await import('../src/data/calculators.ts');
+  const { getGuideBySlug } = await import('../src/data/guides.ts');
+
+  const res = calculateTile({
+    areaLength: 10,
+    areaWidth: 8,
+    tileLengthInches: 12,
+    tileWidthInches: 12,
+  });
+  assert.equal(res.success, true);
+  if (res.success) {
+    const mortarAssumption = res.assumptions.find((a) => a.id === 'mortar-coverage');
+    const groutAssumption = res.assumptions.find((a) => a.id === 'grout-volume-model');
+    assert.ok(mortarAssumption?.detail.includes('preliminary planning benchmark'));
+    assert.ok(mortarAssumption?.detail.includes('Technical Data Sheet (TDS)'));
+    assert.ok(groutAssumption?.detail.includes('unverified 0.06 lb/in³'));
+    assert.ok(groutAssumption?.detail.includes('provisional planning allowance'));
+    assert.ok(groutAssumption?.detail.includes('not manufacturer-verified or exact'));
+  }
+
+  const meta = CALCULATORS['tile-calculator'];
+  assert.ok(meta.assumptions.some((a) => a.includes('unverified 0.06 lb/in³')));
+  assert.ok(meta.assumptions.some((a) => a.includes('Technical Data Sheet (TDS)')));
+  const trowelField = meta.inputFields.find((f) => f.id === 'trowelNotchSize');
+  assert.equal(trowelField?.options?.[0]?.label, 'Suggested Profile (Based on Tile Dimensions)');
+
+  const guide = getGuideBySlug('how-much-tile-do-i-need')!;
+  assert.ok(guide.methodologyAssumptions.some((a) => a.includes('unverified 0.06 lb/in³')));
+  assert.ok(guide.methodologyAssumptions.some((a) => a.includes('Technical Data Sheet (TDS)')));
+});
+

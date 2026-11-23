@@ -842,10 +842,10 @@ export const GUIDES: Record<string, GuideDefinition> = {
           note: 'Retailers do not sell loose tiles. Rounding up to 6 boxes provides 90.0 sq ft, yielding a 2.0 sq ft surplus cushion from the identical dye lot.',
         },
         {
-          step: 'Step 5: Estimate Thinset Mortar and Dry Grout',
+          step: 'Step 5: Estimate Thinset Mortar and Dry Grout (Provisional)',
           title: 'Setting Materials Takeoff',
-          calculation: 'Thinset: Math.ceil(88.0 ÷ 50 sq ft/bag) = 2 bags (50-lb each); Grout: Math.ceil(88.0 ÷ 150 sq ft/bag) = 1 bag (25-lb)',
-          note: 'A standard 50-lb bag of polymer-modified thinset covers approximately 50 sq ft with a 1/4" × 3/8" notched trowel. One 25-lb bag of dry grout covers ~150 sq ft of 12×12 tile with 1/8" joints.',
+          calculation: 'Thinset: Math.ceil((80.0 × 1.10) ÷ 50 sq ft/bag) = 2 bags (50-lb each); Grout: Math.ceil(88.6 in³ × 0.06 lb/in³ × 1.10 ÷ 25 lb/bag) = 1 bag (25-lb)',
+          note: 'Uses a preliminary 50 sq ft/bag benchmark for a suggested 1/4" × 3/8" notch profile plus a provisional 10% allowance, and geometric joint volume multiplied by an unverified 0.06 lb/in³ factor plus a provisional 10% allowance. Confirm trowel notch and product coverage on the manufacturer TDS.',
         },
       ],
       resultSummary:
@@ -972,8 +972,8 @@ export const GUIDES: Record<string, GuideDefinition> = {
     ],
     methodologyAssumptions: [
       'Box coverage defaults to 15.0 sq ft per carton unless overridden by the user.',
-      'Thinset mortar planning rate is modeled at 50 sq ft per 50-lb bag using standard square-notched trowels on flat substrates.',
-      'Grout powder yield is modeled at 150 sq ft per 25-lb bag for standard 12×12 tiles and 80 sq ft per bag for subway or mosaic tiles under 4 inches.',
+      'Thinset mortar uses preliminary planning benchmarks (~65 sq ft/bag for < 8" tile, ~50 sq ft/bag for 8"–14" tile, ~35 sq ft/bag for ≥ 15" LFT) with a suggested trowel profile based primarily on tile dimensions plus a provisional 10% allowance; verify trowel notch and coverage with the mortar manufacturer\'s Technical Data Sheet (TDS).',
+      'Dry grout weight is estimated provisionally from tile dimensions, joint width, and assumed joint depth (default 3/8") using an unverified 0.06 lb/in³ conversion factor plus a provisional 10% allowance (not manufacturer-verified or exact); actual yield varies with product formulation, joint depth, tile edge geometry, and installation conditions.',
       'Whole commercial packaging: open boxes or loose individual tiles cannot be purchased or returned at home improvement retailers.',
     ],
     faqs: [
