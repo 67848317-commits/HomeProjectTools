@@ -415,9 +415,15 @@ test('Golden 14: Topsoil - Bulk Yards vs Retail Bags Benchmark', () => {
     assert.equal(res.outputs.recommendedVolumeCuYds, 6.11);
     assert.equal(res.outputs.bags075cuftToPurchase, 220);
     assert.equal(res.outputs.bags1cuftToPurchase, 165);
-    // Since bags > 25, bulk pricing is selected
+    // Default purchasing format selects bulk cubic yards rounded up to whole yards (7 cu yds)
     const bulkBench = getPriceBenchmark('topsoil-bulk-yard')!;
-    assert.equal(res.costEstimate?.materialsOnly.typical, Math.round(6.111 * bulkBench.priceTypical));
+    const bulkBom = res.billOfMaterials.find((item) => item.id === 'topsoil-bulk-yards')!;
+    assert.equal(res.outputs.selectedPurchasingFormat, 'bulk-yards');
+    assert.equal(res.outputs.bulkCubicYardsToPurchase, 7);
+    assert.equal(bulkBom.purchaseQuantity, 7);
+    assert.equal(res.costEstimate?.materialsOnly.low, Math.round(7 * bulkBench.priceLow));
+    assert.equal(res.costEstimate?.materialsOnly.typical, Math.round(7 * bulkBench.priceTypical));
+    assert.equal(res.costEstimate?.materialsOnly.high, Math.round(7 * bulkBench.priceHigh));
   }
 });
 

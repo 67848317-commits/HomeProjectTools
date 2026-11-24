@@ -13,7 +13,7 @@ import { PracticalTips, type PracticalTipItem } from '../../components/calculato
 import { RelatedTools } from '../../components/calculator/RelatedTools.tsx';
 import { CalculatorTrackerWrapper } from '../calculator/CalculatorTrackerWrapper.tsx';
 
-import { calculateTopsoil } from '../../scripts/calculators/topsoil.ts';
+import { calculateTopsoil, type TopsoilPurchasingFormat } from '../../scripts/calculators/topsoil.ts';
 import { CALCULATORS } from '../../data/calculators.ts';
 import { CATEGORIES } from '../../data/categories.ts';
 import {
@@ -44,6 +44,7 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
   const [bedWidth, setBedWidth] = useState<number>(10);
   const [soilDepthInches, setSoilDepthInches] = useState<number>(4);
   const [wastePercentage, setWastePercentage] = useState<number>(10);
+  const [purchasingFormat, setPurchasingFormat] = useState<TopsoilPurchasingFormat>('bulk-yards');
 
   // Live calculation
   const calculationResult = useMemo(() => {
@@ -52,14 +53,16 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
       bedWidth,
       soilDepthInches,
       wastePercentage,
+      purchasingFormat,
     });
-  }, [bedLength, bedWidth, soilDepthInches, wastePercentage]);
+  }, [bedLength, bedWidth, soilDepthInches, wastePercentage, purchasingFormat]);
 
   const handleReset = () => {
     setBedLength(20);
     setBedWidth(10);
     setSoilDepthInches(4);
     setWastePercentage(10);
+    setPurchasingFormat('bulk-yards');
   };
 
   const breadcrumbs = [
@@ -121,13 +124,13 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
         stepNumber: 4,
         title: 'Determine Commercial Bulk vs Retail Bag Formats',
         description:
-          'Convert total planning cubic-foot volume to bulk cubic yards or retail bags (0.75 cu ft / 1.0 cu ft).',
+          'Convert total planning cubic-foot volume into a whole-yard bulk order or full retail bags (0.75 cu ft priced option; 1.0 cu ft volume-only reference).',
         formulaDisplay: (
           <span>
             Bulk: ceil({out.recommendedVolumeCuYds}) ={' '}
-            <strong className="text-[#b8532b]">{Math.ceil(out.recommendedVolumeCuYds)} cubic yards</strong> • Bagged:{' '}
+            <strong className="text-[#b8532b]">{out.bulkCubicYardsToPurchase} whole cubic yards</strong> • Bagged:{' '}
             {out.recommendedVolumeCuFt} cu ft ÷ 0.75 cu ft/bag ={' '}
-            <strong className="text-[#b8532b]">{out.bags075cuftToPurchase} bags (0.75 cu ft)</strong> ({out.bags1cuftToPurchase} bags of 1.0 cu ft)
+            <strong className="text-[#b8532b]">{out.bags075cuftToPurchase} bags (0.75 cu ft)</strong> ({out.bags1cuftToPurchase} bags of 1.0 cu ft, volume-only)
           </span>
         ),
       },
@@ -136,8 +139,8 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
 
   const practicalTips: PracticalTipItem[] = [
     {
-      title: 'Bulk Dump Truck Delivery vs Retail Bags Decision',
-      desc: 'If your project requires more than 1 cubic yard (approx 36 bags of 0.75 cu ft), local landscape supply yards with dump truck delivery are almost always cheaper and spare your vehicle suspension from 1,500+ lbs of heavy soil.',
+      title: 'Comparing Bulk Yards vs Retail Bags',
+      desc: 'One cubic yard equals thirty-six (36) 0.75 cu ft retail bags. Rather than relying on a single universal cutoff, switch between Bulk Cubic Yards and 0.75 cu ft Retail Bags above and weigh the material price difference against local dump truck delivery fees, supplier order minimums, and wheelbarrow access.',
       icon: Truck,
     },
     {
@@ -273,6 +276,57 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                     </div>
                   )}
                 </div>
+
+                {/* 4. Explicit Purchasing Format for Cost Estimate */}
+                <div className="space-y-2 pt-2 border-t border-[#e3ded4]">
+                  <div className="flex items-center justify-between">
+                    <span className="block text-sm font-semibold text-[#1c1917]">
+                      Cost Estimate Purchasing Format
+                    </span>
+                    <span className="text-[11px] font-mono text-[#78716c]">
+                      Select 1 format
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPurchasingFormat('bulk-yards')}
+                      aria-pressed={purchasingFormat === 'bulk-yards'}
+                      className={`p-2.5 rounded border text-left transition-all ${
+                        purchasingFormat === 'bulk-yards'
+                          ? 'border-[#b8532b] bg-[#fcf4ee] ring-1 ring-[#b8532b] shadow-xs'
+                          : 'border-[#c8c1b2] bg-[#ffffff] hover:border-[#a8a192] hover:bg-[#faf8f5]'
+                      }`}
+                    >
+                      <span className="block text-xs font-bold text-[#1c1917]">
+                        Bulk Cubic Yards
+                      </span>
+                      <span className="block text-[11px] text-[#57534e] mt-0.5">
+                        Whole-yard increment (excl. freight)
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPurchasingFormat('bags-075')}
+                      aria-pressed={purchasingFormat === 'bags-075'}
+                      className={`p-2.5 rounded border text-left transition-all ${
+                        purchasingFormat === 'bags-075'
+                          ? 'border-[#b8532b] bg-[#fcf4ee] ring-1 ring-[#b8532b] shadow-xs'
+                          : 'border-[#c8c1b2] bg-[#ffffff] hover:border-[#a8a192] hover:bg-[#faf8f5]'
+                      }`}
+                    >
+                      <span className="block text-xs font-bold text-[#1c1917]">
+                        0.75 cu ft Retail Bags
+                      </span>
+                      <span className="block text-[11px] text-[#57534e] mt-0.5">
+                        Approx 40-lb home center bags
+                      </span>
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-[#78716c] leading-relaxed">
+                    Choose which format drives your Bill of Materials purchase order and Cost Estimate. Both options are alternative ways to fulfill the same volume, not combined purchases.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -282,6 +336,11 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
             {calculationResult.success ? (
               (() => {
                 const out = calculationResult.outputs;
+                const bulkBom = calculationResult.billOfMaterials.find((item) => item.id === 'topsoil-bulk-yards');
+                const bagBom = calculationResult.billOfMaterials.find((item) => item.id === 'topsoil-bags-075');
+                const isBulkSelected = out.selectedPurchasingFormat === 'bulk-yards';
+                const selectedBomItem = (isBulkSelected ? bulkBom : bagBom) ?? calculationResult.billOfMaterials[0];
+                const alternativeBomItem = isBulkSelected ? bagBom : bulkBom;
 
                 return (
                   <>
@@ -289,24 +348,24 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <ResultMetric
-                          label="Bulk Topsoil Needed"
-                          value={out.recommendedVolumeCuYds}
+                          label="Bulk Order (Whole Yards)"
+                          value={out.bulkCubicYardsToPurchase}
                           unit="cu yds"
-                          subtext={`${Math.ceil(out.recommendedVolumeCuYds)} full yards to order`}
-                          variant="primary"
+                          subtext={`${out.recommendedVolumeCuYds} cu yds planned`}
+                          variant={isBulkSelected ? 'primary' : 'secondary'}
                         />
                         <ResultMetric
-                          label="0.75 cu ft Bags"
+                          label="0.75 cu ft Retail Bags"
                           value={out.bags075cuftToPurchase}
                           unit="bags"
-                          subtext="Standard 40-lb retail bags"
-                          variant="primary"
+                          subtext={`${out.bags075cuftExact} exact (~40-lb bags)`}
+                          variant={!isBulkSelected ? 'primary' : 'secondary'}
                         />
                         <ResultMetric
                           label="1.0 cu ft Bags"
                           value={out.bags1cuftToPurchase}
                           unit="bags"
-                          subtext="Full 1 cubic foot bags"
+                          subtext="Volume-only (not priced)"
                         />
                       </div>
                     </div>
@@ -315,39 +374,67 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                     <div className="rounded-lg border-2 border-[#e3ded4] bg-[#ffffff] p-5 shadow-xs space-y-4">
                       <div className="flex items-center justify-between border-b border-[#e3ded4] pb-2">
                         <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-[#1c1917]">
-                          Commercial Purchasing Format Comparison
+                          Alternative Purchasing Formats (Select 1 for Estimate)
                         </h3>
                         <span className="text-[11px] font-mono text-[#78716c]">
-                          {out.recommendedVolumeCuFt} cu ft total
+                          {out.recommendedVolumeCuFt} cu ft ({out.recommendedVolumeCuYds} yd³) planned
                         </span>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                        <div className="p-4 rounded-lg border border-[#e3ded4] bg-[#faf8f5] space-y-2">
-                          <div className="flex items-center gap-2 text-[#b8532b] font-mono font-bold uppercase text-[11px]">
-                            <Truck className="h-4 w-4" />
-                            <span>Bulk Delivery / Pickup</span>
+                        <button
+                          type="button"
+                          onClick={() => setPurchasingFormat('bulk-yards')}
+                          className={`p-4 rounded-lg border text-left space-y-2 transition-all ${
+                            isBulkSelected
+                              ? 'border-[#b8532b] bg-[#fcf4ee] ring-1 ring-[#b8532b]'
+                              : 'border-[#e3ded4] bg-[#faf8f5] hover:border-[#a8a192]'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="flex items-center gap-1.5 text-[#b8532b] font-mono font-bold uppercase text-[11px]">
+                              <Truck className="h-4 w-4" />
+                              <span>Bulk Cubic Yards</span>
+                            </span>
+                            <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-[#ffffff] border border-[#e3ded4] text-[#1c1917]">
+                              {isBulkSelected ? 'Selected' : 'Select'}
+                            </span>
                           </div>
                           <div className="font-mono text-2xl font-bold text-[#1c1917]">
-                            {out.recommendedVolumeCuYds} <span className="text-xs font-normal">cu yds</span>
+                            {out.bulkCubicYardsToPurchase} <span className="text-xs font-normal">whole cu yds</span>
                           </div>
                           <p className="text-[#57534e] text-[11px] leading-relaxed">
-                            Recommended when total need exceeds 1 cubic yard. Dump truck delivery drops directly onto driveway or tarp.
+                            Material only: ${bulkBom?.estimatedCost?.typical.toLocaleString()} typical ($
+                            {bulkBom?.estimatedCost?.low.toLocaleString()}–${bulkBom?.estimatedCost?.high.toLocaleString()}) at $26–$54/yd³. Excludes delivery freight; supplier increments &amp; minimums vary.
                           </p>
-                        </div>
+                        </button>
 
-                        <div className="p-4 rounded-lg border border-[#e3ded4] bg-[#faf8f5] space-y-2">
-                          <div className="flex items-center gap-2 text-[#1c1917] font-mono font-bold uppercase text-[11px]">
-                            <Package className="h-4 w-4" />
-                            <span>Retail Packaged Bags</span>
+                        <button
+                          type="button"
+                          onClick={() => setPurchasingFormat('bags-075')}
+                          className={`p-4 rounded-lg border text-left space-y-2 transition-all ${
+                            !isBulkSelected
+                              ? 'border-[#b8532b] bg-[#fcf4ee] ring-1 ring-[#b8532b]'
+                              : 'border-[#e3ded4] bg-[#faf8f5] hover:border-[#a8a192]'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="flex items-center gap-1.5 text-[#1c1917] font-mono font-bold uppercase text-[11px]">
+                              <Package className="h-4 w-4" />
+                              <span>0.75 cu ft Retail Bags</span>
+                            </span>
+                            <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-[#ffffff] border border-[#e3ded4] text-[#1c1917]">
+                              {!isBulkSelected ? 'Selected' : 'Select'}
+                            </span>
                           </div>
                           <div className="font-mono text-2xl font-bold text-[#1c1917]">
                             {out.bags075cuftToPurchase} <span className="text-xs font-normal">bags (0.75 cu ft)</span>
                           </div>
                           <p className="text-[#57534e] text-[11px] leading-relaxed">
-                            Best for small garden touch-ups or sites with no dump truck access. 36 bags equal approximately 1 cubic yard.
+                            Material only: ${bagBom?.estimatedCost?.typical.toLocaleString()} typical ($
+                            {bagBom?.estimatedCost?.low.toLocaleString()}–${bagBom?.estimatedCost?.high.toLocaleString()}) at $2.49–$5.29/bag. 36 bags equal 1 cu yd; 1.0 cu ft bag counts ({out.bags1cuftToPurchase} bags) are volume-only without a price benchmark.
                           </p>
-                        </div>
+                        </button>
                       </div>
                     </div>
 
@@ -400,26 +487,56 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                             <span className="text-[11px] font-mono font-bold uppercase text-[#b8532b] bg-[#ffffff] px-1.5 py-0.5 rounded border border-[#e3ded4]">
                               Stage 3
                             </span>
-                            <span className="text-[11px] text-[#b8532b] font-mono font-semibold">Commercial Purchase</span>
+                            <span className="text-[11px] text-[#b8532b] font-mono font-semibold">
+                              {isBulkSelected ? 'Selected: Bulk' : 'Selected: Bags'}
+                            </span>
                           </div>
                           <div className="text-xl sm:text-2xl font-mono font-bold text-[#b8532b] tabular-nums mb-1">
-                            {Math.ceil(out.recommendedVolumeCuYds)}{' '}
-                            <span className="text-xs font-sans font-normal text-[#b8532b]">cu yds</span>
+                            {isBulkSelected ? out.bulkCubicYardsToPurchase : out.bags075cuftToPurchase}{' '}
+                            <span className="text-xs font-sans font-normal text-[#b8532b]">
+                              {isBulkSelected ? 'whole cu yds' : 'bags (0.75 cu ft)'}
+                            </span>
                           </div>
                           <p className="text-xs text-[#57534e] leading-snug">
-                            Or {out.bags075cuftToPurchase} retail 0.75 cu ft bags ({out.bags1cuftToPurchase} of 1.0 cu ft).
+                            {isBulkSelected
+                              ? `Alternative: ${out.bags075cuftToPurchase} bags (0.75 cu ft) or ${out.bags1cuftToPurchase} bags (1.0 cu ft, volume-only).`
+                              : `Alternative: ${out.bulkCubicYardsToPurchase} whole bulk cu yds (or ${out.bags1cuftToPurchase} 1.0 cu ft bags, volume-only).`}
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    {/* MATERIAL BILL OF MATERIALS */}
+                    {/* MATERIAL BILL OF MATERIALS (SELECTED FORMAT ONLY) */}
                     <div className="space-y-2">
-                      <BillOfMaterialsTable items={calculationResult.billOfMaterials} />
+                      {selectedBomItem && <BillOfMaterialsTable items={[selectedBomItem]} />}
+                      {alternativeBomItem && (
+                        <p className="text-[11px] text-[#57534e] bg-[#faf8f5] border border-[#e3ded4] rounded px-3 py-2">
+                          <strong className="text-[#1c1917]">Alternative Format Reference (Not Combined):</strong> Instead of{' '}
+                          {selectedBomItem.purchaseQuantity} {selectedBomItem.packageUnit}, the same {out.recommendedVolumeCuFt} cu ft requirement equals{' '}
+                          <span className="font-mono font-semibold text-[#1c1917]">
+                            {alternativeBomItem.purchaseQuantity} {alternativeBomItem.packageUnit}
+                          </span>{' '}
+                          (est. ${alternativeBomItem.estimatedCost?.low.toLocaleString()}–$
+                          {alternativeBomItem.estimatedCost?.high.toLocaleString()} material only).
+                        </p>
+                      )}
                     </div>
 
-                    {/* COST ESTIMATE */}
-                    <CostEstimateCard costEstimate={calculationResult.costEstimate} />
+                    {/* COST ESTIMATE & EXPLICIT FORMAT / FREIGHT BASIS */}
+                    <div className="space-y-3">
+                      <div className="rounded border border-[#e3ded4] bg-[#faf8f5] p-3.5 text-xs text-[#57534e] space-y-1">
+                        <div className="font-mono font-bold uppercase text-[11px] text-[#1c1917]">
+                          Active Cost Basis: {isBulkSelected ? 'Bulk Cubic Yards (Material Before Freight)' : '0.75 cu ft Retail Bags (Material Only)'}
+                        </div>
+                        <p className="leading-relaxed">
+                          Pricing <strong className="text-[#1c1917]">{selectedBomItem.purchaseQuantity} {selectedBomItem.packageUnit}</strong> using the{' '}
+                          {isBulkSelected
+                            ? 'Screened Loam Topsoil bulk yard benchmark ($26.00 low / $38.00 typical / $54.00 high per cu yd). Delivery freight is excluded and varies by supplier, location, order size, and drop terms; actual supplier increments (e.g., half-yard options or multi-yard minimums) and local quotes may differ.'
+                            : '0.75 cu ft Retail Bag benchmark ($2.49 low / $3.79 typical / $5.29 high per bag). Store delivery, pallet freight, specialty garden-mix upgrades, and sales tax are excluded; 1.0 cu ft bag counts are volume-only and unpriced.'}
+                        </p>
+                      </div>
+                      <CostEstimateCard costEstimate={calculationResult.costEstimate} />
+                    </div>
                   </>
                 );
               })()

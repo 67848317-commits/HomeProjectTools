@@ -13,11 +13,14 @@ import {
   roundToPrecision,
 } from '../core/math-utils.ts';
 
+export type TopsoilPurchasingFormat = 'bulk-yards' | 'bags-075';
+
 export interface TopsoilInputs {
   bedLength: number; // feet
   bedWidth: number; // feet
   soilDepthInches: number; // inches
   wastePercentage?: number; // provisional planning / settling allowance (default 10%, 0–50%)
+  purchasingFormat?: TopsoilPurchasingFormat; // explicit cost basis (default 'bulk-yards')
 }
 
 export interface TopsoilOutputs {
@@ -28,12 +31,17 @@ export interface TopsoilOutputs {
   wastePercentage: number;
   recommendedVolumeCuFt: number;
   recommendedVolumeCuYds: number;
+  bulkCubicYardsToPurchase: number;
+  bags075cuftExact: number;
   bags075cuftToPurchase: number;
-  bags1cuftToPurchase: number;
+  bags1cuftToPurchase: number; // volume-only informational output (no price benchmark)
+  selectedPurchasingFormat: TopsoilPurchasingFormat;
 }
 
 const DEFAULT_WASTE_PERCENT = 10;
 const MAX_WASTE_PERCENT = 50;
+const DEFAULT_PURCHASING_FORMAT: TopsoilPurchasingFormat = 'bulk-yards';
+const BAG_075_CU_FT = 0.75;
 
 export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<TopsoilOutputs> {
   const errors: CalculationErrorResult['errors'] = [];
@@ -103,6 +111,19 @@ export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<Topso
     }
   }
 
+  let selectedFormat: TopsoilPurchasingFormat = DEFAULT_PURCHASING_FORMAT;
+  if (inputs.purchasingFormat !== undefined) {
+    if (inputs.purchasingFormat !== 'bulk-yards' && inputs.purchasingFormat !== 'bags-075') {
+      errors.push({
+        field: 'purchasingFormat',
+        message: 'Purchasing format must be either "bulk-yards" or "bags-075".',
+        code: 'OUT_OF_RANGE',
+      });
+    } else {
+      selectedFormat = inputs.purchasingFormat;
+    }
+  }
+
   if (errors.length > 0) {
     return {
       success: false,
@@ -120,11 +141,15 @@ export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<Topso
   const recommendedCuFt = applyWaste(geometricCuFt, wastePercent);
   const recommendedCuYds = cubicFeetToCubicYards(recommendedCuFt);
 
-  // 3. Commercial Retail Bag Counts (0.75 cu ft is standard 40lb bag; 1.0 cu ft)
-  const bags075cuft = ceilToPackage(recommendedCuFt / 0.75);
+  // 3. Commercial Purchase Quantities (calculated once and reused identically across BOM & cost)
+  // Whole cubic yards is used as the explicit planning purchase increment for bulk topsoil.
+  const bulkPurchaseYards = ceilToPackage(recommendedCuYds);
+  const bags075Exact = recommendedCuFt / BAG_075_CU_FT;
+  const bags075cuft = ceilToPackage(bags075Exact);
+  // 1.0 cu ft bag count is informational only (no price benchmark exists in prices.ts).
   const bags1cuft = ceilToPackage(recommendedCuFt / 1.0);
 
-  // 4. Pricing Benchmarks
+  // 4. Pricing Benchmarks (strictly purchase-quantity based; 1.0 cu ft bags remain unpriced)
   const soilBench = getPriceBenchmark('topsoil-bulk-yard');
   const bagBench = getPriceBenchmark('topsoil-bag-075');
 
@@ -132,7 +157,7 @@ export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<Topso
   const bagPricing = getBenchmarkPriceRange('topsoil-bag-075');
 
   const bulkCost = calculateCostRange(
-    recommendedCuYds,
+    bulkPurchaseYards,
     bulkPricing.low,
     bulkPricing.typical,
     bulkPricing.high
@@ -145,6 +170,12 @@ export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<Topso
     bagPricing.high
   );
 
+  const isBulkSelected = selectedFormat === 'bulk-yards';
+  const selectedCost = isBulkSelected ? bulkCost : baggedCost;
+
+  const recommendedCuYdsDisplay = roundToPrecision(recommendedCuYds, 2);
+  const bags075Display = roundToPrecision(bags075Exact, 2);
+
   return {
     success: true,
     calculatorId: 'topsoil-calculator',
@@ -155,6 +186,7 @@ export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<Topso
       bedWidth: width,
       soilDepthInches: depthInches,
       wastePercentage: wastePercent,
+      purchasingFormat: selectedFormat,
     },
     outputs: {
       areaSqFt: roundToPrecision(areaSqFt, 1),
@@ -163,33 +195,38 @@ export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<Topso
       geometricVolumeCuYds: roundToPrecision(geometricCuYds, 2),
       wastePercentage: wastePercent,
       recommendedVolumeCuFt: roundToPrecision(recommendedCuFt, 2),
-      recommendedVolumeCuYds: roundToPrecision(recommendedCuYds, 2),
+      recommendedVolumeCuYds: recommendedCuYdsDisplay,
+      bulkCubicYardsToPurchase: bulkPurchaseYards,
+      bags075cuftExact: bags075Display,
       bags075cuftToPurchase: bags075cuft,
       bags1cuftToPurchase: bags1cuft,
+      selectedPurchasingFormat: selectedFormat,
     },
+    // BOM semantics: exactQuantity and recommendedQuantity express the unrounded planning requirement
+    // in the exact same commercial unit as packageUnit; purchaseQuantity rounds upward to whole packages.
     billOfMaterials: [
       {
         id: 'topsoil-bulk-yards',
-        name: 'Screened Loam Topsoil (Bulk Delivery)',
-        description: 'Screened garden topsoil delivered in bulk by dump truck',
-        exactQuantity: roundToPrecision(recommendedCuYds, 2),
-        recommendedQuantity: roundToPrecision(recommendedCuYds, 2),
-        purchaseQuantity: Math.ceil(recommendedCuYds),
+        name: `Screened Loam Topsoil — Bulk Cubic Yards (${isBulkSelected ? 'Selected Format' : 'Alternative Format'})`,
+        description: `Whole-yard planning order (${bulkPurchaseYards} yd³) before delivery freight; supplier increments & minimums vary`,
+        exactQuantity: recommendedCuYdsDisplay,
+        recommendedQuantity: recommendedCuYdsDisplay,
+        purchaseQuantity: bulkPurchaseYards,
         packageUnit: 'cubic yards',
-        unitSizeDescription: '27 cu ft/yard',
+        unitSizeDescription: '27 cu ft/yd³ (whole-yard increment)',
         wasteAppliedPercentage: wastePercent,
         benchmarkPriceId: 'topsoil-bulk-yard',
         estimatedCost: bulkCost,
       },
       {
         id: 'topsoil-bags-075',
-        name: '0.75 cu ft Bagged Topsoil',
-        description: 'Retail bags (approx 40 lbs each)',
-        exactQuantity: roundToPrecision(recommendedCuFt / 0.75, 1),
-        recommendedQuantity: roundToPrecision(recommendedCuFt, 1),
+        name: `0.75 cu ft Bagged Topsoil (${!isBulkSelected ? 'Selected Format' : 'Alternative Format'})`,
+        description: `Retail bags (~40 lbs each; ${bags075cuft} whole bags for ${roundToPrecision(recommendedCuFt, 2)} cu ft planning volume)`,
+        exactQuantity: bags075Display,
+        recommendedQuantity: bags075Display,
         purchaseQuantity: bags075cuft,
         packageUnit: '0.75 cu ft bags',
-        unitSizeDescription: '0.75 cu ft/bag (36 bags = 1 yard)',
+        unitSizeDescription: '0.75 cu ft/bag (36 bags = 1 yd³)',
         wasteAppliedPercentage: wastePercent,
         benchmarkPriceId: 'topsoil-bag-075',
         estimatedCost: baggedCost,
@@ -198,13 +235,15 @@ export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<Topso
     costEstimate: {
       hasPricing: true,
       currency: 'USD',
-      materialsOnly: bags075cuft <= 25 ? baggedCost : bulkCost,
+      materialsOnly: selectedCost,
       benchmarkSources: [
-        bags075cuft <= 25
-          ? (bagBench?.sourceNote ?? 'Retail home center packaged topsoil')
-          : (soilBench?.sourceNote ?? 'Screened residential topsoil and garden blend averages'),
+        isBulkSelected
+          ? `Selected Format: Bulk Cubic Yards (${bulkPurchaseYards} yd³ × $${bulkPricing.low.toFixed(2)}–$${bulkPricing.high.toFixed(2)}/yd³, typical $${bulkPricing.typical.toFixed(2)}/yd³) — ${soilBench?.sourceNote ?? 'Screened residential topsoil and garden blend averages'}`
+          : `Selected Format: 0.75 cu ft Retail Bags (${bags075cuft} bags × $${bagPricing.low.toFixed(2)}–$${bagPricing.high.toFixed(2)}/bag, typical $${bagPricing.typical.toFixed(2)}/bag) — ${bagBench?.sourceNote ?? 'Aggregated retail home center packaged topsoil'}`,
       ],
-      disclaimer: 'Bulk pricing excludes dump truck delivery freight fees ($40–$80 per drop).',
+      disclaimer: isBulkSelected
+        ? `Estimate reflects ${bulkPurchaseYards} whole cubic yard(s) of bulk screened topsoil material only. Delivery freight, supplier minimum order charges, half-yard billing availability, and sales tax are excluded and vary by local yard, distance, and order size.`
+        : `Estimate reflects ${bags075cuft} retail 0.75 cu ft bags only (alternative bulk format is not combined). Store delivery, pallet freight, specialty garden soil upgrades, and sales tax are excluded. 1.0 cu ft bag counts are shown for volume reference only without a benchmark price.`,
     },
     assumptions: [
       {
@@ -214,9 +253,9 @@ export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<Topso
         category: 'waste',
       },
       {
-        id: 'bag-vs-bulk-threshold',
-        title: 'Bagged vs Bulk Efficiency',
-        detail: '1 cubic yard of soil equals thirty-six (36) 0.75 cu ft retail bags. Any project exceeding 1.5 cubic yards is significantly cheaper ordered in bulk.',
+        id: 'bag-vs-bulk-equivalence',
+        title: 'Commercial Packaging & Format Comparison',
+        detail: '1 cubic yard (27 cu ft) equals thirty-six (36) 0.75 cu ft retail bags or twenty-seven (27) 1.0 cu ft bags. Bulk orders use a whole-yard planning increment; compare material totals against local delivery fees, supplier minimums, and wheelbarrow/drop-zone access.',
         category: 'packaging',
       },
     ],
