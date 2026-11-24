@@ -68,6 +68,15 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
     { label: metadata?.name ?? 'Topsoil & Garden Bed Calculator' },
   ];
 
+  const fieldErrors = useMemo(() => {
+    if (calculationResult.success) return {} as Record<string, string>;
+    return Object.fromEntries(
+      calculationResult.errors
+        .filter((err) => err.field)
+        .map((err) => [err.field as string, err.message])
+    );
+  }, [calculationResult]);
+
   const explanationSteps: CalculationStep[] = useMemo(() => {
     if (!calculationResult.success) return [];
     const out = calculationResult.outputs;
@@ -85,24 +94,25 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
       },
       {
         stepNumber: 2,
-        title: 'Calculate Geometric Volume from Final Installed Depth',
+        title: 'Calculate Geometric Volume in Cubic Feet',
         description:
-          'Convert depth in inches to fractional feet and multiply by surface area.',
+          'Convert target depth in inches to feet (depth ÷ 12) and multiply by surface area. Displayed values are rounded; internal calculations retain full precision.',
         formulaDisplay: (
           <span>
-            {out.areaSqFt} sq ft × ({soilDepthInches}&quot; ÷ 12) = {out.geometricVolumeCuFt} cu ft ÷ 27 ={' '}
-            <strong>{out.geometricVolumeCuYds} cubic yards (geometric volume)</strong>
+            {out.areaSqFt} sq ft × ({soilDepthInches}&quot; ÷ 12) ={' '}
+            <strong>{out.geometricVolumeCuFt} cu ft</strong> (~{out.geometricVolumeCuYds} cu yds geometric)
           </span>
         ),
       },
       {
         stepNumber: 3,
-        title: 'Incorporate Organic Settling Allowance',
+        title: 'Apply Additional Volume Planning Allowance',
         description:
-          'Screened topsoil and compost contain natural air pockets that compress 10% after initial deep watering and raking.',
+          `An additional ${out.wastePercentage}% planning allowance is applied to the geometric volume, then divided by 27 cu ft/yd³. Displayed values are rounded while internal calculations retain precision.`,
         formulaDisplay: (
           <span>
-            {out.geometricVolumeCuYds} cu yds × (1 + {wastePercentage / 100}) ={' '}
+            {out.geometricVolumeCuFt} cu ft × (1 + {out.wastePercentage / 100}) ={' '}
+            {out.recommendedVolumeCuFt} cu ft ÷ 27 ={' '}
             <strong className="text-[#b8532b]">{out.recommendedVolumeCuYds} cubic yards planning requirement</strong>
           </span>
         ),
@@ -111,7 +121,7 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
         stepNumber: 4,
         title: 'Determine Commercial Bulk vs Retail Bag Formats',
         description:
-          'Convert total recommended cubic feet to bulk cubic yards or retail bags (0.75 cu ft / 1.0 cu ft).',
+          'Convert total planning cubic-foot volume to bulk cubic yards or retail bags (0.75 cu ft / 1.0 cu ft).',
         formulaDisplay: (
           <span>
             Bulk: ceil({out.recommendedVolumeCuYds}) ={' '}
@@ -122,7 +132,7 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
         ),
       },
     ];
-  }, [calculationResult, bedLength, bedWidth, soilDepthInches, wastePercentage]);
+  }, [calculationResult, bedLength, bedWidth, soilDepthInches]);
 
   const practicalTips: PracticalTipItem[] = [
     {
@@ -131,8 +141,8 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
       icon: Truck,
     },
     {
-      title: 'Enter Final Settled Depth, Not Loose Pour Depth',
-      desc: 'Topsoil naturally settles by 10% to 15% after the first rainfall. Our calculation includes a dedicated organic settling buffer, so enter the final target depth you want in your garden bed.',
+      title: 'Enter Target Finished Depth',
+      desc: `Enter the finished depth you want in your garden bed. Because loose topsoil settles differently depending on moisture, texture, and tamping, the calculator applies your selected ${wastePercentage}% provisional planning allowance on top of geometric volume rather than assuming a fixed compaction rate.`,
       icon: Layers,
     },
     {
@@ -165,7 +175,7 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
         <div className="mb-8 rounded-lg border border-[#e3ded4] bg-[#faf8f5] p-4 flex items-start gap-3 text-xs text-[#57534e]">
           <HelpCircle className="h-5 w-5 text-[#b8532b] shrink-0 mt-0.5" />
           <div className="leading-relaxed">
-            <strong className="text-[#1c1917] font-semibold">Installed Depth Planning Notice:</strong> Enter the final installed depth you want after the soil is spread and settled. The engine includes an organic settling allowance to account for natural consolidation after watering. Typical benchmarks: Lawn top-dressing: 0.25"–0.5"; Flower beds & lawn repair: 2"–4"; New raised garden beds: 6"–12".
+            <strong className="text-[#1c1917] font-semibold">Target Depth &amp; Planning Allowance Notice:</strong> Enter the finished depth you want in your bed. An adjustable provisional planning allowance (10% default; configurable 0%–50%) is added to geometric volume to help buffer against loose soil settling and minor grade variations; actual settling varies by soil blend, moisture, and compaction. Typical target depths: Lawn top-dressing: 0.25&quot;–0.5&quot;; Flower beds &amp; lawn repair: 2&quot;–4&quot;; New raised garden beds: 6&quot;–12&quot;.
           </div>
         </div>
 
@@ -184,7 +194,7 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                       Bed Dimensions & Depth
                     </h2>
                     <span className="text-[11px] text-[#78716c]">
-                      Length, width, settled depth & organic settling
+                      Length, width, target depth &amp; planning allowance
                     </span>
                   </div>
                 </div>
@@ -213,6 +223,7 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                     max={500}
                     step={0.5}
                     required
+                    error={fieldErrors.bedLength}
                   />
 
                   <CalculatorInput
@@ -225,32 +236,43 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                     max={200}
                     step={0.5}
                     required
+                    error={fieldErrors.bedWidth}
                   />
                 </div>
 
                 {/* 2. Soil Depth */}
                 <CalculatorInput
                   id="soil-depth"
-                  label="Final Installed Depth (After Settling)"
+                  label="Target Installed Depth"
                   value={soilDepthInches}
                   onChange={setSoilDepthInches}
                   unit="in"
                   min={0.25}
                   max={36}
                   step={0.25}
-                  description="Enter target depth after watering. Common: 3–4 inches for garden beds; 6–8 inches for vegetables."
+                  description="Enter desired finished depth (0.25–36 in). Common: 0.25–0.5 in top-dressing; 3–4 in garden beds; 6–8 in vegetables."
                   required
+                  error={fieldErrors.soilDepthInches}
                 />
 
-                {/* 3. Waste / Settling Allowance */}
-                <WasteSelector
-                  value={wastePercentage}
-                  onChange={setWastePercentage}
-                  options={metadata.wasteOptions}
-                  title="Organic Soil Settling Allowance"
-                  customLabel="Allowance"
-                  principleNote="Accounts for soil compaction and void space reduction when loose topsoil is watered and raked. 10% is typical for screened loam."
-                />
+                {/* 3. Waste / Settling Planning Allowance */}
+                <div className="space-y-1.5">
+                  <WasteSelector
+                    value={wastePercentage}
+                    onChange={setWastePercentage}
+                    options={metadata.wasteOptions}
+                    title="Provisional Planning / Settling Allowance"
+                    customLabel="Allowance"
+                    max={50}
+                    principleNote="An adjustable additional volume allowance (10% default; 0%–50%) added once to geometric volume as a provisional planning buffer for loose soil settling and minor grading variations. Actual settling varies with soil composition, moisture, and tamping."
+                  />
+                  {fieldErrors.wastePercentage && (
+                    <div role="alert" className="flex items-center gap-1.5 text-xs text-[#b91c1c] pt-0.5">
+                      <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                      <span>{fieldErrors.wastePercentage}</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -362,14 +384,14 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                             <span className="text-[11px] font-mono font-bold uppercase text-[#1e3a5f] bg-[#edf3f9] px-1.5 py-0.5 rounded">
                               Stage 2
                             </span>
-                            <span className="text-[11px] text-[#1e3a5f] font-mono">+{wastePercentage}% Settling</span>
+                            <span className="text-[11px] text-[#1e3a5f] font-mono">+{out.wastePercentage}% Allowance</span>
                           </div>
                           <div className="text-xl sm:text-2xl font-mono font-bold text-[#1e3a5f] tabular-nums mb-1">
                             {out.recommendedVolumeCuYds}{' '}
                             <span className="text-xs font-sans font-normal text-[#57534e]">cu yds</span>
                           </div>
                           <p className="text-xs text-[#57534e] leading-snug">
-                            {out.recommendedVolumeCuFt} cu ft including organic compaction allowance.
+                            {out.recommendedVolumeCuFt} cu ft including +{out.wastePercentage}% provisional planning allowance.
                           </p>
                         </div>
 
@@ -409,7 +431,8 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                   Input Validation Error
                 </h3>
                 <p className="text-xs text-[#57534e] max-w-md mx-auto">
-                  {calculationResult.errors[0]?.message ?? 'Please check your inputs and ensure area dimensions and depth are positive numbers.'}
+                  {calculationResult.errors.map((err) => err.message).join(' ') ||
+                    'Please check your inputs and ensure area dimensions and depth are positive numbers.'}
                 </p>
                 <button
                   type="button"
@@ -430,7 +453,7 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
             {/* Step-by-Step Explanation */}
             <CalculationExplanation
               title="Mathematical Breakdown: How Topsoil Quantities are Calculated"
-              subtitle="Footprint to Settled Volume, Bulk Yards & Retail Bag Counts"
+              subtitle="Footprint to Planning Volume, Bulk Yards & Retail Bag Counts"
               steps={explanationSteps}
             />
 

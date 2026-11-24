@@ -3,7 +3,7 @@
  */
 
 import { getBenchmarkPriceRange, getPriceBenchmark } from '../../data/prices.ts';
-import type { CalculationResult } from '../../types/index.ts';
+import type { CalculationErrorResult, CalculationResult } from '../../types/index.ts';
 import {
   applyWaste,
   calculateCostRange,
@@ -11,14 +11,13 @@ import {
   ceilToPackage,
   cubicFeetToCubicYards,
   roundToPrecision,
-  sanitizeNumber,
 } from '../core/math-utils.ts';
 
 export interface TopsoilInputs {
   bedLength: number; // feet
   bedWidth: number; // feet
   soilDepthInches: number; // inches
-  wastePercentage?: number; // settling / compaction allowance (default 10%)
+  wastePercentage?: number; // provisional planning / settling allowance (default 10%, 0–50%)
 }
 
 export interface TopsoilOutputs {
@@ -33,23 +32,82 @@ export interface TopsoilOutputs {
   bags1cuftToPurchase: number;
 }
 
-export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<TopsoilOutputs> {
-  const length = sanitizeNumber(inputs.bedLength, 0);
-  const width = sanitizeNumber(inputs.bedWidth, 0);
-  const depthInches = sanitizeNumber(inputs.soilDepthInches, 0);
-  const wastePercent = Math.max(0, sanitizeNumber(inputs.wastePercentage, 10));
+const DEFAULT_WASTE_PERCENT = 10;
+const MAX_WASTE_PERCENT = 50;
 
-  if (length <= 0 || width <= 0 || depthInches <= 0) {
+export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<TopsoilOutputs> {
+  const errors: CalculationErrorResult['errors'] = [];
+
+  const length = typeof inputs.bedLength === 'number' ? inputs.bedLength : Number.NaN;
+  const width = typeof inputs.bedWidth === 'number' ? inputs.bedWidth : Number.NaN;
+  const depthInches = typeof inputs.soilDepthInches === 'number' ? inputs.soilDepthInches : Number.NaN;
+
+  if (!Number.isFinite(length)) {
+    errors.push({
+      field: 'bedLength',
+      message: 'Area length must be a finite number greater than zero.',
+      code: 'INVALID_NUMBER',
+    });
+  } else if (length <= 0) {
+    errors.push({
+      field: 'bedLength',
+      message: 'Area length must be greater than zero.',
+      code: 'OUT_OF_RANGE',
+    });
+  }
+
+  if (!Number.isFinite(width)) {
+    errors.push({
+      field: 'bedWidth',
+      message: 'Area width must be a finite number greater than zero.',
+      code: 'INVALID_NUMBER',
+    });
+  } else if (width <= 0) {
+    errors.push({
+      field: 'bedWidth',
+      message: 'Area width must be greater than zero.',
+      code: 'OUT_OF_RANGE',
+    });
+  }
+
+  if (!Number.isFinite(depthInches)) {
+    errors.push({
+      field: 'soilDepthInches',
+      message: 'Soil depth must be a finite number greater than zero.',
+      code: 'INVALID_NUMBER',
+    });
+  } else if (depthInches <= 0) {
+    errors.push({
+      field: 'soilDepthInches',
+      message: 'Soil depth must be greater than zero.',
+      code: 'OUT_OF_RANGE',
+    });
+  }
+
+  let wastePercent = DEFAULT_WASTE_PERCENT;
+  if (inputs.wastePercentage !== undefined) {
+    if (typeof inputs.wastePercentage !== 'number' || !Number.isFinite(inputs.wastePercentage)) {
+      errors.push({
+        field: 'wastePercentage',
+        message: `Planning allowance must be a finite number between 0% and ${MAX_WASTE_PERCENT}%.`,
+        code: 'INVALID_NUMBER',
+      });
+    } else if (inputs.wastePercentage < 0 || inputs.wastePercentage > MAX_WASTE_PERCENT) {
+      errors.push({
+        field: 'wastePercentage',
+        message: `Planning allowance must be between 0% and ${MAX_WASTE_PERCENT}%.`,
+        code: 'OUT_OF_RANGE',
+      });
+    } else {
+      wastePercent = inputs.wastePercentage;
+    }
+  }
+
+  if (errors.length > 0) {
     return {
       success: false,
       calculatorId: 'topsoil-calculator',
-      errors: [
-        {
-          field: length <= 0 ? 'bedLength' : width <= 0 ? 'bedWidth' : 'soilDepthInches',
-          message: 'Area dimensions and soil depth must be positive numbers greater than zero.',
-          code: 'INVALID_NUMBER',
-        },
-      ],
+      errors,
     };
   }
 
@@ -58,7 +116,7 @@ export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<Topso
   const geometricCuFt = calculateVolumeCubicFeet(length, width, depthInches);
   const geometricCuYds = cubicFeetToCubicYards(geometricCuFt);
 
-  // 2. Organic Settling Buffer (topsoil compresses after first deep watering)
+  // 2. Provisional Planning / Settling Allowance (applied once to geometric volume)
   const recommendedCuFt = applyWaste(geometricCuFt, wastePercent);
   const recommendedCuYds = cubicFeetToCubicYards(recommendedCuFt);
 
@@ -91,7 +149,13 @@ export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<Topso
     success: true,
     calculatorId: 'topsoil-calculator',
     timestamp: new Date().toISOString(),
-    inputs: { ...inputs, bedLength: length, bedWidth: width, soilDepthInches: depthInches },
+    inputs: {
+      ...inputs,
+      bedLength: length,
+      bedWidth: width,
+      soilDepthInches: depthInches,
+      wastePercentage: wastePercent,
+    },
     outputs: {
       areaSqFt: roundToPrecision(areaSqFt, 1),
       soilDepthInches: depthInches,
@@ -145,8 +209,8 @@ export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<Topso
     assumptions: [
       {
         id: 'soil-settling-factor',
-        title: 'Settling Allowance',
-        detail: `Added ${wastePercent}% to account for natural soil compression and settling after rain or initial hose soaking.`,
+        title: 'Provisional Planning Allowance',
+        detail: `Applies an adjustable ${wastePercent}% additional volume allowance to geometric volume as a provisional planning buffer for loose soil settling, raking, and minor grade variations (actual settling varies with soil blend, moisture, and compaction).`,
         category: 'waste',
       },
       {
