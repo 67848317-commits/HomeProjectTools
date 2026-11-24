@@ -1531,7 +1531,7 @@ export const GUIDES: Record<string, GuideDefinition> = {
     publishedDate: '2026-02-18',
     lastReviewedDate: '2026-02-18',
     quickAnswer:
-      'An interlocking paver patio requires five material layers: 1) Pavers: surface area divided by single paver area plus 10% cut waste; 2) Crushed Base: length and width plus a 6-inch horizontal perimeter extension on all sides, multiplied by base depth (4" standard pedestrian default) and converted to tons (1.55 tons/yd³); 3) Bedding Sand: 1-inch uncompacted coarse concrete sand across the patio area; 4) Polymeric Joint Sand: 1 bag (50 lb) per 70 sq ft; 5) Edge Restraints. For a 15×12 ft patio with 4×8-inch pavers and 4-inch base: order 891 pavers, 4 tons of crushed gravel base, 0.56 cubic yards of bedding sand, and 3 bags of polymeric sand.',
+      'An interlocking paver patio requires five material layers: 1) Pavers: surface area divided by single paver area plus 10% cut waste (applied to pavers only); 2) Crushed Base: length and width plus a 6-inch horizontal perimeter extension on all sides, multiplied by finished compacted base depth (4" standard pedestrian default) and converted via a provisional ~1.55 tons/yd³ compacted dense-grade factor; 3) Bedding Sand: 1-inch uncompacted coarse concrete sand across the net patio area only; 4) Polymeric Joint Sand: preliminary ~70 sq ft per 50-lb bag planning benchmark (varies by joint width and paver thickness); 5) Edge Restraints (estimated separately). For a 15×12 ft patio with 4×8-inch pavers and 4-inch compacted base: plan for 891 pavers (198 sq ft ordered), 3.98 net tons of base gravel (rounded to 4 whole tons), 0.56 net cu yds of bedding sand (0.6 yd³ planning increment), and 3 bags of polymeric sand.',
     introduction: [
       'Building an interlocking paver patio is one of the most transformative exterior home improvements a homeowner can undertake. Unlike a poured concrete slab that can crack unpredictably over time, an interlocking paver system creates a flexible, durable pavement where individual stones interlock to distribute structural loads across a multi-layer foundation.',
       'The single most common mistake DIY homeowners make when estimating a paver project is focusing solely on the pavers themselves. Pavers represent merely the top cosmetic layer of a sophisticated five-tier structural system. Beneath the surface lies an excavated subgrade, a compacted dense-graded crushed stone base, an uncompacted bedding sand screed layer, snap-edge perimeter restraints, and specialized polymeric jointing sand.',
@@ -1573,19 +1573,19 @@ export const GUIDES: Record<string, GuideDefinition> = {
       stage2Description:
         'Adds 10% paver cut waste for straight rectangular borders (or 15% for curved borders and herringbone layouts). Crucially, the crushed aggregate base layer is planned with a 6-inch horizontal perimeter extension on all sides (+1.0 ft to both length and width) to anchor edge restraint spikes into compacted rock rather than loose earth. This 6-inch extension applies ONLY to the aggregate base, not the finished patio surface or bedding sand.',
       stage3Title: 'Stage 3: Commercial Purchase Quantity',
-      stage3Formula: 'Base Tons = Base Volume cu yds × 1.55 tons/yd³; Bedding Sand = Patio Area × (1/12) ÷ 27; Polymeric Sand = Math.ceil(Patio Area ÷ 70)',
+      stage3Formula: 'Base Tons = Base Compacted Volume yd³ × 1.55 tons/yd³ (provisional); Bedding Sand = Patio Area × (1/12) ÷ 27; Polymeric Sand = Math.ceil(Patio Area ÷ 70)',
       stage3Description:
-        'Crushed dense-graded stone base is ordered by weight (in tons from local quarries at ~1.55 tons per loose cubic yard); coarse bedding sand is ordered in bulk cubic yards or tons; polymeric joint sand is ordered in 50-lb commercial bags (covering ~70 sq ft of standard pavers). Round all items up to whole commercial purchasing increments.',
+        'Crushed dense-graded stone base is estimated from target finished compacted depth using a provisional ~1.55 tons/yd³ compacted density benchmark and rounded up to whole tons for planning; coarse bedding sand is rounded up to 0.1 cu yd planning increments (confirm local yard 0.5 or 1.0 yd³ scoop minimums); polymeric joint sand uses a preliminary ~70 sq ft/bag benchmark for standard pavers and rounds up to whole 50-lb bags.',
     },
     practicalExample: {
-      scenario: 'Residential backyard paver patio: 15 ft length by 12 ft width installed with classic 4×8-inch concrete pavers (32 sq in) over a 4-inch crushed gravel base with straight borders (10% cut waste).',
+      scenario: 'Residential backyard paver patio: 15 ft length by 12 ft width installed with classic 4×8-inch concrete pavers (32 sq in) over a 4-inch finished compacted crushed gravel base with straight borders (10% cut waste).',
       inputs: {
         'Patio Length': '15 ft',
         'Patio Width': '12 ft',
         'Paver Dimensions': '4 in × 8 in (32 sq in = 0.222 sq ft)',
-        'Base Depth': '4 inches (Standard Pedestrian Default)',
-        'Bedding Sand Depth': '1.0 inch (Coarse ASTM C33 Sand)',
-        'Paver Layout Pattern': 'Running Bond (10% Cut Waste)',
+        'Base Depth': '4 inches compacted (Standard Pedestrian Default)',
+        'Bedding Sand Depth': '1.0 inch uncompacted (Coarse ASTM C33 Sand)',
+        'Paver Layout Pattern': 'Running Bond (10% Cut Waste, pavers only)',
       },
       steps: [
         {
@@ -1597,30 +1597,30 @@ export const GUIDES: Record<string, GuideDefinition> = {
         {
           step: 'Step 2: Apply 10% Paver Cut Waste Allowance',
           title: 'Paver Purchase Quantity',
-          calculation: '810.0 pavers × 1.10 = 891.0 → Math.ceil(891.0) = 891 pavers to order',
-          note: 'Adds 81 pavers for perimeter border trimming and guillotine splitter scrap.',
+          calculation: '810.0 pavers × 1.10 = 891.0 → Math.ceil(891.0) = 891 pavers to order (198.0 sq ft priced)',
+          note: 'Adds 81 pavers for perimeter border trimming and splitter scrap. Cut waste applies only to pavers, not base gravel or sand.',
         },
         {
           step: 'Step 3: Calculate Crushed Gravel Base with 6-Inch Perimeter Extension',
           title: 'Base Layer Tonnage',
-          calculation: 'Base Footprint = (15 + 1.0) × (12 + 1.0) = 16.0 × 13.0 = 208.0 sq ft; Base Volume = 208.0 × (4 in ÷ 12) = 69.33 cu ft ÷ 27 = 2.568 cu yds; Weight = 2.568 cu yds × 1.55 tons/yd³ = 3.98 tons',
-          note: 'The 6-inch extension on all sides increases base footprint from 180 to 208 sq ft so edge restraint spikes drive into solid rock. Order 4.0 tons of dense-graded crusher run.',
+          calculation: 'Base Footprint = (15 + 1.0) × (12 + 1.0) = 16.0 × 13.0 = 208.0 sq ft; Base Volume = 208.0 × (4 in ÷ 12) = 69.33 cu ft ÷ 27 = 2.568 cu yds; Weight = 2.568 cu yds × 1.55 tons/yd³ (provisional) = 3.98 net tons → 4 tons',
+          note: 'The 6-inch extension on all sides increases base footprint from 180 to 208 sq ft so edge restraint spikes drive into solid rock. Plan for 4 whole tons of dense-graded crusher run (confirm quarry delivery minimums).',
         },
         {
           step: 'Step 4: Calculate 1-Inch Coarse Bedding Sand Volume',
           title: 'Bedding Sand Takeoff',
-          calculation: '180.0 sq ft × (1 in ÷ 12) = 15.0 cu ft ÷ 27 = 0.556 cu yds (≈ 0.56 cubic yards)',
-          note: 'Bedding sand is screeded ONLY across the 180 sq ft patio area, not the 6-inch perimeter base extension. Order 0.75 cubic yards or 1.0 ton.',
+          calculation: '180.0 sq ft × (1 in ÷ 12) = 15.0 cu ft ÷ 27 = 0.556 cu yds (0.56 net yd³ → 0.6 yd³ planning order)',
+          note: 'Bedding sand is screeded ONLY across the 180 sq ft patio area, not the 6-inch perimeter base extension or cut waste. Many landscape yards have a 0.5 or 1.0 cu yd minimum bucket charge.',
         },
         {
           step: 'Step 5: Calculate Polymeric Joint Sand Bags',
           title: 'Joint Sand Takeoff',
-          calculation: '180.0 sq ft ÷ 70 sq ft/bag = 2.57 bags → Math.ceil(2.57) = 3 bags (50-lb each)',
-          note: 'Standard 50-lb bag covers approximately 60 to 80 sq ft for standard 4x8 pavers. Order 3 full bags.',
+          calculation: '180.0 sq ft ÷ ~70 sq ft/bag (provisional) = 2.57 bags → Math.ceil(2.57) = 3 bags (50-lb each)',
+          note: 'Preliminary benchmark for typical 4×8 pavers with narrow joints; actual yield varies roughly 25 to 100 sq ft/bag by paver thickness, joint width, and manufacturer chart.',
         },
       ],
       resultSummary:
-        'For a 15×12 ft paver patio (180 sq ft): order 891 individual 4×8-inch pavers, 4.0 tons of dense-graded crushed stone base, 0.56 cubic yards of coarse bedding sand, and 3 bags (50-lb) of polymeric joint sand.',
+        'For a 15×12 ft paver patio (180 sq ft): plan for 891 individual 4×8-inch pavers (198 sq ft), 4 whole tons of dense-graded crushed stone base (3.98 net tons), 0.6 cubic yards planning order of coarse bedding sand (0.56 net cu yds), and 3 bags (50-lb) of polymeric joint sand.',
     },
     sections: [
       {
@@ -1673,7 +1673,7 @@ export const GUIDES: Record<string, GuideDefinition> = {
       overview:
         'A comprehensive paver patio material budget includes pavers, dense-graded crushed stone base, coarse bedding sand, polymeric joint sand, non-woven geotextile fabric, plastic snap-edge restraints with 10-inch steel spikes, and compactor rental.',
       benchmarksNote:
-        'Price benchmarks reflect national supplier averages: $0.65 to $2.40 per standard concrete paver unit ($1.25 typical), $52 per ton of crushed base stone, $52 per cubic yard of bedding sand, and $38 per 50-lb bag of polymeric sand.',
+        'Price benchmarks reflect national supplier averages: $2.50 to $8.50 per sq ft of concrete pavers ($4.50 typical), $35 to $75 per ton of crushed base stone ($52 typical), $32 to $65 per cubic yard of bedding sand ($46 typical), and $24 to $48 per 50-lb bag of polymeric sand ($34 typical), excluding delivery charges, supplier minimums, edge restraints, and geotextile fabric.',
       materialTiers: [
         {
           tier: 'Standard Concrete Paver System (DIY)',
@@ -1731,12 +1731,12 @@ export const GUIDES: Record<string, GuideDefinition> = {
       'Slope and Drainage Needs: Yards sloping toward the house require retaining walls, French drainage pipes, and additional aggregate backfill.',
     ],
     methodologyAssumptions: [
-      'Surface pavers calculated based on net patio area plus selectable cut waste (10% standard rectangular, 15% curved).',
-      'Aggregate base calculated with a mandatory 6-inch horizontal perimeter extension (+1.0 ft to length and width).',
-      'Dense-graded aggregate base compaction rate modeled at 1.55 tons per loose cubic yard.',
-      'Bedding sand modeled at strictly 1.0 inch thickness over net patio surface area (0.003086 cu yds per sq ft).',
-      'Polymeric sand coverage estimated at 70 sq ft per 50-lb bag for standard interlocking pavers.',
-      'This calculation represents material estimating benchmarks and does not replace site-specific drainage or local engineering codes.',
+      'Surface pavers calculated based on net patio area plus selectable cut waste (10% standard rectangular, 15% curved); paver cutting waste does not inflate gravel base, bedding sand, or polymeric sand.',
+      'Aggregate base calculated with a mandatory 6-inch horizontal perimeter extension (+1.0 ft to length and width) applied to the base layer only.',
+      'Dense-graded aggregate base modeled from finished compacted thickness using a provisional ~1.55 tons per cubic yard compacted weight benchmark (rounded up to whole tons for purchase planning).',
+      'Bedding sand modeled at strictly 1.0 inch uncompacted thickness over net patio surface area (0.003086 cu yds per sq ft) and rounded to 0.1 yd³ planning increments.',
+      'Polymeric sand coverage estimated at a preliminary ~70 sq ft per 50-lb bag benchmark for standard ~4×8 interlocking pavers without adjusting for paver thickness or joint width.',
+      'Excludes delivery fees, quarry/landscape-yard minimum orders, full-pallet paver rules, edge restraints, spikes, geotextile fabric, and site-specific drainage or local engineering codes.',
     ],
     faqs: [
       {

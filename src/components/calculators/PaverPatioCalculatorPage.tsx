@@ -26,8 +26,6 @@ import {
   Compass,
   CheckCircle2,
   ShieldAlert,
-  Truck,
-  Box,
   BookOpen,
   ArrowRight,
 } from 'lucide-react';
@@ -78,62 +76,66 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
   const explanationSteps: CalculationStep[] = useMemo(() => {
     if (!calculationResult.success) return [];
     const out = calculationResult.outputs;
-    const paverSqFt = (paverLengthInches * paverWidthInches) / 144;
-    const exactPavers = Math.round(out.patioAreaSqFt / paverSqFt);
 
     return [
       {
         stepNumber: 1,
         title: 'Compute Patio Surface Area & Paver Units',
         description:
-          'Multiply patio length by width to obtain net square footage. Divide by the area of an individual paver and apply the cutting waste factor.',
+          'Multiply patio length by width to obtain net square footage. Divide by the area of an individual paver and apply the cutting waste allowance to pavers only. Paver material cost is estimated on the purchased paver square footage.',
         formulaDisplay: (
           <span>
             {patioLength}&apos; × {patioWidth}&apos; = <strong>{out.patioAreaSqFt} sq ft</strong> • Pavers:{' '}
-            {out.patioAreaSqFt} sq ft ÷ {paverSqFt.toFixed(3)} sq ft/unit = {exactPavers} units × (1 + {wastePercentage / 100}) ={' '}
-            <strong className="text-[#b8532b]">{out.recommendedPaversToPurchase} pavers</strong>
+            {out.patioAreaSqFt} sq ft ÷ {out.singlePaverSqFt.toFixed(4)} sq ft/unit = {out.exactPaversNeeded} net × (1 + {wastePercentage / 100}) ={' '}
+            {out.recommendedPaversWithWaste} →{' '}
+            <strong className="text-[#b8532b]">
+              {out.recommendedPaversToPurchase} pavers ({out.purchasedPaverSqFt} sq ft ordered)
+            </strong>
           </span>
         ),
       },
       {
         stepNumber: 2,
-        title: 'Calculate Crushed Aggregate Base Tonnage (With Perimeter Extension)',
+        title: 'Calculate Crushed Aggregate Base Tonnage (Finished Compacted Depth + 6" Extension)',
         description:
-          'Per Interlocking Concrete Pavement Institute (ICPI) guidelines, aggregate base extends 6 inches beyond the paver perimeter on each side for edge restraint stability. Compacted dense-grade gravel is estimated at 1.55 tons per cubic yard.',
+          'Per Interlocking Concrete Pavement Institute (ICPI) practice, the aggregate base extends 6 inches past the paver perimeter on all four sides to support edge restraints. Using the selected finished compacted depth, volume is converted with a provisional ~1.55 tons/yd³ dense-graded crushed stone benchmark and rounded up to whole tons for planning (cut waste is not applied to base gravel).',
         formulaDisplay: (
           <span>
             ({patioLength} + 1)&apos; × ({patioWidth} + 1)&apos; × ({baseDepthInches}&quot; ÷ 12) ={' '}
-            {(((patioLength + 1) * (patioWidth + 1) * baseDepthInches) / 12).toFixed(1)} cu ft ÷ 27 × 1.55 tons/yd³ ={' '}
-            <strong className="text-[#b8532b]">{out.gravelBaseTons} tons of dense-grade base gravel</strong>
+            {out.baseVolumeCuFt} cu ft ({out.baseVolumeCuYds} yd³) × ~{out.gravelDensityTonsPerCuYd} tons/yd³ (provisional) ={' '}
+            {out.gravelBaseTons} net tons →{' '}
+            <strong className="text-[#b8532b]">{out.gravelBasePurchaseTons} whole tons ordered</strong>
           </span>
         ),
       },
       {
         stepNumber: 3,
-        title: 'Bedding Sand Screed Layer',
+        title: 'Bedding Sand Screed Layer (Net Patio Area Only)',
         description:
-          'A uniform 1-inch layer of uncompacted coarse concrete sand is screeded directly over the compacted aggregate base before laying pavers.',
+          'A uniform 1-inch layer of uncompacted coarse concrete sand (ASTM C33) is screeded strictly across the net patio surface—without the 6-inch perimeter extension or paver cutting waste—then rounded up to 0.1 yd³ planning increments.',
         formulaDisplay: (
           <span>
-            {patioLength}&apos; × {patioWidth}&apos; × (1&quot; ÷ 12) = {((patioLength * patioWidth) / 12).toFixed(1)} cu ft ÷ 27 ={' '}
-            <strong className="text-[#b8532b]">{out.beddingSandCubicYards} cubic yards of bedding sand</strong>
+            {patioLength}&apos; × {patioWidth}&apos; × (1&quot; ÷ 12) = {out.beddingSandCubicFt} cu ft ÷ 27 ={' '}
+            {out.beddingSandCubicYards} net yd³ →{' '}
+            <strong className="text-[#b8532b]">{out.beddingSandPurchaseCubicYards} yd³ planning order</strong>
           </span>
         ),
       },
       {
         stepNumber: 4,
-        title: 'Polymeric Jointing Sand Allowance',
+        title: 'Preliminary Polymeric Jointing Sand Allowance',
         description:
-          'Standard polymeric jointing sand is swept into joints and activated with water mist. One 50-lb bag typically covers 60 to 80 sq ft for standard 4x8 pavers.',
+          'Uses a preliminary ~70 sq ft per 50-lb bag planning benchmark typical of ~4"×8" pavers with standard joints. Because paver thickness, joint width, and edge bevels are not inputs, actual coverage commonly ranges from ~25 to 100 sq ft/bag—verify with the product Technical Data Sheet before ordering.',
         formulaDisplay: (
           <span>
-            {out.patioAreaSqFt} sq ft ÷ 70 sq ft/bag ={' '}
+            {out.patioAreaSqFt} sq ft ÷ ~{out.polymericSandCoverageSqFtPerBag} sq ft/bag (provisional) ={' '}
+            {out.polymericSandExactBags} bags →{' '}
             <strong className="text-[#b8532b]">{out.polymericSand50lbBags} bags (50-lb polymeric sand)</strong>
           </span>
         ),
       },
     ];
-  }, [calculationResult, patioLength, patioWidth, paverLengthInches, paverWidthInches, baseDepthInches, wastePercentage]);
+  }, [calculationResult, patioLength, patioWidth, baseDepthInches, wastePercentage]);
 
   const practicalTips: PracticalTipItem[] = [
     {
@@ -176,7 +178,7 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
         <div className="mb-8 rounded-lg border border-[#e3ded4] bg-[#faf8f5] p-4 flex items-start gap-3 text-xs text-[#57534e]">
           <HelpCircle className="h-5 w-5 text-[#b8532b] shrink-0 mt-0.5" />
           <div className="leading-relaxed">
-            <strong className="text-[#1c1917] font-semibold">Planning Base-Depth Benchmark: 4 in:</strong> This calculator provides a material planning estimate based on typical residential pedestrian patios. Actual base requirements vary with native subgrade soil (clay vs sand), drainage, freeze-thaw cycles, and anticipated loading (walkway vs driveway). Plastic edge restraints and geotextile stabilization fabric are estimated separately based on perimeter and area.
+            <strong className="text-[#1c1917] font-semibold">Planning Estimate &amp; Scope Notice (Selected Base: {baseDepthInches} in compacted):</strong> This tool provides a residential pedestrian patio planning estimate using provisional benchmarks (~1.55 tons/yd³ compacted dense-grade base and ~70 sq ft/bag polymeric sand). Actual requirements vary with native subgrade soil, freeze-thaw depth, quarry rock density, paver thickness, joint width, and local supplier pallet or delivery minimums. Edge restraints, spikes, geotextile fabric, and delivery fees are not included.
           </div>
         </div>
 
@@ -224,6 +226,7 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
                     max={200}
                     step={0.5}
                     required
+                    error={patioLength <= 0 ? 'Length must be > 0' : undefined}
                   />
 
                   <CalculatorInput
@@ -236,6 +239,7 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
                     max={200}
                     step={0.5}
                     required
+                    error={patioWidth <= 0 ? 'Width must be > 0' : undefined}
                   />
                 </div>
 
@@ -251,6 +255,7 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
                     max={36}
                     step={0.5}
                     required
+                    error={paverLengthInches <= 0 ? 'Paver length must be > 0' : undefined}
                   />
 
                   <CalculatorInput
@@ -263,6 +268,7 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
                     max={36}
                     step={0.5}
                     required
+                    error={paverWidthInches <= 0 ? 'Paver width must be > 0' : undefined}
                   />
                 </div>
 
@@ -270,16 +276,16 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
                 <div className="space-y-1.5">
                   <CalculatorSelect
                     id="base-depth"
-                    label="Crushed Aggregate Base Depth"
+                    label="Finished Compacted Base Depth"
                     value={baseDepthInches.toString()}
                     onChange={(val) => setBaseDepthInches(Number(val))}
                     options={[
-                      { label: '4 Inches (Planning Benchmark: Pedestrian Patio)', value: '4' },
-                      { label: '6 Inches (Cold Climates, Heavy Clay Soil, or Soft Subgrade)', value: '6' },
+                      { label: '4 Inches Compacted (Planning Benchmark: Pedestrian Patio)', value: '4' },
+                      { label: '6 Inches Compacted (Cold Climates, Heavy Clay Soil, or Soft Subgrade)', value: '6' },
                     ]}
                   />
                   <span className="text-[11px] text-[#78716c] leading-relaxed block">
-                    Planning base-depth benchmark is 4" for well-drained soils; 6" is recommended in freeze-thaw zones or wet clay soils.
+                    Models target finished compacted thickness (4&quot; standard pedestrian benchmark; 6&quot; in freeze-thaw zones or wet clay). Aggregate weight uses a provisional ~1.55 tons/yd³ benchmark; confirm loose-vs-compacted yield with your quarry.
                   </span>
                 </div>
 
@@ -288,9 +294,9 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
                   value={wastePercentage}
                   onChange={setWastePercentage}
                   options={metadata.wasteOptions}
-                  title="Cutting & Pattern Waste Allowance"
+                  title="Paver Cutting & Pattern Waste Allowance"
                   customLabel="Allowance"
-                  principleNote="Accounts for perimeter border cuts and pattern alignment. 10% is standard for straight rectangular patios; 15% is recommended for herringbone or curved borders."
+                  principleNote="Applies strictly to concrete pavers for border cuts and pattern alignment (10% straight rectangular; 15% herringbone or curves). Does not inflate gravel base, bedding sand, or polymeric sand."
                 />
               </div>
             </div>
@@ -310,11 +316,11 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
                 </div>
                 <div className="p-2 rounded bg-[#ffffff] border border-[#e3ded4] flex items-center justify-between">
                   <span className="font-semibold text-[#1c1917]">Layer 2: Bedding Sand</span>
-                  <span className="font-mono text-[#78716c]">1.0&quot; coarse screed sand</span>
+                  <span className="font-mono text-[#78716c]">1.0&quot; uncompacted screed sand</span>
                 </div>
                 <div className="p-2 rounded bg-[#ffffff] border border-[#e3ded4] flex items-center justify-between">
                   <span className="font-semibold text-[#1c1917]">Layer 3: Aggregate Base</span>
-                  <span className="font-mono text-[#78716c]">{baseDepthInches}&quot; compacted gravel</span>
+                  <span className="font-mono text-[#78716c]">{baseDepthInches}&quot; finished compacted</span>
                 </div>
                 <div className="p-2 rounded bg-[#ffffff] border border-[#e3ded4] flex items-center justify-between">
                   <span className="font-semibold text-[#1c1917]">Layer 4: Joint Sand</span>
@@ -322,7 +328,7 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
                 </div>
               </div>
               <p className="text-[11px] text-[#78716c] leading-relaxed">
-                Illustrative layered model. Actual subgrade preparation depends on local soil bearing capacity.
+                Illustrative layered model. Actual subgrade excavation depth and stabilization depend on local soil bearing capacity.
               </p>
             </div>
           </div>
@@ -342,28 +348,28 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
                           label="Pavers to Buy"
                           value={out.recommendedPaversToPurchase}
                           unit="pavers"
-                          subtext={`Inc. ${wastePercentage}% cut buffer`}
+                          subtext={`${out.purchasedPaverSqFt} sq ft (inc. ${wastePercentage}% waste)`}
                           variant="primary"
                         />
                         <ResultMetric
                           label="Gravel Base"
                           value={out.gravelBaseTons}
-                          unit="tons"
-                          subtext={`${baseDepthInches}" dense-grade rock`}
+                          unit="tons net"
+                          subtext={`${baseDepthInches}" compacted (Order ${out.gravelBasePurchaseTons} t)`}
                           variant="primary"
                         />
                         <ResultMetric
                           label="Bedding Sand"
                           value={out.beddingSandCubicYards}
-                          unit="cu yds"
-                          subtext="1&quot; coarse sand screed"
+                          unit="cu yds net"
+                          subtext={`1" screed (Order ${out.beddingSandPurchaseCubicYards} yd³)`}
                           variant="primary"
                         />
                         <ResultMetric
                           label="Polymeric Sand"
                           value={out.polymericSand50lbBags}
                           unit="bags"
-                          subtext="50-lb joint sand bags"
+                          subtext={`Provisional (~70 sq ft/bag)`}
                           variant="primary"
                         />
                       </div>
@@ -373,7 +379,7 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                           <div>
                             <strong className="text-[#1c1917]">Finished Patio Surface:</strong> {out.patioAreaSqFt} sq ft ({patioLength}&apos; × {patioWidth}&apos;)
-                            <span className="text-[11px] text-[#78716c] block sm:inline sm:ml-1.5">— used for paver counts &amp; bedding sand</span>
+                            <span className="text-[11px] text-[#78716c] block sm:inline sm:ml-1.5">— used for paver counts, bedding sand &amp; joint sand</span>
                           </div>
                         </div>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-1 border-t border-[#e8e4dc]">
@@ -382,7 +388,7 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
                             <span className="text-[11px] text-[#78716c] block sm:inline sm:ml-1.5">— includes 6&quot; perimeter extension on all sides for edge restraint stability</span>
                           </div>
                           <span className="font-mono font-bold text-[#b8532b] text-[11px]">
-                            {baseDepthInches}&quot; Base Depth
+                            {baseDepthInches}&quot; Compacted Depth
                           </span>
                         </div>
                       </div>
@@ -392,7 +398,7 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
                     <div className="space-y-2">
                       <BillOfMaterialsTable items={calculationResult.billOfMaterials} />
                       <p className="text-[11px] font-mono text-[#78716c] px-1">
-                        * Quantities represent commercial purchase units rounded up. Edge restraints, spikes, and non-woven geotextile underlayment fabric are estimated separately.
+                        * Planning purchase orders round pavers to individual units, gravel base to whole tons, bedding sand to 0.1 yd³ increments, and polymeric sand to 50-lb bags. Local suppliers may enforce pallet minimums (100–120 sq ft/pallet), 1–3 ton or 0.5–1.0 yd³ bulk minimums, and delivery fees. Edge restraints, spikes, and geotextile fabric are excluded.
                       </p>
                     </div>
 
@@ -439,11 +445,12 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
               assumptions={calculationResult.assumptions}
               notices={calculationResult.notices}
               limitations={[
-                'Subgrade Excavation: Total excavation depth must equal base depth + 1" sand + paver thickness (typically 7" to 9" total depth). Soil spoils removal is not included.',
-                'Compaction Equipment: Dense-graded aggregate base requires mechanical compaction in 2-inch lifts using a heavy reversible plate compactor.',
-                'Perimeter Restraints: Heavy-duty plastic paver edging and 10-inch galvanized steel spikes along the perimeter are required to prevent lateral spreading.',
+                'Finished Compacted Base vs. Quarry Delivery: Base volume reflects target finished compacted thickness; actual loose truck volume, moisture weight, and compaction shrinkage vary by stone gradation—confirm scale tonnage with your aggregate supplier.',
+                'Polymeric Sand Joint Geometry: Joint sand is a preliminary ~70 sq ft/bag planning benchmark because paver thickness, joint width, and chamfer depth are not inputs. Wide joints or thick pavers (80mm) can require significantly more sand.',
+                'Supplier Minimums & Pallet Packaging: Gravel is modeled in whole-ton increments and bedding sand in 0.1 yd³ increments for planning, while suppliers often enforce 1–3 ton or 0.5–1.0 yd³ minimums, delivery fees, and full-pallet or restocking fees on pavers.',
+                'Subgrade Excavation & Accessories Excluded: Total excavation depth must equal base depth + 1" sand + paver thickness (typically 7" to 9" total depth). Soil spoils removal, plate compactor rental, snap-edge restraints, 10" steel spikes, and geotextile fabric are not included.',
               ]}
-              scopeTitle="Excavation & Base Scope Disclaimers"
+              scopeTitle="Planning Scope, Supplier Minimums & Disclaimers"
             />
 
             {/* Comprehensive Editorial Planning Guide */}
