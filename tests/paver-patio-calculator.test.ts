@@ -104,7 +104,7 @@ test('Paver Patio - 3. Gravel cost consistency strictly matches purchased whole-
   assert.equal(gravelBom.estimatedCost?.high, Math.round(7 * gravelBench.priceHigh));
 });
 
-test('Paver Patio - 4. Compaction, finished depth & provisional assumption disclosures in engine, metadata, and guide', () => {
+test('Paver Patio - 4. Compaction, #57 substitute benchmark & provisional assumption disclosures in engine, metadata, and guide', () => {
   const res = calculatePaverPatio({
     patioLength: 15,
     patioWidth: 12,
@@ -113,21 +113,33 @@ test('Paver Patio - 4. Compaction, finished depth & provisional assumption discl
   assert.equal(res.success, true);
   if (!res.success) return;
 
+  const gravelBom = res.billOfMaterials.find((b) => b.id === 'gravel-base')!;
+  assert.ok(gravelBom.description.includes('approximate substitute/reference benchmark'));
+  assert.ok(res.costEstimate.benchmarkSources.some((s) => s.includes('substitute/reference benchmark')));
+  assert.ok(res.costEstimate.disclaimer.includes('Crushed Stone / #57 Gravel'));
+
   const baseAssumption = res.assumptions.find((a) => a.id === 'base-depth-specification');
   const polymericAssumption = res.assumptions.find((a) => a.id === 'polymeric-sand-benchmark');
-  assert.ok(baseAssumption?.detail.includes('finished compacted'));
+  assert.ok(baseAssumption?.detail.includes('target finished compacted thickness'));
   assert.ok(baseAssumption?.detail.includes('provisional 1.55 tons/yd³'));
-  assert.ok(polymericAssumption?.detail.includes('preliminary 70 sq ft per 50-lb bag'));
-  assert.ok(polymericAssumption?.detail.includes('paver thickness, joint width'));
+  assert.ok(baseAssumption?.detail.includes('not a universal conversion'));
+  assert.ok(baseAssumption?.detail.includes('substitute/reference benchmark'));
+  assert.ok(polymericAssumption?.detail.includes('provisional 70 sq ft per 50-lb bag'));
+  assert.ok(polymericAssumption?.detail.includes('illustrative planning ranges only'));
+  assert.ok(polymericAssumption?.detail.includes('paver thickness, joint width, joint depth, bevel geometry'));
+  assert.ok(polymericAssumption?.detail.includes('Technical Data Sheet (TDS)'));
 
   const meta = CALCULATORS['paver-patio-calculator'];
-  assert.ok(meta.assumptions.some((a) => a.includes('finished compacted')));
-  assert.ok(meta.assumptions.some((a) => a.includes('preliminary ~70 sq ft per 50-lb bag')));
-  assert.ok(meta.limitations.some((l) => l.includes('Delivery fees')));
+  assert.ok(meta.assumptions.some((a) => a.includes('target finished compacted thickness')));
+  assert.ok(meta.assumptions.some((a) => a.includes('approximate substitute/reference benchmark')));
+  assert.ok(meta.assumptions.some((a) => a.includes('provisional ~70 sq ft per 50-lb bag')));
+  assert.ok(meta.limitations.some((l) => l.includes('not quarry- or manufacturer-verified quotes')));
 
   const guide = getGuideBySlug('how-to-calculate-paver-patio-materials')!;
-  assert.ok(guide.methodologyAssumptions.some((a) => a.includes('finished compacted thickness')));
-  assert.ok(guide.methodologyAssumptions.some((a) => a.includes('preliminary ~70 sq ft per 50-lb bag')));
+  assert.ok(guide.methodologyAssumptions.some((a) => a.includes('target finished compacted thickness')));
+  assert.ok(guide.methodologyAssumptions.some((a) => a.includes('approximate substitute/reference benchmark')));
+  assert.ok(guide.methodologyAssumptions.some((a) => a.includes('provisional ~70 sq ft per 50-lb bag')));
+  assert.ok(guide.costPlanning.benchmarksNote.includes('approximate substitute/reference benchmark'));
   assert.ok(!guide.threeStageExplanation.stage3Description.includes('loose cubic yard'));
 });
 
@@ -209,7 +221,7 @@ test('Paver Patio - 7. Polymeric sand coverage calculation and disclosed plannin
 
   const sandBom = overRes.billOfMaterials.find((b) => b.id === 'polymeric-sand')!;
   assert.ok(sandBom.unitSizeDescription.includes('Provisional'));
-  assert.ok(sandBom.description.includes('not adjusted for joint width or paver thickness'));
+  assert.ok(sandBom.description.includes('verify product TDS'));
 });
 
 test('Paver Patio - 8. BOM unit consistency (exactQuantity <= recommendedQuantity <= purchaseQuantity)', () => {

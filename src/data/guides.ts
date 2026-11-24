@@ -1531,7 +1531,7 @@ export const GUIDES: Record<string, GuideDefinition> = {
     publishedDate: '2026-02-18',
     lastReviewedDate: '2026-02-18',
     quickAnswer:
-      'An interlocking paver patio requires five material layers: 1) Pavers: surface area divided by single paver area plus 10% cut waste (applied to pavers only); 2) Crushed Base: length and width plus a 6-inch horizontal perimeter extension on all sides, multiplied by finished compacted base depth (4" standard pedestrian default) and converted via a provisional ~1.55 tons/yd³ compacted dense-grade factor; 3) Bedding Sand: 1-inch uncompacted coarse concrete sand across the net patio area only; 4) Polymeric Joint Sand: preliminary ~70 sq ft per 50-lb bag planning benchmark (varies by joint width and paver thickness); 5) Edge Restraints (estimated separately). For a 15×12 ft patio with 4×8-inch pavers and 4-inch compacted base: plan for 891 pavers (198 sq ft ordered), 3.98 net tons of base gravel (rounded to 4 whole tons), 0.56 net cu yds of bedding sand (0.6 yd³ planning increment), and 3 bags of polymeric sand.',
+      'An interlocking paver patio requires five material layers: 1) Pavers: surface area divided by single paver area plus 10% cut waste (applied to pavers only); 2) Crushed Base: length and width plus a 6-inch horizontal perimeter extension on all sides, multiplied by target finished compacted base depth (4" standard pedestrian default) and converted via a provisional 1.55 tons/yd³ in-place compacted weight-per-volume assumption; 3) Bedding Sand: 1-inch uncompacted coarse concrete sand across the net patio area only; 4) Polymeric Joint Sand: provisional ~70 sq ft per 50-lb bag planning benchmark (illustrative only; verify product TDS); 5) Edge Restraints (estimated separately). For a 15×12 ft patio with 4×8-inch pavers and 4-inch finished compacted base: plan for 891 pavers (198 sq ft ordered), 3.98 net tons of base gravel (rounded to 4 whole tons), 0.56 net cu yds of bedding sand (0.6 yd³ planning increment), and 3 bags of polymeric sand.',
     introduction: [
       'Building an interlocking paver patio is one of the most transformative exterior home improvements a homeowner can undertake. Unlike a poured concrete slab that can crack unpredictably over time, an interlocking paver system creates a flexible, durable pavement where individual stones interlock to distribute structural loads across a multi-layer foundation.',
       'The single most common mistake DIY homeowners make when estimating a paver project is focusing solely on the pavers themselves. Pavers represent merely the top cosmetic layer of a sophisticated five-tier structural system. Beneath the surface lies an excavated subgrade, a compacted dense-graded crushed stone base, an uncompacted bedding sand screed layer, snap-edge perimeter restraints, and specialized polymeric jointing sand.',
@@ -1575,7 +1575,7 @@ export const GUIDES: Record<string, GuideDefinition> = {
       stage3Title: 'Stage 3: Commercial Purchase Quantity',
       stage3Formula: 'Base Tons = Base Compacted Volume yd³ × 1.55 tons/yd³ (provisional); Bedding Sand = Patio Area × (1/12) ÷ 27; Polymeric Sand = Math.ceil(Patio Area ÷ 70)',
       stage3Description:
-        'Crushed dense-graded stone base is estimated from target finished compacted depth using a provisional ~1.55 tons/yd³ compacted density benchmark and rounded up to whole tons for planning; coarse bedding sand is rounded up to 0.1 cu yd planning increments (confirm local yard 0.5 or 1.0 yd³ scoop minimums); polymeric joint sand uses a preliminary ~70 sq ft/bag benchmark for standard pavers and rounds up to whole 50-lb bags.',
+        'Crushed dense-graded stone base is estimated from target finished compacted thickness using a provisional 1.55 tons/yd³ in-place compacted weight-per-volume assumption (not a universal aggregate conversion; actual gradation, moisture, and certified quarry scale weights vary) and rounded up to whole tons for planning; coarse bedding sand is rounded up to 0.1 cu yd planning increments (confirm local yard 0.5 or 1.0 yd³ scoop minimums); polymeric joint sand uses a provisional ~70 sq ft/bag planning assumption and rounds up to whole 50-lb bags.',
     },
     practicalExample: {
       scenario: 'Residential backyard paver patio: 15 ft length by 12 ft width installed with classic 4×8-inch concrete pavers (32 sq in) over a 4-inch finished compacted crushed gravel base with straight borders (10% cut waste).',
@@ -1603,8 +1603,8 @@ export const GUIDES: Record<string, GuideDefinition> = {
         {
           step: 'Step 3: Calculate Crushed Gravel Base with 6-Inch Perimeter Extension',
           title: 'Base Layer Tonnage',
-          calculation: 'Base Footprint = (15 + 1.0) × (12 + 1.0) = 16.0 × 13.0 = 208.0 sq ft; Base Volume = 208.0 × (4 in ÷ 12) = 69.33 cu ft ÷ 27 = 2.568 cu yds; Weight = 2.568 cu yds × 1.55 tons/yd³ (provisional) = 3.98 net tons → 4 tons',
-          note: 'The 6-inch extension on all sides increases base footprint from 180 to 208 sq ft so edge restraint spikes drive into solid rock. Plan for 4 whole tons of dense-graded crusher run (confirm quarry delivery minimums).',
+          calculation: 'Base Footprint = (15 + 1.0) × (12 + 1.0) = 16.0 × 13.0 = 208.0 sq ft; Base Volume = 208.0 × (4 in ÷ 12) = 69.33 cu ft ÷ 27 = 2.568 cu yds; Weight = 2.568 cu yds × 1.55 tons/yd³ (provisional in-place compacted) = 3.98 net tons → 4 tons',
+          note: 'The 6-inch extension on all sides increases base footprint from 180 to 208 sq ft so edge restraint spikes drive into solid rock. Plan for 4 whole tons of dense-graded crusher run (confirm quarry gradation, moisture, certified scale weights, and delivery minimums).',
         },
         {
           step: 'Step 4: Calculate 1-Inch Coarse Bedding Sand Volume',
@@ -1616,7 +1616,7 @@ export const GUIDES: Record<string, GuideDefinition> = {
           step: 'Step 5: Calculate Polymeric Joint Sand Bags',
           title: 'Joint Sand Takeoff',
           calculation: '180.0 sq ft ÷ ~70 sq ft/bag (provisional) = 2.57 bags → Math.ceil(2.57) = 3 bags (50-lb each)',
-          note: 'Preliminary benchmark for typical 4×8 pavers with narrow joints; actual yield varies roughly 25 to 100 sq ft/bag by paver thickness, joint width, and manufacturer chart.',
+          note: 'Provisional ~70 sq ft/bag benchmark sits inside an illustrative ~60–80 sq ft range for standard ~4×8 pavers (and ~25–100 sq ft/bag across paver styles). Illustrative only—verify actual yield against your product Technical Data Sheet (TDS) for paver thickness, joint width, joint depth, and bevel geometry.',
         },
       ],
       resultSummary:
@@ -1666,14 +1666,14 @@ export const GUIDES: Record<string, GuideDefinition> = {
         id: 'polymeric-sand-takeoff',
         title: 'Polymeric Joint Sand: Sizing and Activation',
         content:
-          'Polymeric sand is a specialized mixture of graded silica sand and polymer binding resins. When swept into dry paver joints and activated with a fine water mist, the polymers cross-link to form an elastic, firm joint that flexes with temperature swings while preventing ant burrowing and weed germination. A standard 50-lb bag covers approximately 60 to 80 square feet of standard 4×8-inch pavers with narrow 1/8" joints. Larger flagstone-style pavers or wide joints reduce coverage to 30 to 45 square feet per bag. Always ensure paver surfaces are 100% dry and blown clean of haze before misting with water, as wet polymer haze will permanently stain pavers.',
+          'Polymeric sand is a specialized mixture of graded silica sand and polymer binding resins. When swept into dry paver joints and activated with a fine water mist, the polymers cross-link to form an elastic, firm joint that flexes with temperature swings while preventing ant burrowing and weed germination. As an illustrative planning range—not a universal manufacturer specification—a 50-lb bag often covers roughly 60 to 80 sq ft for standard 4×8-inch pavers with narrow joints (which is why our calculator uses ~70 sq ft/bag provisionally), while broader illustrative ranges across paver styles span roughly 25 to 100 sq ft per bag (wider-joint flagstone at the lower end vs. large tight-jointed slabs at the upper end). Actual yield depends on paver thickness, joint width, joint depth, bevel geometry, and the product-specific Technical Data Sheet (TDS) coverage chart. Always ensure paver surfaces are 100% dry and blown clean of haze before misting with water, as wet polymer haze will permanently stain pavers.',
       },
     ],
     costPlanning: {
       overview:
         'A comprehensive paver patio material budget includes pavers, dense-graded crushed stone base, coarse bedding sand, polymeric joint sand, non-woven geotextile fabric, plastic snap-edge restraints with 10-inch steel spikes, and compactor rental.',
       benchmarksNote:
-        'Price benchmarks reflect national supplier averages: $2.50 to $8.50 per sq ft of concrete pavers ($4.50 typical), $35 to $75 per ton of crushed base stone ($52 typical), $32 to $65 per cubic yard of bedding sand ($46 typical), and $24 to $48 per 50-lb bag of polymeric sand ($34 typical), excluding delivery charges, supplier minimums, edge restraints, and geotextile fabric.',
+        'Price benchmarks reflect regional planning averages, not quarry- or manufacturer-verified quotes: $2.50 to $8.50 per sq ft of concrete pavers ($4.50 typical), $35 to $75 per ton from the Crushed Stone / #57 Gravel benchmark ($52 typical, ~1.4 tons/yd³—used here as an approximate substitute/reference benchmark for dense-grade crusher run), $32 to $65 per cubic yard of bedding sand ($46 typical), and $24 to $48 per 50-lb bag of polymeric sand ($34 typical), excluding delivery charges, supplier minimums, edge restraints, and geotextile fabric.',
       materialTiers: [
         {
           tier: 'Standard Concrete Paver System (DIY)',
@@ -1733,16 +1733,17 @@ export const GUIDES: Record<string, GuideDefinition> = {
     methodologyAssumptions: [
       'Surface pavers calculated based on net patio area plus selectable cut waste (10% standard rectangular, 15% curved); paver cutting waste does not inflate gravel base, bedding sand, or polymeric sand.',
       'Aggregate base calculated with a mandatory 6-inch horizontal perimeter extension (+1.0 ft to length and width) applied to the base layer only.',
-      'Dense-graded aggregate base modeled from finished compacted thickness using a provisional ~1.55 tons per cubic yard compacted weight benchmark (rounded up to whole tons for purchase planning).',
+      'Base depth represents target finished compacted thickness, converted via a provisional 1.55 tons/yd³ in-place compacted weight-per-volume assumption for dense-graded crusher run (rounded to whole tons for planning). This is not a universal conversion for all aggregate types; quarry gradation, moisture, and certified scale weights vary.',
+      'Dense-grade base cost uses the Crushed Stone / #57 Gravel benchmark ($35–$75/ton, ~1.4 tons/yd³) as an approximate substitute/reference benchmark rather than a quarry-verified crusher-run price.',
       'Bedding sand modeled at strictly 1.0 inch uncompacted thickness over net patio surface area (0.003086 cu yds per sq ft) and rounded to 0.1 yd³ planning increments.',
-      'Polymeric sand coverage estimated at a preliminary ~70 sq ft per 50-lb bag benchmark for standard ~4×8 interlocking pavers without adjusting for paver thickness or joint width.',
+      'Polymeric sand uses a provisional ~70 sq ft per 50-lb bag planning assumption (illustrative ~60–80 sq ft for standard ~4×8 pavers; broader illustrative ranges span ~25–100 sq ft/bag—not universal manufacturer specifications). Actual yield depends on paver thickness, joint width, joint depth, bevel geometry, and product-specific Technical Data Sheet (TDS) coverage charts.',
       'Excludes delivery fees, quarry/landscape-yard minimum orders, full-pallet paver rules, edge restraints, spikes, geotextile fabric, and site-specific drainage or local engineering codes.',
     ],
     faqs: [
       {
         question: 'How much crushed stone base do I need for a paver patio?',
         answer:
-          'For standard pedestrian residential patios, a 4-inch compacted depth of dense-graded crushed stone (#21A, 3/4" crusher run, or road base) is the standard benchmark. For a 15×12 ft patio, adding the mandatory 6-inch perimeter extension yields an excavated base footprint of 16×13 ft (208 sq ft), requiring approximately 2.57 cubic yards or 4.0 tons of aggregate base.',
+          'For standard pedestrian residential patios, a 4-inch target finished compacted depth of dense-graded crushed stone (#21A, 3/4" crusher run, or road base) is a common planning benchmark. For a 15×12 ft patio, adding the 6-inch perimeter extension yields an excavated base footprint of 16×13 ft (208 sq ft), or about 2.57 cubic yards in place—roughly 3.98 net tons (4 whole tons ordered) using a provisional 1.55 tons/yd³ in-place compacted assumption. Confirm local quarry gradation, moisture, and scale tonnage before ordering.',
       },
       {
         question: 'Why does the gravel base need to extend 6 inches past the pavers?',
@@ -1762,7 +1763,7 @@ export const GUIDES: Record<string, GuideDefinition> = {
       {
         question: 'How much polymeric sand do I need?',
         answer:
-          'A standard 50-lb bag of polymeric joint sand covers approximately 60 to 80 square feet of standard 4×8-inch pavers with standard 1/8-inch joints. For larger slabs with tighter joints, a bag can cover up to 100 square feet; for irregular flagstone with wide 1/2-inch joints, coverage drops to 25 to 40 square feet per bag.',
+          'As an illustrative planning range—not a universal manufacturer specification—a 50-lb bag of polymeric joint sand commonly covers around 60 to 80 square feet for standard 4×8-inch pavers with narrow joints (the calculator uses ~70 sq ft/bag provisionally). Across paver styles, illustrative ranges span roughly 25 to 100 sq ft per bag depending on paver thickness, joint width, joint depth, and bevel geometry—always check the manufacturer\'s Technical Data Sheet (TDS) coverage chart for your specific paver and product.',
       },
       {
         question: 'Do I compact the bedding sand before laying pavers?',

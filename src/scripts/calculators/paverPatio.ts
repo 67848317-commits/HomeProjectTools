@@ -272,13 +272,13 @@ export function calculatePaverPatio(inputs: PaverPatioInputs): CalculationResult
       },
       {
         id: 'gravel-base',
-        name: `Dense-Grade Crushed Gravel Base (${baseDepth}" Compacted Depth)`,
-        description: `Compactible base rock over ${roundToPrecision(baseExcavationArea, 1)} sq ft (+6" perimeter extension), rounded up to whole tons`,
+        name: `Dense-Grade Crushed Gravel Base (${baseDepth}" Finished Compacted)`,
+        description: `Dense-grade base rock over ${roundToPrecision(baseExcavationArea, 1)} sq ft (+6" perimeter extension), rounded to whole tons; cost uses #57 crushed-stone pricing as an approximate substitute/reference benchmark`,
         exactQuantity: gravelBaseTons,
         recommendedQuantity: gravelBaseTons,
         purchaseQuantity: gravelBasePurchaseTons,
         packageUnit: 'tons',
-        unitSizeDescription: `Provisional ~${DENSE_GRADE_GRAVEL_TONS_PER_CU_YD} tons/yd³ compacted`,
+        unitSizeDescription: `Provisional ~${DENSE_GRADE_GRAVEL_TONS_PER_CU_YD} tons/yd³ in-place compacted`,
         wasteAppliedPercentage: 0,
         benchmarkPriceId: 'gravel-crushed-stone-ton',
         estimatedCost: gravelCost,
@@ -299,7 +299,7 @@ export function calculatePaverPatio(inputs: PaverPatioInputs): CalculationResult
       {
         id: 'polymeric-sand',
         name: 'Polymeric Jointing Sand (50-lb Bags)',
-        description: `Preliminary joint sand allowance across ${roundToPrecision(patioArea, 1)} sq ft (not adjusted for joint width or paver thickness)`,
+        description: `Provisional ~70 sq ft/bag planning estimate across ${roundToPrecision(patioArea, 1)} sq ft (illustrative ~60–80 sq ft for 4"×8" pavers, ~25–100 sq ft across styles; verify product TDS)`,
         exactQuantity: polymericSandExactBags,
         recommendedQuantity: polymericSandExactBags,
         purchaseQuantity: polymericSandBags,
@@ -327,11 +327,11 @@ export function calculatePaverPatio(inputs: PaverPatioInputs): CalculationResult
         : undefined,
       benchmarkSources: [
         paverBench?.sourceNote ?? 'Interlocking concrete paver benchmarks',
-        gravelBench?.sourceNote ?? 'Quarry aggregate benchmarks',
+        'Crushed Stone / #57 Gravel benchmark (used as an approximate substitute/reference benchmark for dense-grade crusher-run base; not a quarry-verified crusher-run quote)',
         beddingBench?.sourceNote ?? 'Bedding sand benchmarks',
       ],
       disclaimer:
-        'Excludes delivery fees, quarry/yard minimum order rules (often 1–3 tons or 0.5–1.0 yd³), full-pallet vs. split-pallet paver fees, soil excavation/disposal, plate compactor rental, snap-edge restraints, spikes, and geotextile fabric.',
+        'Benchmark prices are regional planning references, not quarry- or manufacturer-verified quotes. Dense-grade crusher-run base cost uses the Crushed Stone / #57 Gravel ($35–$75/ton, ~1.4 tons/yd³) entry as an approximate substitute/reference benchmark. Excludes delivery fees, quarry/yard minimum order rules (often 1–3 tons or 0.5–1.0 yd³), full-pallet vs. split-pallet paver fees, soil excavation/disposal, plate compactor rental, snap-edge restraints, spikes, and geotextile fabric.',
     },
     assumptions: [
       {
@@ -342,8 +342,8 @@ export function calculatePaverPatio(inputs: PaverPatioInputs): CalculationResult
       },
       {
         id: 'base-depth-specification',
-        title: 'Finished Compacted Base Depth & Provisional Tonnage Factor',
-        detail: `Uses ${baseDepth}" finished compacted base thickness (${roundToPrecision(baseCuYds, 2)} yd³ in place) converted via a provisional ${DENSE_GRADE_GRAVEL_TONS_PER_CU_YD} tons/yd³ dense-graded aggregate benchmark (${gravelBaseTons} net tons, rounded to ${gravelBasePurchaseTons} whole tons for planning). Actual quarry scale weight and loose-to-compacted shrinkage vary by rock gradation, moisture, and subgrade bearing capacity.`,
+        title: 'Finished Compacted Base Depth, Provisional 1.55 tons/yd³ Factor & Substitute Price Benchmark',
+        detail: `Base depth (${baseDepth}") represents target finished compacted thickness (${roundToPrecision(baseCuYds, 2)} yd³ in place), converted using a provisional ${DENSE_GRADE_GRAVEL_TONS_PER_CU_YD} tons/yd³ in-place compacted weight-per-volume assumption for dense-graded crusher run (${gravelBaseTons} net tons, rounded to ${gravelBasePurchaseTons} whole tons). This factor is not a universal conversion for all aggregate types, and quarry material gradation, moisture, and actual certified scale weights can change the delivered tonnage relationship. Base cost uses the #57 Crushed Stone ton benchmark as an approximate substitute/reference benchmark rather than a quarry-verified crusher-run price.`,
         category: 'structural',
       },
       {
@@ -354,8 +354,8 @@ export function calculatePaverPatio(inputs: PaverPatioInputs): CalculationResult
       },
       {
         id: 'polymeric-sand-benchmark',
-        title: 'Preliminary Polymeric Sand Coverage Benchmark',
-        detail: `Uses a preliminary ${POLYMERIC_SAND_COVERAGE_SQ_FT_PER_BAG} sq ft per 50-lb bag planning assumption typical of ~4"×8" pavers with standard joints (${polymericSandExactBags} exact → ${polymericSandBags} bags). Because paver thickness, joint width, and edge bevels are not modeled, real coverage commonly ranges from ~25 to 100 sq ft/bag—confirm against the polymeric sand manufacturer's coverage chart before ordering.`,
+        title: 'Provisional Polymeric Sand Coverage Assumption & Illustrative Ranges',
+        detail: `Uses a provisional ${POLYMERIC_SAND_COVERAGE_SQ_FT_PER_BAG} sq ft per 50-lb bag planning assumption (${polymericSandExactBags} exact → ${polymericSandBags} bags), representing the midpoint of an illustrative ~60–80 sq ft planning range for standard ~4"×8" pavers and part of a wider ~25–100 sq ft/bag illustrative planning range across paver styles. These are illustrative planning ranges only—not universal manufacturer specifications. Actual coverage depends on paver thickness, joint width, joint depth, bevel geometry, and product-specific Technical Data Sheet (TDS) coverage charts.`,
         category: 'coverage',
       },
       {
@@ -367,7 +367,7 @@ export function calculatePaverPatio(inputs: PaverPatioInputs): CalculationResult
     ],
     notices: [
       'Ensure polymeric sand is applied ONLY when pavers and joints are completely dry, and blow all dust off paver faces before misting to prevent permanent polymer hazing.',
-      'Confirm whether your supplier requires full-pallet paver purchases (typically 100–120 sq ft/pallet) or bulk delivery minimums for gravel and sand before finalizing quantities.',
+      'Confirm local quarry crusher-run pricing, scale weights, and bulk delivery minimums—and verify polymeric sand yield against your product Technical Data Sheet (TDS)—before placing material orders.',
     ],
   };
 }

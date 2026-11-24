@@ -98,7 +98,7 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
         stepNumber: 2,
         title: 'Calculate Crushed Aggregate Base Tonnage (Finished Compacted Depth + 6" Extension)',
         description:
-          'Per Interlocking Concrete Pavement Institute (ICPI) practice, the aggregate base extends 6 inches past the paver perimeter on all four sides to support edge restraints. Using the selected finished compacted depth, volume is converted with a provisional ~1.55 tons/yd³ dense-graded crushed stone benchmark and rounded up to whole tons for planning (cut waste is not applied to base gravel).',
+          'Per Interlocking Concrete Pavement Institute (ICPI) practice, the aggregate base extends 6 inches past the paver perimeter on all four sides to support edge restraints. Base depth is the target finished compacted thickness, and volume is converted using a provisional 1.55 tons/yd³ in-place compacted weight-per-volume assumption for dense-graded crusher run (not a universal conversion across aggregates; quarry gradation, moisture, and certified scale weights vary). Base cost uses the site\'s #57 crushed stone ton benchmark as an approximate substitute/reference benchmark.',
         formulaDisplay: (
           <span>
             ({patioLength} + 1)&apos; × ({patioWidth} + 1)&apos; × ({baseDepthInches}&quot; ÷ 12) ={' '}
@@ -123,9 +123,9 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
       },
       {
         stepNumber: 4,
-        title: 'Preliminary Polymeric Jointing Sand Allowance',
+        title: 'Provisional Polymeric Jointing Sand Allowance',
         description:
-          'Uses a preliminary ~70 sq ft per 50-lb bag planning benchmark typical of ~4"×8" pavers with standard joints. Because paver thickness, joint width, and edge bevels are not inputs, actual coverage commonly ranges from ~25 to 100 sq ft/bag—verify with the product Technical Data Sheet before ordering.',
+          'Uses a provisional ~70 sq ft per 50-lb bag planning assumption (midpoint of an illustrative ~60–80 sq ft range for standard ~4"×8" pavers; broader illustrative ranges across styles span ~25–100 sq ft/bag). These are illustrative planning ranges, not universal manufacturer specifications—actual yield depends on paver thickness, joint width, joint depth, bevel geometry, and product-specific Technical Data Sheet (TDS) coverage charts.',
         formulaDisplay: (
           <span>
             {out.patioAreaSqFt} sq ft ÷ ~{out.polymericSandCoverageSqFtPerBag} sq ft/bag (provisional) ={' '}
@@ -178,7 +178,7 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
         <div className="mb-8 rounded-lg border border-[#e3ded4] bg-[#faf8f5] p-4 flex items-start gap-3 text-xs text-[#57534e]">
           <HelpCircle className="h-5 w-5 text-[#b8532b] shrink-0 mt-0.5" />
           <div className="leading-relaxed">
-            <strong className="text-[#1c1917] font-semibold">Planning Estimate &amp; Scope Notice (Selected Base: {baseDepthInches} in compacted):</strong> This tool provides a residential pedestrian patio planning estimate using provisional benchmarks (~1.55 tons/yd³ compacted dense-grade base and ~70 sq ft/bag polymeric sand). Actual requirements vary with native subgrade soil, freeze-thaw depth, quarry rock density, paver thickness, joint width, and local supplier pallet or delivery minimums. Edge restraints, spikes, geotextile fabric, and delivery fees are not included.
+            <strong className="text-[#1c1917] font-semibold">Planning Estimate &amp; Scope Notice (Selected Base: {baseDepthInches} in finished compacted):</strong> This tool provides a residential pedestrian patio planning estimate using provisional assumptions (1.55 tons/yd³ in-place compacted dense-grade aggregate; ~70 sq ft/bag polymeric sand) and uses the site&apos;s Crushed Stone / #57 Gravel per-ton entry ($35–$75/ton) as an approximate substitute/reference benchmark for dense-grade base cost (not a quarry-verified quote). Actual quantities and pricing vary with subgrade soil, freeze-thaw depth, quarry gradation/moisture, paver thickness, joint width, bevel geometry, and supplier minimums. Edge restraints, spikes, geotextile fabric, and delivery fees are excluded.
           </div>
         </div>
 
@@ -285,7 +285,7 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
                     ]}
                   />
                   <span className="text-[11px] text-[#78716c] leading-relaxed block">
-                    Models target finished compacted thickness (4&quot; standard pedestrian benchmark; 6&quot; in freeze-thaw zones or wet clay). Aggregate weight uses a provisional ~1.55 tons/yd³ benchmark; confirm loose-vs-compacted yield with your quarry.
+                    Base depth is the target finished compacted thickness (4&quot; standard pedestrian benchmark; 6&quot; in freeze-thaw zones or wet clay). Tonnage uses a provisional 1.55 tons/yd³ in-place compacted assumption for dense-grade crusher run (not universal across aggregates; confirm gradation, moisture, and quarry scale weights locally).
                   </span>
                 </div>
 
@@ -445,12 +445,12 @@ export const PaverPatioCalculatorPage: React.FC<PaverPatioCalculatorPageProps> =
               assumptions={calculationResult.assumptions}
               notices={calculationResult.notices}
               limitations={[
-                'Finished Compacted Base vs. Quarry Delivery: Base volume reflects target finished compacted thickness; actual loose truck volume, moisture weight, and compaction shrinkage vary by stone gradation—confirm scale tonnage with your aggregate supplier.',
-                'Polymeric Sand Joint Geometry: Joint sand is a preliminary ~70 sq ft/bag planning benchmark because paver thickness, joint width, and chamfer depth are not inputs. Wide joints or thick pavers (80mm) can require significantly more sand.',
-                'Supplier Minimums & Pallet Packaging: Gravel is modeled in whole-ton increments and bedding sand in 0.1 yd³ increments for planning, while suppliers often enforce 1–3 ton or 0.5–1.0 yd³ minimums, delivery fees, and full-pallet or restocking fees on pavers.',
-                'Subgrade Excavation & Accessories Excluded: Total excavation depth must equal base depth + 1" sand + paver thickness (typically 7" to 9" total depth). Soil spoils removal, plate compactor rental, snap-edge restraints, 10" steel spikes, and geotextile fabric are not included.',
+                'Aggregate Price Benchmark Substitution: Dense-grade crusher-run base cost is estimated using the Crushed Stone / #57 Gravel benchmark ($35–$75/ton, ~1.4 tons/yd³) as an approximate substitute/reference benchmark rather than a quarry-verified crusher-run price.',
+                'Finished Compacted Base & Provisional 1.55 tons/yd³ Factor: Base depth is target finished compacted thickness, and 1.55 tons/yd³ is a provisional in-place compacted weight-per-volume assumption—not a universal aggregate conversion. Quarry gradation, moisture, and actual scale weights change delivered tonnage.',
+                'Polymeric Sand Illustrative Coverage: The ~70 sq ft/bag benchmark (illustrative ~60–80 sq ft for 4"×8" pavers; ~25–100 sq ft/bag across styles) is a provisional planning range, not a universal manufacturer specification. Confirm yield with your product\'s Technical Data Sheet (TDS) for actual paver thickness, joint width, joint depth, and bevel geometry.',
+                'Supplier Minimums, Pallet Packaging & Excluded Accessories: Gravel rounds to whole tons and bedding sand to 0.1 yd³ for planning, while suppliers often enforce 1–3 ton or 0.5–1.0 yd³ minimums, delivery fees, and pallet fees. Soil excavation/disposal (typically 7"–9" total depth), plate compactor rental, snap-edge restraints, 10" steel spikes, and geotextile fabric are excluded.',
               ]}
-              scopeTitle="Planning Scope, Supplier Minimums & Disclaimers"
+              scopeTitle="Planning Scope, Benchmark Substitutions & Disclaimers"
             />
 
             {/* Comprehensive Editorial Planning Guide */}
