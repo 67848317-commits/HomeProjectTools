@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 
 import { calculateTopsoil } from '../src/scripts/calculators/topsoil.ts';
 import { CALCULATORS } from '../src/data/calculators.ts';
+import { CATEGORIES } from '../src/data/categories.ts';
+import { getGuideBySlug } from '../src/data/guides.ts';
 import { getPriceBenchmark } from '../src/data/prices.ts';
 
 test('Topsoil 1B.3.1 - 1. Default omitted wastePercentage resolves to 10% and normalizes result.inputs', () => {
@@ -350,4 +352,97 @@ test('Topsoil 1B.3.2 - 4. Edge volumes (exact whole yard, just above whole yard,
   assert.ok(bulkBench.priceBasis.toLowerCase().includes('before delivery freight'));
   assert.equal(getPriceBenchmark('topsoil-bag-100'), undefined);
 });
+
+test('Topsoil 1B.3.3 - 1. Guide worked example costs & quantities match approved engine & price benchmarks', () => {
+  const guide = getGuideBySlug('how-much-topsoil-do-i-need')!;
+  assert.ok(guide, 'Topsoil guide must exist');
+
+  const bulkExample = calculateTopsoil({
+    bedLength: 20,
+    bedWidth: 10,
+    soilDepthInches: 4,
+    wastePercentage: 10,
+    purchasingFormat: 'bulk-yards',
+  });
+  const bagExample = calculateTopsoil({
+    bedLength: 20,
+    bedWidth: 10,
+    soilDepthInches: 4,
+    wastePercentage: 10,
+    purchasingFormat: 'bags-075',
+  });
+  assert.equal(bulkExample.success, true);
+  assert.equal(bagExample.success, true);
+  if (!bulkExample.success || !bagExample.success) return;
+
+  assert.equal(bulkExample.outputs.bulkCubicYardsToPurchase, 3);
+  assert.equal(bulkExample.costEstimate.materialsOnly.low, 78);
+  assert.equal(bulkExample.costEstimate.materialsOnly.typical, 114);
+  assert.equal(bulkExample.costEstimate.materialsOnly.high, 162);
+
+  assert.equal(bagExample.outputs.bags075cuftToPurchase, 98);
+  assert.equal(bagExample.costEstimate.materialsOnly.low, 244);
+  assert.equal(bagExample.costEstimate.materialsOnly.typical, 371);
+  assert.equal(bagExample.costEstimate.materialsOnly.high, 518);
+  assert.equal(bagExample.outputs.bags1cuftToPurchase, 74);
+
+  const guideJson = JSON.stringify(guide);
+
+  // Required aligned pricing & volume-only 1.0 cu ft disclosure
+  assert.ok(guideJson.includes('$78') && guideJson.includes('$162') && guideJson.includes('$114'));
+  assert.ok(guideJson.includes('$244') && guideJson.includes('$518') && guideJson.includes('$371'));
+  assert.ok(guideJson.includes('Quantity only; price not estimated') || guideJson.includes('quantity only; price not estimated'));
+
+  // Prohibited obsolete figures & unsupported claims must be absent
+  const forbiddenGuideStrings = [
+    '$260–$480',
+    '$260 - $480',
+    '$80 - $160',
+    '$245 - $520',
+    '1.5 to 2.0 cubic yards',
+    '1.5 to 2 cubic yards',
+    '25-35 bags',
+    '$40 to $90',
+    '$40 to $70',
+    '$38 - $68',
+    'over the first two weeks',
+    '1 to 2 inches for lawn topdressing',
+  ];
+  for (const forbidden of forbiddenGuideStrings) {
+    assert.equal(guideJson.includes(forbidden), false, `Guide must not contain obsolete claim: ${forbidden}`);
+  }
+});
+
+test('Topsoil 1B.3.3 - 2. Landscaping category, Topsoil metadata, and bidirectional links align with model', () => {
+  const guide = getGuideBySlug('how-much-topsoil-do-i-need')!;
+  const calc = CALCULATORS['topsoil-calculator'];
+  const cat = CATEGORIES['landscaping'];
+
+  assert.equal(guide.categoryId, 'landscaping');
+  assert.equal(guide.targetCalculatorId, 'topsoil-calculator');
+  assert.equal(guide.targetCalculatorPath, '/calculators/topsoil-calculator');
+  assert.ok(calc.relatedGuideSlugs.includes(guide.slug));
+  assert.ok(cat.relatedGuideSlugs.includes(guide.slug));
+  assert.ok(cat.calculatorIds.includes(calc.id));
+
+  // Category bulk-vs-bag FAQ avoids universal threshold
+  const bulkFaq = cat.planningQuestions?.find((q) => q.question.toLowerCase().includes('bulk'));
+  assert.ok(bulkFaq);
+  assert.ok(bulkFaq.answer.toLowerCase().includes('no single universal'));
+  assert.equal(bulkFaq.answer.includes('greater than 2 to 3 cubic yards'), false);
+
+  // Calculator metadata reflects explicit format, whole-yard bulk planning, freight exclusions, and unpriced 1.0 cu ft bags
+  const bags1Def = calc.outputDefinitions.find((o) => o.id === 'bags1cuft')!;
+  assert.ok(bags1Def.description.toLowerCase().includes('price not estimated'));
+  const calcMetaStr = JSON.stringify({
+    description: calc.description,
+    assumptions: calc.assumptions,
+    limitations: calc.limitations,
+    seo: calc.seo,
+  });
+  assert.ok(calcMetaStr.includes('0%–50%'));
+  assert.ok(calcMetaStr.toLowerCase().includes('delivery freight'));
+  assert.ok(calcMetaStr.toLowerCase().includes('no automatic'));
+});
+
 

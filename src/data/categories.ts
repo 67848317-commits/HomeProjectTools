@@ -213,16 +213,16 @@ export const CATEGORIES: Record<CategoryId, CategoryDefinition> = {
       'Composite / Stone Garden Edging',
     ],
     planningWorkflowSteps: [
-      'Measure length and width in feet, and determine target installed depth in inches.',
-      'Calculate volume in cubic yards and apply settling (5-10%) or compaction buffers (10%).',
-      'Compare retail bagged packaging against bulk landscape nursery dump truck delivery.',
+      'Measure length and width in feet, and determine target depth in inches.',
+      'Calculate volume in cubic yards and apply a project-appropriate planning allowance (such as compaction or settling buffers where needed).',
+      'Compare retail bagged packaging against bulk landscape yard delivery quotes, including freight and minimums.',
       'Check site access, driveway clearance, wheelbarrow routes, and delivery drop zones.',
     ],
     planningQuestions: [
       {
         question: 'When is bulk delivery more cost-effective than retail bags?',
         answer:
-          'For quantities greater than 2 to 3 cubic yards (27 to 40 two-cubic-foot bags), buying bulk material from a local landscape yard delivered by dump truck is usually significantly cheaper and saves handling dozens of plastic bags.',
+          'There is no single universal volume cutoff—whether bulk delivery beats retail bags depends on the material, retail bag size (for example, 0.75 cu ft or 1.0 cu ft topsoil bags versus 2 cu ft mulch bags), local dump truck delivery freight, supplier minimum order rules, and whether you have driveway drop access and wheelbarrow staging. Compare delivered bulk quotes against total bag cost before ordering.',
       },
       {
         question: 'What is the difference between loose depth and compacted depth in gravel?',
