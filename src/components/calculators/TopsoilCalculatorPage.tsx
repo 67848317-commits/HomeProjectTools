@@ -109,9 +109,9 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
       },
       {
         stepNumber: 3,
-        title: 'Apply Additional Volume Planning Allowance',
+        title: 'Apply Provisional Planning Allowance (Once)',
         description:
-          `An additional ${out.wastePercentage}% planning allowance is applied to the geometric volume, then divided by 27 cu ft/yd³. Displayed values are rounded while internal calculations retain precision.`,
+          `A provisional planning allowance of ${out.wastePercentage}% (10% default; configurable 0%–50%) is applied once to geometric volume, then divided by 27 cu ft/yd³. Displayed values are rounded while internal calculations retain precision.`,
         formulaDisplay: (
           <span>
             {out.geometricVolumeCuFt} cu ft × (1 + {out.wastePercentage / 100}) ={' '}
@@ -144,13 +144,13 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
       icon: Truck,
     },
     {
-      title: 'Enter Target Finished Depth',
-      desc: `Enter the finished depth you want in your garden bed. Because loose topsoil settles differently depending on moisture, texture, and tamping, the calculator applies your selected ${wastePercentage}% provisional planning allowance on top of geometric volume rather than assuming a fixed compaction rate.`,
+      title: 'Enter Target Depth Once',
+      desc: `Enter the true target depth you want without inflating it manually. The calculator applies your selected ${wastePercentage}% provisional planning allowance (10% default; configurable 0%–50%) once on top of geometric volume as a planning input—not a universal soil-settling or compaction rate.`,
       icon: Layers,
     },
     {
-      title: 'Moist Topsoil Weight Considerations',
-      desc: 'One cubic yard of damp, screened topsoil weighs approximately 2,000 to 2,400 lbs (over 1 ton). A half-ton pickup truck bed can typically carry only 0.75 to 1.0 cubic yard safely in a single trip.',
+      title: 'Topsoil Weight & Vehicle Payload',
+      desc: 'As a rough planning reference, moist topsoil often weighs roughly 2,000–2,500 lbs per cubic yard, varying by soil blend and moisture (saturated soil can weigh more). Do not use cubic-yard volume alone to judge hauling limits—check your vehicle manufacturer’s payload rating, account for passengers, accessories, and other cargo, and ask the supplier for actual product weight.',
       icon: Package,
     },
     {
@@ -170,7 +170,7 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
         <CalculatorHeader
           title={metadata?.name ?? 'Topsoil & Garden Bed Calculator'}
           categoryName={category?.name ?? 'Landscaping & Grounds'}
-          description="Calculate bulk cubic yards and retail bags (0.75 cu ft / 1.0 cu ft) of topsoil or compost for raised garden beds, lawn top-dressing, and grading."
+          description="Calculate bulk cubic yards (whole-yard planning increment) and retail bags (0.75 cu ft priced; 1.0 cu ft volume-only) of topsoil for raised garden beds, lawn top-dressing, and grading."
           targetIntent={metadata?.targetIntent}
         />
 
@@ -178,7 +178,7 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
         <div className="mb-8 rounded-lg border border-[#e3ded4] bg-[#faf8f5] p-4 flex items-start gap-3 text-xs text-[#57534e]">
           <HelpCircle className="h-5 w-5 text-[#b8532b] shrink-0 mt-0.5" />
           <div className="leading-relaxed">
-            <strong className="text-[#1c1917] font-semibold">Target Depth &amp; Planning Allowance Notice:</strong> Enter the finished depth you want in your bed. An adjustable provisional planning allowance (10% default; configurable 0%–50%) is added to geometric volume to help buffer against loose soil settling and minor grade variations; actual settling varies by soil blend, moisture, and compaction. Typical target depths: Lawn top-dressing: 0.25&quot;–0.5&quot;; Flower beds &amp; lawn repair: 2&quot;–4&quot;; New raised garden beds: 6&quot;–12&quot;.
+            <strong className="text-[#1c1917] font-semibold">Target Depth &amp; Planning Allowance Notice:</strong> Enter your true target depth once—do not inflate depth manually. An adjustable provisional planning allowance (10% default; configurable 0%–50%) is applied once to geometric volume as a planning input, not a universal soil-settling or compaction rate. Project-dependent depth examples: Lawn top-dressing: 0.25&quot;–0.5&quot;; Flower beds &amp; lawn prep: 2&quot;–4&quot;; Raised garden beds: 6&quot;–12&quot;.
           </div>
         </div>
 
@@ -246,28 +246,28 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                 {/* 2. Soil Depth */}
                 <CalculatorInput
                   id="soil-depth"
-                  label="Target Installed Depth"
+                  label="Target Soil Depth"
                   value={soilDepthInches}
                   onChange={setSoilDepthInches}
                   unit="in"
                   min={0.25}
                   max={36}
                   step={0.25}
-                  description="Enter desired finished depth (0.25–36 in). Common: 0.25–0.5 in top-dressing; 3–4 in garden beds; 6–8 in vegetables."
+                  description="Enter your true target depth once (0.25–36 in); do not pre-inflate depth. Examples: 0.25–0.5 in top-dressing; 3–4 in garden beds; 6–8+ in vegetables."
                   required
                   error={fieldErrors.soilDepthInches}
                 />
 
-                {/* 3. Waste / Settling Planning Allowance */}
+                {/* 3. Provisional Planning Allowance */}
                 <div className="space-y-1.5">
                   <WasteSelector
                     value={wastePercentage}
                     onChange={setWastePercentage}
                     options={metadata.wasteOptions}
-                    title="Provisional Planning / Settling Allowance"
+                    title="Provisional Planning Allowance"
                     customLabel="Allowance"
                     max={50}
-                    principleNote="An adjustable additional volume allowance (10% default; 0%–50%) added once to geometric volume as a provisional planning buffer for loose soil settling and minor grading variations. Actual settling varies with soil composition, moisture, and tamping."
+                    principleNote="An adjustable planning input (10% default; configurable 0%–50%) applied once to geometric volume—not a universal soil-settling or compaction rate. Do not inflate your target depth and apply the allowance twice."
                   />
                   {fieldErrors.wastePercentage && (
                     <div role="alert" className="flex items-center gap-1.5 text-xs text-[#b91c1c] pt-0.5">
@@ -319,7 +319,7 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                         0.75 cu ft Retail Bags
                       </span>
                       <span className="block text-[11px] text-[#57534e] mt-0.5">
-                        Approx 40-lb home center bags
+                        Priced retail bags (weight varies)
                       </span>
                     </button>
                   </div>
@@ -358,14 +358,14 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                           label="0.75 cu ft Retail Bags"
                           value={out.bags075cuftToPurchase}
                           unit="bags"
-                          subtext={`${out.bags075cuftExact} exact (~40-lb bags)`}
+                          subtext={`${out.bags075cuftExact} exact (weight varies)`}
                           variant={!isBulkSelected ? 'primary' : 'secondary'}
                         />
                         <ResultMetric
                           label="1.0 cu ft Bags"
                           value={out.bags1cuftToPurchase}
                           unit="bags"
-                          subtext="Volume-only (not priced)"
+                          subtext="Quantity only; price not estimated"
                         />
                       </div>
                     </div>
@@ -405,7 +405,7 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                           </div>
                           <p className="text-[#57534e] text-[11px] leading-relaxed">
                             Material only: ${bulkBom?.estimatedCost?.typical.toLocaleString()} typical ($
-                            {bulkBom?.estimatedCost?.low.toLocaleString()}–${bulkBom?.estimatedCost?.high.toLocaleString()}) at $26–$54/yd³. Excludes delivery freight; supplier increments &amp; minimums vary.
+                            {bulkBom?.estimatedCost?.low.toLocaleString()}–${bulkBom?.estimatedCost?.high.toLocaleString()}) at $26–$54/yd³. Excludes delivery freight, supplier minimums, and sales tax; supplier billing increments vary.
                           </p>
                         </button>
 
@@ -579,7 +579,7 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
               assumptions={calculationResult.assumptions}
               notices={calculationResult.notices}
               limitations={[
-                'Weight and Vehicle Capacity: 1 cubic yard of moist screened topsoil weighs approximately 2,000 to 2,400 lbs. Check truck and trailer payload ratings before attempting self-pickup.',
+                'Weight & Vehicle Payload: As a rough planning reference, moist topsoil often weighs roughly 2,000–2,500 lbs per cubic yard, varying by soil blend and moisture (saturated soil can weigh more). Do not rely on cubic-yard volume alone—verify your vehicle manufacturer’s payload rating (accounting for passengers, accessories, and other cargo) and obtain actual supplier material weights before pickup.',
                 'Bulk Delivery Drops: Bulk material delivered by dump truck is unloaded in driveways or curbside. Transport from the drop zone to backyard garden beds with wheelbarrows must be planned.',
                 'Subgrade Grading: Soil quantities calculated here assume a uniform, relatively level subgrade. Irregular low spots or deep ruts will demand additional volume.',
               ]}
@@ -600,7 +600,7 @@ export const TopsoilCalculatorPage: React.FC<TopsoilCalculatorPageProps> = ({ on
                     How Much Topsoil Do I Need? Calculate Cubic Yards, Depth, and Bags
                   </h3>
                   <p className="text-xs sm:text-sm text-[#57534e] mt-1 max-w-xl leading-relaxed">
-                    Learn how to measure bed square footage, specify final installed depth, account for organic settling, and evaluate bulk dump truck delivery versus retail bags.
+                    Learn how to measure bed square footage, set target depth, apply an adjustable provisional planning allowance once (10% default; 0%–50%), and compare bulk cubic yards against retail bags.
                   </p>
                 </div>
               </div>
