@@ -221,7 +221,7 @@ export function calculateTopsoil(inputs: TopsoilInputs): CalculationResult<Topso
       {
         id: 'topsoil-bags-075',
         name: `0.75 cu ft Bagged Topsoil (${!isBulkSelected ? 'Selected Format' : 'Alternative Format'})`,
-        description: `Retail bags (~40 lbs each; ${bags075cuft} whole bags for ${roundToPrecision(recommendedCuFt, 2)} cu ft planning volume)`,
+        description: `Retail bags (weight varies by product and moisture; ${bags075cuft} whole bags for ${roundToPrecision(recommendedCuFt, 2)} cu ft planning volume)`,
         exactQuantity: bags075Display,
         recommendedQuantity: bags075Display,
         purchaseQuantity: bags075cuft,

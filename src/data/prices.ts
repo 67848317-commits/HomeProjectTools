@@ -353,7 +353,7 @@ export const PRICE_BENCHMARKS: Record<string, PriceBenchmark> = {
     priceLow: 2.49,
     priceTypical: 3.79,
     priceHigh: 5.29,
-    priceBasis: 'Per 0.75 cu ft bag (~40 lbs)',
+    priceBasis: 'Per 0.75 cu ft bag (weight varies by product and moisture)',
     packagingAssumption: '36 bags equal 1 cubic yard',
     sourceNote: 'Aggregated retail home center packaged topsoil',
     lastReviewedDate: '2026-01-15',
